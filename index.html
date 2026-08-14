@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nursing Study Center — Final</title>
+<title>Nursing Study Center — Final 1.1</title>
 <meta name="theme-color" content="#5a57d8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -62,7 +62,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 
 <section id="inicio" class="active">
 <div class="card">
-<span class="pill">FINAL • 20 MÓDULOS</span>
+<span class="pill">FINAL • 20 MÓDULOS • PRÁCTICA CORREGIDA</span>
 <h2>Nursing Study Center</h2>
 <p>Los 20 módulos de enfermería están reunidos en una sola app, con práctica, examen, favoritos y progreso.</p>
 <button class="primary" onclick="show('temas')">📚 Ver los 20 módulos →</button>
@@ -1949,7 +1949,7 @@ function ensureFinalUI(){
  }
  document.querySelector('#inicio').innerHTML=`
   <div class="card">
-   <span class="pill">FINAL • 20 MÓDULOS</span>
+   <span class="pill">FINAL • 20 MÓDULOS • PRÁCTICA CORREGIDA</span>
    <h2>Nursing Study Center</h2>
    <p>Estudio, práctica, examen, favoritos y progreso en una sola app.</p>
    <div class="actions">
@@ -2008,14 +2008,17 @@ function toggleComplete(k){
 }
 
 let practiceOrder=[], practicePos=0, answeredFinal=false;
-function startPractice(shuffle=false){
- show('quiz');
- if(shuffle || !practiceOrder.length){
-   practiceOrder=[...Array(qs.length).keys()];
-   for(let i=practiceOrder.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
-   practicePos=0;
+function buildPracticeOrder(){
+ practiceOrder=[...Array(qs.length).keys()];
+ for(let i=practiceOrder.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]];
  }
- renderPractice();
+ practicePos=0;
+}
+function startPractice(shuffle=false){
+ if(shuffle || !practiceOrder.length) buildPracticeOrder();
+ show('quiz');
 }
 function renderPractice(){
  answeredFinal=false;
@@ -2036,8 +2039,17 @@ function answerPractice(idx,n){
  document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}</div>`;
  document.getElementById('next').style.display='inline-block';
 }
-nextQ=function(){ practicePos=(practicePos+1)%practiceOrder.length; renderPractice(); window.scrollTo({top:0,behavior:'smooth'}) }
-renderQ=function(){ if(!practiceOrder.length) startPractice(true); else renderPractice() }
+nextQ=function(){
+ if(!practiceOrder.length) buildPracticeOrder();
+ practicePos++;
+ if(practicePos>=practiceOrder.length) buildPracticeOrder();
+ renderPractice();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+renderQ=function(){
+ if(!practiceOrder.length) buildPracticeOrder();
+ renderPractice();
+}
 
 function toggleFavorite(idx){
  const p=appState.favorites.indexOf(idx); if(p>=0) appState.favorites.splice(p,1); else appState.favorites.push(idx);
@@ -2089,7 +2101,10 @@ show=function(id){
  document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
  const el=document.getElementById(id); if(el)el.classList.add('active');
  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
- if(id==='quiz') {if(!practiceOrder.length) startPractice(true); else renderPractice()}
+ if(id==='quiz'){
+   if(!practiceOrder.length) buildPracticeOrder();
+   renderPractice();
+ }
  if(id==='favoritos')renderFavorites();
  if(id==='progreso')renderProgress();
  if(id==='exam' && !examOrder.length) document.getElementById('examBox').innerHTML='<button class="primary" onclick="startExam()">Comenzar examen de 25 preguntas</button>';
