@@ -64,6 +64,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .activity-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}.activity-day{min-height:58px;border-radius:10px;padding:7px 5px;background:#edf0f6;border:1px solid #e0e4ed;text-align:center;color:#596276}.activity-day b{display:block;font-size:14px}.activity-day small{font-size:11px}.activity-1{background:#dff6ec;color:#126946;border-color:#bcebd8}.activity-2{background:#aee7cf;color:#075c3c;border-color:#86d7b9}.activity-3{background:#38aa79;color:#fff;border-color:#279467}.activity-legend{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}.activity-dot{width:14px;height:14px;border-radius:4px;display:inline-block}
 .achievement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.achievement{position:relative;text-align:center;border:2px solid #e4e6ef}.achievement .medal{font-size:44px;display:block;margin-bottom:8px}.achievement.earned{background:linear-gradient(145deg,#fff9df,#fff);border-color:#f2cf57}.achievement.locked{filter:grayscale(1);opacity:.58}.achievement .status{font-size:12px;font-weight:900;color:var(--muted)}.achievement.earned .status{color:#936600}
 .exam-plan-card{border:2px solid #4eb7c7;background:linear-gradient(135deg,#effcff,#f5f3ff)}.exam-plan-date{padding:11px 13px;border:1px solid #cfd8e6;border-radius:11px;background:#fff;font:inherit;min-height:44px}.exam-plan-number{font-size:34px;font-weight:900;color:var(--brand);margin:4px 0}.exam-plan-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}.exam-plan-details div{background:#fff;border-radius:12px;padding:12px;border:1px solid #dce4ee}.exam-plan-details b{display:block;font-size:21px;color:#315a9b}
+.flashcard-stage{max-width:760px;margin:18px auto}.flashcard{min-height:330px;border-radius:24px;padding:30px;background:linear-gradient(145deg,#fff,#f3f3ff);border:2px solid #dcdcf7;box-shadow:0 16px 42px #30306818;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer}.flashcard h2{font-size:29px;line-height:1.25}.flash-answer{margin-top:18px;padding-top:18px;border-top:2px dashed #d9dcec;line-height:1.6;text-align:left}.flash-hidden{display:none}.flash-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:15px}.flash-select{width:100%;padding:12px;border:1px solid #d8dbea;border-radius:11px;background:#fff;font-size:16px}.flash-config{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin:15px 0}.flash-stat b{font-size:25px;color:var(--brand);display:block}
 .report-preview{position:fixed;inset:0;z-index:10000;background:#edf0f7;overflow:auto;padding:24px}.report-sheet{max-width:900px;margin:auto;background:#fff;color:#172033;border-radius:18px;padding:34px;box-shadow:0 12px 45px #17203324}.report-toolbar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:9px;max-width:900px;margin:0 auto 12px;padding:10px;background:#edf0f7e8}.report-head{border-bottom:3px solid var(--brand);padding-bottom:15px;margin-bottom:20px}.report-head h1{color:#3532a5}.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.report-metric{border:1px solid #dfe3ee;border-radius:12px;padding:12px}.report-metric b{display:block;font-size:23px;color:var(--brand)}.report-section{margin-top:24px}.report-section h2{font-size:20px;border-bottom:1px solid #dfe3ee;padding-bottom:7px}.report-table{width:100%;border-collapse:collapse}.report-table th,.report-table td{text-align:left;border-bottom:1px solid #e6e8ef;padding:9px 6px;vertical-align:top}.report-note{white-space:pre-wrap;background:#f8f9fd;border-radius:10px;padding:12px;margin:8px 0 15px}.report-empty{color:var(--muted);font-style:italic}
 @media(max-width:650px){
   nav{position:relative;top:auto;z-index:1;background:var(--bg);padding:8px 0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
@@ -72,6 +73,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
   .module-report-row{grid-template-columns:1fr 58px}.module-report-row button{grid-column:1/-1}
   .search-panel{position:relative;top:auto;z-index:1}
   .report-preview{padding:10px}.report-sheet{padding:20px}.report-summary{grid-template-columns:repeat(2,1fr)}
+  .flash-config{grid-template-columns:1fr}.flashcard{min-height:300px;padding:22px}.flashcard h2{font-size:24px}
 }
 
 @media print{
@@ -2168,11 +2170,11 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},achievements:{},examPlan:{targetDate:''},lifetime:{questions:0,practiceSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
-appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.achievements=appState.achievements||{};
+appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.flashcards=appState.flashcards||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
-appState.lifetime=Object.assign({questions:0,practiceSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
+appState.lifetime=Object.assign({questions:0,practiceSessions:0,flashcardSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
 appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
@@ -2189,6 +2191,7 @@ function ensureFinalUI(){
   <button class="tab active" data-tab="inicio">Inicio</button>
   <button class="tab" data-tab="temas">Módulos</button>
   <button class="tab" data-tab="buscar">🔎 Buscar</button>
+  <button class="tab" data-tab="tarjetas">🧠 Tarjetas</button>
   <button class="tab" data-tab="quiz">Práctica</button>
   <button class="tab" data-tab="exam">Examen</button>
   <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
@@ -2207,6 +2210,9 @@ function ensureFinalUI(){
    const search=document.createElement('section');search.id='buscar';
    search.innerHTML=`<h2>🔎 Buscar contenido</h2><div class="search-panel"><input id="smartSearch" class="search-input" type="search" placeholder="Ejemplo: insulina, infarto, embarazo…" autocomplete="off" oninput="renderSearch(this.value)"></div><div id="searchResults"></div>`;
    main.insertBefore(search,footer);
+ }
+ if(!document.getElementById('tarjetas')){
+   const cards=document.createElement('section');cards.id='tarjetas';cards.innerHTML=`<div id="flashcardsBox"></div>`;main.insertBefore(cards,footer);
  }
  if(!document.getElementById('favoritos')){
    const fav=document.createElement('section'); fav.id='favoritos';
@@ -2234,6 +2240,7 @@ function ensureFinalUI(){
    <div class="actions">
     <button class="primary" onclick="show('temas')">📚 Estudiar módulos</button>
     <button class="secondary" onclick="show('buscar')">🔎 Buscar contenido</button>
+    <button class="secondary" onclick="show('tarjetas')">🧠 Tarjetas inteligentes</button>
     <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
     <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
     <button class="goodbtn" onclick="startExam()">🎯 Simulacro NCLEX</button>
@@ -2247,6 +2254,7 @@ function ensureFinalUI(){
  updateDashboard();
  renderTopics();
  renderSearch('');
+ renderFlashcards();
  renderFavorites();
  renderMistakes();
  renderAchievements();
@@ -2294,9 +2302,31 @@ function renderExamPlan(){
  if(plan.days<0)return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>📅 Actualiza tu fecha de examen</h2><p>La fecha guardada ya pasó.</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Guardar nueva fecha</button></div></div>`;
  return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>🎓 ${plan.days===0?'¡El examen es hoy!':`Faltan ${plan.days} día${plan.days===1?'':'s'}`}</h2><p>${esc(plan.target.toLocaleDateString('es-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}))}</p><div class="exam-plan-number">${plan.todayQuestions}/${plan.dailyGoal} preguntas hoy</div><div class="progressbar"><span style="width:${weeklyBar(plan.todayQuestions,plan.dailyGoal)}%"></span></div><p><b>${plan.status}</b></p><div class="exam-plan-details"><div><b>${plan.mastered}/20</b>Módulos dominados</div><div><b>${plan.pending}</b>Módulos por dominar</div><div><b>${plan.errors}</b>Errores pendientes</div></div><div class="actions"><button class="goodbtn" onclick="startDailyPractice()">Estudiar ahora</button><input class="exam-plan-date" type="date" min="${today}" value="${esc(appState.examPlan.targetDate)}"><button class="secondary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Cambiar fecha</button><button class="secondary" onclick="clearExamTargetDate()">Eliminar fecha</button></div></div>`;
 }
+let flashDeck=[],flashPos=0,flashFlipped=false,flashKnown=0,flashReview=0;
+function allFlashcards(){const cards=[];CORE_MODULES.forEach(([key,title],moduleIndex)=>{(lessons[key]?.items||[]).forEach((item,itemIndex)=>cards.push({id:`${key}:${itemIndex}`,key,moduleIndex,moduleTitle:title.replace(/^Clase \d+ — /,''),front:item[0],back:item[1]}))});return cards}
+function flashcardStats(){const cards=allFlashcards(),today=dailyDateKey(),seen=cards.filter(c=>(appState.flashcards[c.id]?.seen||0)>0).length,mastered=cards.filter(c=>(appState.flashcards[c.id]?.interval||0)>=14).length,due=cards.filter(c=>{const p=appState.flashcards[c.id];return !p?.due||p.due<=today}).length;return{total:cards.length,seen,mastered,due}}
+function renderFlashcards(){
+ const box=document.getElementById('flashcardsBox');if(!box)return;if(flashDeck.length){renderFlashcardStudy();return}const s=flashcardStats();
+ box.innerHTML=`<div class="card"><span class="pill">REPETICIÓN ESPACIADA</span><h2>🧠 Tarjetas inteligentes</h2><p>Toca cada tarjeta para revelar la respuesta. Las difíciles regresarán con mayor frecuencia.</p><div class="final-stats"><div class="stat flash-stat"><b>${s.total}</b>Total</div><div class="stat flash-stat"><b>${s.seen}</b>Estudiadas</div><div class="stat flash-stat"><b>${s.mastered}</b>Dominadas</div><div class="stat flash-stat"><b>${s.due}</b>Para repasar</div></div><div class="flash-config"><label><b>Módulo</b><select id="flashModule" class="flash-select"><option value="all">Todos los módulos mezclados</option>${CORE_MODULES.map(([key,title],i)=>`<option value="${key}">${i+1}. ${esc(title.replace(/^Clase \d+ — /,''))}</option>`).join('')}</select></label><label><b>Cantidad</b><select id="flashCount" class="flash-select"><option>10</option><option selected>20</option><option>30</option></select></label></div><button class="primary" onclick="startFlashcards()">Comenzar tarjetas</button></div>`;
+}
+function startFlashcards(){
+ const module=document.getElementById('flashModule')?.value||'all',count=Number(document.getElementById('flashCount')?.value||20),today=dailyDateKey();let pool=allFlashcards().filter(c=>module==='all'||c.key===module);pool.sort((a,b)=>{const pa=appState.flashcards[a.id]||{},pb=appState.flashcards[b.id]||{},ad=!pa.due||pa.due<=today?0:1,bd=!pb.due||pb.due<=today?0:1;return ad-bd||(pa.interval||0)-(pb.interval||0)||Math.random()-.5});flashDeck=pool.slice(0,Math.min(count,pool.length));flashPos=0;flashKnown=0;flashReview=0;flashFlipped=false;rememberStudy('flashcards','',module==='all'?'Tarjetas de todos los módulos':`Tarjetas: ${lessons[module]?.title||'módulo'}`);show('tarjetas');
+}
+function renderFlashcardStudy(){
+ const box=document.getElementById('flashcardsBox');if(!box)return;if(flashPos>=flashDeck.length){finishFlashcards();return}const c=flashDeck[flashPos],p=appState.flashcards[c.id]||{};box.innerHTML=`<div class="flashcard-stage"><div class="exam-meta"><b>Tarjeta ${flashPos+1}/${flashDeck.length}</b><span>${flashKnown} sé · ${flashReview} repasar</span></div><div class="flashcard" onclick="flipFlashcard()"><span class="pill">MÓDULO ${c.moduleIndex+1} · ${esc(c.moduleTitle)}</span><h2>${esc(c.front)}</h2><p id="flashPrompt" class="muted ${flashFlipped?'flash-hidden':''}">Toca para mostrar la respuesta</p><div id="flashAnswer" class="flash-answer ${flashFlipped?'':'flash-hidden'}"><p>${esc(c.back)}</p>${p.interval?`<small class="muted">Intervalo actual: ${p.interval} día${p.interval===1?'':'s'}</small>`:''}</div></div><div class="flash-controls ${flashFlipped?'':'flash-hidden'}"><button class="warnbtn" onclick="rateFlashcard(false)">Necesito repasarlo</button><button class="goodbtn" onclick="rateFlashcard(true)">Lo sé</button><button class="secondary" onclick="readTextAloud(flashDeck[flashPos].back)">🔊 Escuchar</button></div></div>`;
+}
+function flipFlashcard(){flashFlipped=true;document.getElementById('flashAnswer')?.classList.remove('flash-hidden');document.getElementById('flashPrompt')?.classList.add('flash-hidden');document.querySelector('.flash-controls')?.classList.remove('flash-hidden')}
+function rateFlashcard(known){
+ const c=flashDeck[flashPos],old=appState.flashcards[c.id]||{interval:0,seen:0,known:0},interval=known?(old.interval>=30?30:old.interval>=14?30:old.interval>=7?14:old.interval>=3?7:old.interval>=1?3:1):1,due=new Date();due.setDate(due.getDate()+interval);appState.flashcards[c.id]={interval,due:dailyDateKey(due),seen:(old.seen||0)+1,known:(old.known||0)+(known?1:0),lastResult:known?'know':'review',lastDate:new Date().toISOString()};if(known)flashKnown++;else flashReview++;saveState();flashPos++;flashFlipped=false;renderFlashcardStudy();window.scrollTo({top:0,behavior:'smooth'});
+}
+function finishFlashcards(){
+ appState.lifetime.flashcardSessions=Math.max(0,Number(appState.lifetime.flashcardSessions||0)+1);saveState();const box=document.getElementById('flashcardsBox'),total=flashDeck.length;flashDeck=[];box.innerHTML=`<div class="card"><h2>✅ Sesión de tarjetas completada</h2><p>Terminaste ${total} tarjetas: <b>${flashKnown}</b> marcadas “Lo sé” y <b>${flashReview}</b> para repasar.</p><div class="actions"><button class="primary" onclick="renderFlashcards()">Elegir otra sesión</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
+}
 const ACHIEVEMENT_DEFS=[
  {id:'first_question',icon:'🌟',title:'Primer paso',desc:'Responder la primera pregunta',test:()=>appState.lifetime.questions>=1},
- {id:'first_practice',icon:'🧩',title:'Primera práctica',desc:'Completar una sesión de práctica',test:()=>appState.lifetime.practiceSessions>=1},
+  {id:'first_practice',icon:'🧩',title:'Primera práctica',desc:'Completar una sesión de práctica',test:()=>appState.lifetime.practiceSessions>=1},
+ {id:'first_flash',icon:'🧠',title:'Primera tarjeta',desc:'Estudiar una tarjeta inteligente',test:()=>Object.values(appState.flashcards).some(p=>(p.seen||0)>=1)},
+ {id:'flash50',icon:'🗂️',title:'50 tarjetas dominadas',desc:'Alcanzar un intervalo de 14 días en 50 tarjetas',test:()=>Object.values(appState.flashcards).filter(p=>(p.interval||0)>=14).length>=50},
  {id:'q100',icon:'💯',title:'100 preguntas',desc:'Responder 100 preguntas',test:()=>appState.lifetime.questions>=100},
  {id:'q500',icon:'📚',title:'500 preguntas',desc:'Responder 500 preguntas',test:()=>appState.lifetime.questions>=500},
  {id:'q1000',icon:'🏅',title:'1,000 preguntas',desc:'Responder 1,000 preguntas',test:()=>appState.lifetime.questions>=1000},
@@ -2350,6 +2380,7 @@ function resumeLastStudy(){
  else if(last.type==='weak')startWeakPractice();
  else if(last.type==='mistakes')startMistakePractice();
  else if(last.type==='daily')startDailyPractice();
+ else if(last.type==='flashcards')show('tarjetas');
  else startPractice(true);
 }
 function renderContinueCard(){
@@ -2373,6 +2404,7 @@ function updateDashboard(){
   <div class="stat"><b>${appState.mistakes.length}</b>Preguntas por dominar</div>
   <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>Módulos con notas</div>
   <div class="stat"><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b>Medallas logradas</div>
+  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  </div>`;
  const hm=document.getElementById('homeModules');
  if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}${moduleMasteryLabel(k)}</small></div>`).join('');
@@ -2817,6 +2849,7 @@ function exportProgressReport(){
  updateAchievements();
  const weekly=ensureWeekly();
  const examPlan=getExamPlan();
+ const flashStats=flashcardStats();
  const generated=new Date().toLocaleString('es-US',{dateStyle:'long',timeStyle:'short'});
  const completed=CORE_MODULES.filter(([key])=>appState.completed.includes(key));
  const notes=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
@@ -2838,6 +2871,7 @@ function exportProgressReport(){
   <div class="report-metric"><b>${weekly.questions}/${weekly.goals.questions}</b>Preguntas esta semana</div>
   <div class="report-metric"><b>${weekly.modules}/${weekly.goals.modules}</b>Módulos esta semana</div>
   <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>Exámenes esta semana</div>
+  <div class="report-metric"><b>${flashStats.mastered}/${flashStats.total}</b>Tarjetas dominadas</div>
  </div>
  <section class="report-section" style="display:block"><h2>🎓 Plan NCLEX</h2>${examPlan?`<p><b>Fecha prevista:</b> ${esc(examPlan.target.toLocaleDateString('es-US'))} · <b>${Math.max(0,examPlan.days)} días</b> · Meta diaria: <b>${examPlan.dailyGoal} preguntas</b> · Hoy: ${examPlan.todayQuestions}/${examPlan.dailyGoal}.</p>`:'<p class="report-empty">No se ha definido una fecha prevista para el examen.</p>'}</section>
  <section class="report-section" style="display:block"><h2>✅ Módulos completados</h2>${completed.length?`<ol>${completed.map(([,title])=>`<li>${esc(title)}</li>`).join('')}</ol>`:'<p class="report-empty">Aún no hay módulos marcados como completados.</p>'}</section>
@@ -2860,12 +2894,14 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
+ <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  ${renderExamPlan()}
  ${renderStudyRecommendation()}
  ${renderWeeklyGoals()}
  ${renderActivityCalendar()}
  ${renderModuleMasteryOverview()}
+ <div class="card"><h3>🧠 Tarjetas inteligentes</h3><p><b>${flashcardStats().mastered}</b> dominadas · <b>${flashcardStats().due}</b> listas para repasar.</p><button class="primary" onclick="show('tarjetas')">Estudiar tarjetas</button></div>
  <div class="card"><h3>🏆 Mis logros</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> medallas conseguidas.</p><button class="warnbtn" onclick="show('logros')">Ver todas las medallas</button></div>
  <div class="card"><h3>📄 Informe de progreso y notas</h3><p>Crea una vista lista para imprimir o guardar como PDF desde tu teléfono, Mac, Android o Windows.</p><button class="primary" onclick="exportProgressReport()">Exportar informe PDF</button></div>
  ${renderExamHistory()}
@@ -2888,6 +2924,7 @@ show=function(id){
  }
  if(id==='favoritos')renderFavorites();
  if(id==='errores')renderMistakes();
+ if(id==='tarjetas')renderFlashcards();
  if(id==='logros')renderAchievements();
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
@@ -2918,12 +2955,13 @@ function normalizeLoadedState(raw){
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
  appState.moduleProgress=appState.moduleProgress||{};
  appState.activityLog=appState.activityLog||{};
+ appState.flashcards=appState.flashcards||{};
  appState.achievements=appState.achievements||{};
  appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
- appState.lifetime=Object.assign({questions:0,practiceSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
+ appState.lifetime=Object.assign({questions:0,practiceSessions:0,flashcardSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
  appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
  appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
  appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2931,7 +2969,7 @@ function normalizeLoadedState(raw){
  appState.updatedAt=Number(appState.updatedAt||0);
 }
 function refreshStateUI(){
- updateDashboard();renderTopics();renderFavorites();renderMistakes();renderAchievements();renderProgress();
+ updateDashboard();renderTopics();renderFavorites();renderMistakes();renderFlashcards();renderAchievements();renderProgress();
 }
 function scheduleCloudSync(){
  if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
