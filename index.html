@@ -2157,7 +2157,7 @@ try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
-function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));updateDashboard();scheduleCloudSync()}
+function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');updateDashboard();scheduleCloudSync()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function pct(a,b){return b?Math.round(a*100/b):0}
 
@@ -2514,7 +2514,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div></div>
  <div class="card"><h3>🎯 Refuerzo inteligente</h3><p>${getWeakModuleKeys().length?'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.'}</p><button class="warnbtn" onclick="startWeakPractice()" ${getWeakModuleKeys().length?'':'disabled'}>Practicar temas débiles</button></div>
- <div class="card"><h3>☁️ Sincronización</h3><p id="syncStatus" class="muted">Comprobando tu cuenta…</p><button class="secondary" onclick="syncCloudProgress()">Sincronizar ahora</button></div>
+ <div class="card"><h3>☁️ Sincronización</h3><p id="syncStatus" class="muted">Comprobando tu cuenta…</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm('¿Usar el progreso de este dispositivo como copia principal?'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>
  <div class="card"><h3>Módulos completados</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(t.replace(/^Clase \\d+ — /,''))}</p>`).join('')}
  <button class="secondary" onclick="if(confirm('¿Borrar todo el progreso guardado?')){localStorage.removeItem(STORE_KEY);location.reload()}">Reiniciar progreso</button></div>`;
 }
@@ -2550,6 +2550,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, 
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 const CLOUD_STATE_KEY='nursing_study_center_v1';
+const SYNC_POLICY_KEY='mnsc_sync_policy_v2';
 let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false;
 
 function setSyncStatus(text){const el=document.getElementById('syncStatus');if(el)el.textContent=text}
@@ -2567,22 +2568,31 @@ function scheduleCloudSync(){
  if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
  clearTimeout(cloudSyncTimer);cloudSyncTimer=setTimeout(()=>syncCloudProgress(true),1200);
 }
-async function syncCloudProgress(uploadLocal=false){
+async function syncCloudProgress(uploadLocal=false,manual=false){
  if(cloudSyncBusy)return;cloudSyncBusy=true;setSyncStatus('Sincronizando…');
  try{
    const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);
    if(userError||!user)throw userError||new Error('NO_USER');
    const cloud=user.user_metadata?.[CLOUD_STATE_KEY]||null;
-   const localTime=Number(appState.updatedAt||0),cloudTime=Number(cloud?.updatedAt||0);
-   if(cloud&&!uploadLocal&&cloudTime>localTime){
+   const pending=localStorage.getItem('mnsc_sync_pending')==='1';
+   if(cloud&&!pending&&!manual&&!localStorage.getItem(SYNC_POLICY_KEY)){
+     cloudSyncReady=true;
+     setSyncStatus('Elige una vez: guarda este dispositivo si tiene los porcentajes correctos, o carga desde tu cuenta.');
+     return;
+   }
+   if(cloud&&!uploadLocal&&!pending){
      normalizeLoadedState(cloud);
      localStorage.setItem(STORE_KEY,JSON.stringify(appState));
+     localStorage.removeItem('mnsc_sync_pending');
+     localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      refreshStateUI();
      setSyncStatus('Progreso actualizado desde tu cuenta.');
-   }else if(!cloud||uploadLocal||localTime>cloudTime){
+   }else if(!cloud||uploadLocal||pending){
      const {error}=await authTimeout(sb.auth.updateUser({data:{[CLOUD_STATE_KEY]:JSON.parse(JSON.stringify(appState))}}),10000);
      if(error)throw error;
-     setSyncStatus('Progreso sincronizado correctamente.');
+     localStorage.removeItem('mnsc_sync_pending');
+     localStorage.setItem(SYNC_POLICY_KEY,'cloud');
+     setSyncStatus('Progreso de este dispositivo guardado en tu cuenta.');
    }else setSyncStatus('Tu progreso ya está sincronizado.');
    cloudSyncReady=true;
  }catch(e){
