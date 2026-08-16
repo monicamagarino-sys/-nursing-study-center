@@ -2165,7 +2165,7 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},audio:{lang:'es-US',rate:1},lastStudy:null,practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
@@ -2243,6 +2243,25 @@ function ensureFinalUI(){
  renderProgress();
 }
 
+function mondayWeekKey(date=new Date()){
+ const d=new Date(date);d.setHours(0,0,0,0);const day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function ensureWeekly(){
+ const defaults={week:mondayWeekKey(),questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};
+ appState.weekly=Object.assign(defaults,appState.weekly||{});appState.weekly.goals=Object.assign(defaults.goals,appState.weekly.goals||{});
+ if(appState.weekly.week!==mondayWeekKey())appState.weekly={...defaults,goals:{...defaults.goals}};
+ return appState.weekly;
+}
+function addWeekly(kind,amount=1){const week=ensureWeekly();week[kind]=Math.max(0,Number(week[kind]||0)+amount)}
+function weeklyBar(value,goal){return Math.min(100,Math.round((Number(value)||0)/Math.max(1,Number(goal)||1)*100))}
+function renderWeeklyGoals(){
+ const w=ensureWeekly(),g=w.goals,complete=w.questions>=g.questions&&w.modules>=g.modules&&w.exams>=g.exams;
+ return `<div class="card"><span class="pill">META SEMANAL · LUNES A DOMINGO</span><h2>${complete?'🏆 ¡Semana completada!':'📆 Tu avance esta semana'}</h2>
+ <p><b>${w.questions}/${g.questions}</b> preguntas</p><div class="progressbar"><span style="width:${weeklyBar(w.questions,g.questions)}%"></span></div>
+ <p><b>${w.modules}/${g.modules}</b> módulos terminados</p><div class="progressbar"><span style="width:${weeklyBar(w.modules,g.modules)}%"></span></div>
+ <p><b>${w.exams}/${g.exams}</b> exámenes realizados</p><div class="progressbar"><span style="width:${weeklyBar(w.exams,g.exams)}%"></span></div>
+ <small class="muted">Se reinicia automáticamente cada lunes. Meta: 100 preguntas, 2 módulos y 1 examen.</small></div>`;
+}
 function rememberStudy(type,key='',label=''){
  const next={type,key,label,updatedAt:Date.now()};
  if(appState.lastStudy?.type===type&&appState.lastStudy?.key===key&&appState.lastStudy?.label===label)return;
@@ -2267,7 +2286,7 @@ function updateDashboard(){
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
- if(daily)daily.innerHTML=renderContinueCard()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
+ if(daily)daily.innerHTML=renderContinueCard()+renderWeeklyGoals()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
  const hp=document.getElementById('homeStats');
  if(hp) hp.innerHTML=`<div class="final-stats">
   <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -2382,7 +2401,7 @@ function deleteModuleNote(k){
  delete appState.notes[k];saveState();openLesson(k);
 }
 function toggleComplete(k){
- const i=appState.completed.indexOf(k); if(i>=0) appState.completed.splice(i,1); else appState.completed.push(k);
+ const i=appState.completed.indexOf(k); if(i>=0) appState.completed.splice(i,1); else{appState.completed.push(k);addWeekly('modules')}
  saveState(); openLesson(k);
 }
 
@@ -2486,6 +2505,7 @@ function answerPractice(idx,n){
  if(answeredFinal)return; answeredFinal=true; const x=qs[idx],ops=document.querySelectorAll('#quizBox .option');
  ops[x[2]].classList.add('correct'); if(n!==x[2])ops[n].classList.add('wrong');
  appState.practice.attempts++;
+ addWeekly('questions');
  if(n===x[2]){
    appState.practice.correct++;
    if(dailyPractice)dailyCorrect++;
@@ -2590,6 +2610,7 @@ function finishExam(timedOut=false){
  const answered=Math.min(examPos,examOrder.length),score=Math.round(examCorrect/NCLEX_EXAM_SIZE*100);
  const passed=!timedOut&&answered===NCLEX_EXAM_SIZE&&examCorrect>=NCLEX_PASS_CORRECT;
  appState.exam.last=score;appState.exam.best=Math.max(appState.exam.best,score);appState.exam.taken++;appState.exam.breakdown=examBreakdown;
+ addWeekly('exams');
  recordExamHistory({type:'Simulacro NCLEX',score,correct:examCorrect,total:NCLEX_EXAM_SIZE,modules:['Todos los módulos']});saveState();
  const box=document.getElementById('examBox');
  const rows=CORE_MODULES.map(([key,title])=>{
@@ -2615,6 +2636,7 @@ function answerExam(n){
  const x=qs[examOrder[examPos]],ops=document.querySelectorAll('#examBox .option');
  ops.forEach(o=>o.disabled=true);ops[n].classList.add('selected');
  const key=x[4];if(key){if(!examBreakdown[key])examBreakdown[key]={correct:0,total:0};examBreakdown[key].total++}
+ addWeekly('questions');
  if(n===x[2]){examCorrect++;if(key)examBreakdown[key].correct++}
  else if(!appState.mistakes.includes(examOrder[examPos]))appState.mistakes.push(examOrder[examPos]);
  saveState();
@@ -2661,6 +2683,7 @@ function answerCustomExam(n){
  if(customAnswered||(customConfig.timeSeconds&&customSecondsLeft()<=0))return;customAnswered=true;
  const idx=customOrder[customPos],x=qs[idx],ops=document.querySelectorAll('#examBox .option'),key=x[4];
  ops.forEach(o=>o.disabled=true);if(!customBreakdown[key])customBreakdown[key]={correct:0,total:0};customBreakdown[key].total++;
+ addWeekly('questions');
  const correct=n===x[2];if(correct){customCorrect++;customBreakdown[key].correct++}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  if(customConfig.mode==='practice'){
    appState.practice.attempts++;if(correct)appState.practice.correct++;
@@ -2674,6 +2697,7 @@ function finishCustomExam(timedOut=false){
  if(customTimerId)clearInterval(customTimerId);customTimerId=null;
  const score=pct(customCorrect,customConfig.size),box=document.getElementById('examBox');
  appState.customExam.last=score;appState.customExam.best=Math.max(appState.customExam.best,score);appState.customExam.taken++;
+ addWeekly('exams');
  const moduleNames=CORE_MODULES.filter(([key])=>customConfig.modules.includes(key)).map(([,title])=>title.replace(/^Clase \d+ — /,''));
  recordExamHistory({type:customConfig.mode==='practice'?'Personalizado · Práctica':'Personalizado · Examen',score,correct:customCorrect,total:customConfig.size,modules:moduleNames});saveState();
  const rows=CORE_MODULES.map(([key,title])=>{const s=customBreakdown[key];if(!s?.total)return null;const percent=pct(s.correct,s.total),level=percent>=80?['Fortaleza','level-good']:percent>=65?['En progreso','level-mid']:['Repasar','level-low'];return{key,title:title.replace(/^Clase \d+ — /,''),correct:s.correct,total:s.total,percent,level}}).filter(Boolean).sort((a,b)=>a.percent-b.percent);
@@ -2703,6 +2727,7 @@ function renderNotesOverview(){
 function closeProgressReport(){document.getElementById('printReport')?.remove()}
 function exportProgressReport(){
  closeProgressReport();
+ const weekly=ensureWeekly();
  const generated=new Date().toLocaleString('es-US',{dateStyle:'long',timeStyle:'short'});
  const completed=CORE_MODULES.filter(([key])=>appState.completed.includes(key));
  const notes=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
@@ -2719,6 +2744,9 @@ function exportProgressReport(){
   <div class="report-metric"><b>${appState.exam.best}%</b>Mejor examen</div>
   <div class="report-metric"><b>${appState.daily.streak}</b>Racha diaria</div>
   <div class="report-metric"><b>${appState.favorites.length} / ${appState.mistakes.length}</b>Favoritos / errores</div>
+  <div class="report-metric"><b>${weekly.questions}/${weekly.goals.questions}</b>Preguntas esta semana</div>
+  <div class="report-metric"><b>${weekly.modules}/${weekly.goals.modules}</b>Módulos esta semana</div>
+  <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>Exámenes esta semana</div>
  </div>
  <section class="report-section" style="display:block"><h2>✅ Módulos completados</h2>${completed.length?`<ol>${completed.map(([,title])=>`<li>${esc(title)}</li>`).join('')}</ol>`:'<p class="report-empty">Aún no hay módulos marcados como completados.</p>'}</section>
  <section class="report-section" style="display:block"><h2>🎯 Rendimiento por módulo</h2>${performance.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Resultado</th><th>Nivel</th></tr></thead><tbody>${performance.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.correct}/${row.total} · ${row.score}%</td><td>${row.score>=80?'Fortaleza':row.score>=65?'En progreso':'Repasar'}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Completa un examen para generar el análisis de temas fuertes y débiles.</p>'}</section>
@@ -2739,6 +2767,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
+ ${renderWeeklyGoals()}
  <div class="card"><h3>📄 Informe de progreso y notas</h3><p>Crea una vista lista para imprimir o guardar como PDF desde tu teléfono, Mac, Android o Windows.</p><button class="primary" onclick="exportProgressReport()">Exportar informe PDF</button></div>
  ${renderExamHistory()}
  ${renderNotesOverview()}
@@ -2788,6 +2817,7 @@ function normalizeLoadedState(raw){
  appState=Object.assign(appState,raw||{});
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
  appState.lastStudy=appState.lastStudy||null;
+ appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
  appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
  appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
