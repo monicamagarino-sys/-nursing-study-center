@@ -2146,9 +2146,9 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}}};
+let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}}};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
-appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[];
+appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(appState));updateDashboard()}
@@ -2163,6 +2163,7 @@ function ensureFinalUI(){
   <button class="tab" data-tab="quiz">Práctica</button>
   <button class="tab" data-tab="exam">Examen</button>
   <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
+  <button class="tab" data-tab="errores">⚠️ Errores</button>
   <button class="tab" data-tab="progreso">Progreso</button>`;
  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
  const main=document.querySelector('main');
@@ -2176,6 +2177,11 @@ function ensureFinalUI(){
    const fav=document.createElement('section'); fav.id='favoritos';
    fav.innerHTML=`<h2>⭐ Preguntas favoritas</h2><div id="favBox"></div>`;
    main.insertBefore(fav,footer);
+ }
+ if(!document.getElementById('errores')){
+   const mistakes=document.createElement('section'); mistakes.id='errores';
+   mistakes.innerHTML=`<h2>⚠️ Cuaderno de errores</h2><div id="mistakesBox"></div>`;
+   main.insertBefore(mistakes,footer);
  }
  if(!document.getElementById('progreso')){
    const pr=document.createElement('section'); pr.id='progreso';
@@ -2201,6 +2207,7 @@ function ensureFinalUI(){
  updateDashboard();
  renderTopics();
  renderFavorites();
+ renderMistakes();
  renderProgress();
 }
 
@@ -2212,6 +2219,7 @@ function updateDashboard(){
   <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>Práctica<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
   <div class="stat"><b>${appState.exam.best}%</b>Mejor examen<br><small>${appState.exam.taken} realizados</small></div>
   <div class="stat"><b>${appState.favorites.length}</b>Favoritos guardados</div>
+  <div class="stat"><b>${appState.mistakes.length}</b>Preguntas por dominar</div>
  </div>`;
  const hm=document.getElementById('homeModules');
  if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio</small></div>`).join('');
@@ -2253,6 +2261,7 @@ let practiceOrder=[], practicePos=0, answeredFinal=false;
 let practiceModule='';
 let practiceLabel='';
 let practiceFinite=false;
+let mistakePractice=false;
 function buildPracticeOrder(){
  practiceOrder=[...Array(qs.length).keys()];
  for(let i=practiceOrder.length-1;i>0;i--){
@@ -2265,6 +2274,7 @@ function startPractice(shuffle=false){
  practiceModule='';
  practiceLabel='';
  practiceFinite=false;
+ mistakePractice=false;
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  show('quiz');
 }
@@ -2272,6 +2282,7 @@ function startModuleQuiz(k){
  practiceModule=k;
  practiceLabel='';
  practiceFinite=true;
+ mistakePractice=false;
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0; show('quiz');
@@ -2294,7 +2305,19 @@ function startWeakPractice(){
  practiceModule='';
  practiceLabel='Refuerzo: '+weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · ');
  practiceFinite=true;
+ mistakePractice=false;
  practiceOrder=shuffled(selected);
+ practicePos=0;
+ show('quiz');
+}
+function startMistakePractice(){
+ const valid=appState.mistakes.filter(idx=>qs[idx]);
+ if(!valid.length){alert('No tienes preguntas pendientes en el cuaderno de errores.');show('errores');return}
+ practiceModule='';
+ practiceLabel='Cuaderno de errores';
+ practiceFinite=true;
+ mistakePractice=true;
+ practiceOrder=shuffled(valid);
  practicePos=0;
  show('quiz');
 }
@@ -2314,7 +2337,11 @@ function renderPractice(){
 function answerPractice(idx,n){
  if(answeredFinal)return; answeredFinal=true; const x=qs[idx],ops=document.querySelectorAll('#quizBox .option');
  ops[x[2]].classList.add('correct'); if(n!==x[2])ops[n].classList.add('wrong');
- appState.practice.attempts++; if(n===x[2])appState.practice.correct++;
+ appState.practice.attempts++;
+ if(n===x[2]){
+   appState.practice.correct++;
+   if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx);
+ }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  saveState();
  document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}</div>`;
  document.getElementById('next').style.display='inline-block';
@@ -2332,7 +2359,7 @@ nextQ=function(){
 function finishPractice(){
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
- const repeat=practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
+ const repeat=mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
  document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ Práctica completada</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p><div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
  document.getElementById('next').style.display='none';
  window.scrollTo({top:0,behavior:'smooth'});
@@ -2350,6 +2377,16 @@ function renderFavorites(){
  const box=document.getElementById('favBox'); if(!box)return;
  if(!appState.favorites.length){box.innerHTML='<div class="card empty">Todavía no has guardado preguntas favoritas. En Práctica toca ☆.</div>';return}
  box.innerHTML=appState.favorites.map(idx=>{const x=qs[idx];return `<div class="card"><button class="star" onclick="toggleFavorite(${idx})">★</button><h3>${esc(x[0])}</h3><p><b>Respuesta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
+}
+function removeMistake(idx){
+ appState.mistakes=appState.mistakes.filter(i=>i!==idx);saveState();renderMistakes();
+}
+function renderMistakes(){
+ const box=document.getElementById('mistakesBox');if(!box)return;
+ const valid=appState.mistakes.filter(idx=>qs[idx]);
+ if(!valid.length){box.innerHTML='<div class="card empty">¡Excelente! No tienes preguntas pendientes. Las respuestas incorrectas se guardarán aquí automáticamente.</div>';return}
+ box.innerHTML=`<div class="card"><p><b>${valid.length} pregunta${valid.length===1?'':'s'} por dominar.</b> Cuando la respondas correctamente en esta práctica, desaparecerá de la lista.</p><div class="actions"><button class="warnbtn" onclick="startMistakePractice()">Practicar mis errores</button><button class="secondary" onclick="if(confirm('¿Vaciar el cuaderno de errores?')){appState.mistakes=[];saveState();renderMistakes()}">Vaciar lista</button></div></div>`+
+ valid.map(idx=>{const x=qs[idx];const title=lessons[x[4]]?.title||'Módulo';return `<div class="card"><button class="star" onclick="removeMistake(${idx})" title="Eliminar">×</button><small>${esc(title)}</small><h3>${esc(x[0])}</h3><p><b>Respuesta correcta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
 }
 
 const NCLEX_EXAM_SIZE=85;
@@ -2421,6 +2458,8 @@ function answerExam(n){
  ops.forEach(o=>o.disabled=true);ops[n].classList.add('selected');
  const key=x[4];if(key){if(!examBreakdown[key])examBreakdown[key]={correct:0,total:0};examBreakdown[key].total++}
  if(n===x[2]){examCorrect++;if(key)examBreakdown[key].correct++}
+ else if(!appState.mistakes.includes(examOrder[examPos]))appState.mistakes.push(examOrder[examPos]);
+ saveState();
  examPos++;setTimeout(renderExam,180);
 }
 
@@ -2447,6 +2486,7 @@ show=function(id){
    renderPractice();
  }
  if(id==='favoritos')renderFavorites();
+ if(id==='errores')renderMistakes();
  if(id==='progreso')renderProgress();
  if(id==='exam' && !examOrder.length) document.getElementById('examBox').innerHTML='<div class="feedback"><p><b>Simulacro NCLEX:</b> 85 preguntas, 5 horas y meta de práctica de 76 correctas.</p><p class="muted">Una vez respondida una pregunta no podrás regresar. Las respuestas y explicaciones se mantienen ocultas durante el examen.</p><button class="primary" onclick="startExam()">Comenzar simulacro</button></div>';
 }
