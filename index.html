@@ -2273,6 +2273,15 @@ function renderModuleMasteryOverview(){
  if(!rows.length)return '<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Completa el quiz de un módulo para comenzar este seguimiento.</p></div>';
  return `<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Los módulos que necesitan más repaso aparecen primero.</p><div class="module-report">${rows.map(r=>`<div class="module-report-row"><strong>${r.number}. ${esc(r.title)}<br><small class="${r.cls}">${r.level} · ${r.attempts} intento${r.attempts===1?'':'s'}${r.lastDate?` · ${esc(new Date(r.lastDate).toLocaleDateString('es-US'))}`:''}</small></strong><span>Último ${r.last}%<br>Mejor ${r.best}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Repetir quiz</button></div>`).join('')}</div></div>`;
 }
+function getStudyRecommendation(){
+ const mistakesByModule={};(appState.mistakes||[]).forEach(idx=>{const key=qs[idx]?.[4];if(key)mistakesByModule[key]=(mistakesByModule[key]||0)+1});
+ const ranked=CORE_MODULES.map(([key,title],index)=>{const p=moduleMastery(key),errors=mistakesByModule[key]||0;let days=0;if(p?.lastDate)days=Math.max(0,Math.floor((Date.now()-new Date(p.lastDate).getTime())/86400000));let priority=p?100-p.best:70;priority+=Math.min(48,errors*12)+Math.min(30,days)+(p?0:20);if(appState.completed.includes(key))priority-=8;if(p?.best>=80&&!errors)priority-=30;return{key,index,title:title.replace(/^Clase \d+ — /,''),p,errors,days,priority}}).sort((a,b)=>b.priority-a.priority||a.index-b.index);
+ const pick=ranked[0];if(!pick)return null;let reason='Es el mejor siguiente paso según tu progreso.';if(pick.errors)reason=`Tienes ${pick.errors} pregunta${pick.errors===1?'':'s'} pendiente${pick.errors===1?'':'s'} de este módulo.`;else if(!pick.p)reason='Todavía no has completado el quiz de este módulo.';else if(pick.p.best<65)reason=`Tu mejor resultado es ${pick.p.best}%; conviene reforzarlo.`;else if(pick.days>=7)reason=`Han pasado ${pick.days} días desde tu último intento.`;else if(pick.p.best<80)reason=`Estás en progreso con ${pick.p.best}%; un repaso puede llevarlo a Dominado.`;return{...pick,reason};
+}
+function renderStudyRecommendation(){
+ const r=getStudyRecommendation();if(!r)return '';
+ return `<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">RECOMENDACIÓN DE HOY</span><h2>🧠 Módulo ${r.index+1}: ${esc(r.title)}</h2><p>${esc(r.reason)}</p><div class="actions"><button class="warnbtn" onclick="openLesson('${r.key}')">Estudiar recomendación de hoy</button><button class="secondary" onclick="startModuleQuiz('${r.key}')">Ir directamente al quiz</button></div></div>`;
+}
 function rememberStudy(type,key='',label=''){
  const next={type,key,label,updatedAt:Date.now()};
  if(appState.lastStudy?.type===type&&appState.lastStudy?.key===key&&appState.lastStudy?.label===label)return;
@@ -2297,7 +2306,7 @@ function updateDashboard(){
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
- if(daily)daily.innerHTML=renderContinueCard()+renderWeeklyGoals()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
+ if(daily)daily.innerHTML=renderContinueCard()+renderStudyRecommendation()+renderWeeklyGoals()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
  const hp=document.getElementById('homeStats');
  if(hp) hp.innerHTML=`<div class="final-stats">
   <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -2787,6 +2796,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
+ ${renderStudyRecommendation()}
  ${renderWeeklyGoals()}
  ${renderModuleMasteryOverview()}
  <div class="card"><h3>📄 Informe de progreso y notas</h3><p>Crea una vista lista para imprimir o guardar como PDF desde tu teléfono, Mac, Android o Windows.</p><button class="primary" onclick="exportProgressReport()">Exportar informe PDF</button></div>
