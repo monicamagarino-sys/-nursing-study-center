@@ -63,6 +63,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .continue-card{background:linear-gradient(135deg,#eef0ff,#eafaff);border:1px solid #d9ddff}.continue-card h2{margin-bottom:7px}.continue-card .continue-meta{color:var(--muted);margin:4px 0 14px}
 .activity-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}.activity-day{min-height:58px;border-radius:10px;padding:7px 5px;background:#edf0f6;border:1px solid #e0e4ed;text-align:center;color:#596276}.activity-day b{display:block;font-size:14px}.activity-day small{font-size:11px}.activity-1{background:#dff6ec;color:#126946;border-color:#bcebd8}.activity-2{background:#aee7cf;color:#075c3c;border-color:#86d7b9}.activity-3{background:#38aa79;color:#fff;border-color:#279467}.activity-legend{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}.activity-dot{width:14px;height:14px;border-radius:4px;display:inline-block}
 .achievement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.achievement{position:relative;text-align:center;border:2px solid #e4e6ef}.achievement .medal{font-size:44px;display:block;margin-bottom:8px}.achievement.earned{background:linear-gradient(145deg,#fff9df,#fff);border-color:#f2cf57}.achievement.locked{filter:grayscale(1);opacity:.58}.achievement .status{font-size:12px;font-weight:900;color:var(--muted)}.achievement.earned .status{color:#936600}
+.exam-plan-card{border:2px solid #4eb7c7;background:linear-gradient(135deg,#effcff,#f5f3ff)}.exam-plan-date{padding:11px 13px;border:1px solid #cfd8e6;border-radius:11px;background:#fff;font:inherit;min-height:44px}.exam-plan-number{font-size:34px;font-weight:900;color:var(--brand);margin:4px 0}.exam-plan-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}.exam-plan-details div{background:#fff;border-radius:12px;padding:12px;border:1px solid #dce4ee}.exam-plan-details b{display:block;font-size:21px;color:#315a9b}
 .report-preview{position:fixed;inset:0;z-index:10000;background:#edf0f7;overflow:auto;padding:24px}.report-sheet{max-width:900px;margin:auto;background:#fff;color:#172033;border-radius:18px;padding:34px;box-shadow:0 12px 45px #17203324}.report-toolbar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:9px;max-width:900px;margin:0 auto 12px;padding:10px;background:#edf0f7e8}.report-head{border-bottom:3px solid var(--brand);padding-bottom:15px;margin-bottom:20px}.report-head h1{color:#3532a5}.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.report-metric{border:1px solid #dfe3ee;border-radius:12px;padding:12px}.report-metric b{display:block;font-size:23px;color:var(--brand)}.report-section{margin-top:24px}.report-section h2{font-size:20px;border-bottom:1px solid #dfe3ee;padding-bottom:7px}.report-table{width:100%;border-collapse:collapse}.report-table th,.report-table td{text-align:left;border-bottom:1px solid #e6e8ef;padding:9px 6px;vertical-align:top}.report-note{white-space:pre-wrap;background:#f8f9fd;border-radius:10px;padding:12px;margin:8px 0 15px}.report-empty{color:var(--muted);font-style:italic}
 @media(max-width:650px){
   nav{position:relative;top:auto;z-index:1;background:var(--bg);padding:8px 0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
@@ -2167,11 +2168,12 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},achievements:{},lifetime:{questions:0,practiceSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},achievements:{},examPlan:{targetDate:''},lifetime:{questions:0,practiceSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.lifetime=Object.assign({questions:0,practiceSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
+appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2279,6 +2281,19 @@ function renderActivityCalendar(){
  const active=days.filter(d=>d.total>0).length,questions=days.reduce((sum,d)=>sum+Number(d.row.questions||0),0),modules=days.reduce((sum,d)=>sum+Number(d.row.modules||0),0),exams=days.reduce((sum,d)=>sum+Number(d.row.exams||0),0);
  return `<div class="card"><h2>🗓️ Actividad de los últimos 28 días</h2><p><b>${active}</b> días activos · <b>${questions}</b> preguntas · <b>${modules}</b> módulos · <b>${exams}</b> exámenes</p><div class="activity-calendar">${days.map(d=>`<div class="activity-day activity-${d.level}" title="${esc(d.date.toLocaleDateString('es-US'))}: ${d.row.questions||0} preguntas, ${d.row.modules||0} módulos, ${d.row.exams||0} exámenes"><b>${d.date.getDate()}</b><small>${d.total?`${d.row.questions||0} preg.`:'—'}</small></div>`).join('')}</div><div class="activity-legend"><span>Menos</span><i class="activity-dot" style="background:#edf0f6"></i><i class="activity-dot" style="background:#dff6ec"></i><i class="activity-dot" style="background:#aee7cf"></i><i class="activity-dot" style="background:#38aa79"></i><span>Más actividad</span></div></div>`;
 }
+function parseLocalDate(value){const parts=String(value||'').split('-').map(Number);return parts.length===3&&parts.every(Number.isFinite)?new Date(parts[0],parts[1]-1,parts[2]):null}
+function saveExamTargetDate(value){
+ const target=parseLocalDate(value),today=new Date();today.setHours(0,0,0,0);if(!target||target<today){alert('Selecciona una fecha de hoy en adelante.');return}appState.examPlan={targetDate:value};saveState();
+}
+function clearExamTargetDate(){if(!confirm('¿Eliminar la fecha prevista del NCLEX?'))return;appState.examPlan={targetDate:''};saveState()}
+function getExamPlan(){
+ const target=parseLocalDate(appState.examPlan?.targetDate);if(!target)return null;const today=new Date();today.setHours(0,0,0,0);const days=Math.ceil((target-today)/86400000),mastered=Object.values(appState.moduleProgress||{}).filter(p=>(p.best||0)>=80).length,pending=Math.max(0,20-mastered),errors=(appState.mistakes||[]).length,todayQuestions=Number(appState.activityLog?.[dailyDateKey()]?.questions||0);let dailyGoal=days<=14?85:days<=30?60:days<=60?40:25;if(pending>10)dailyGoal+=10;if(errors>10)dailyGoal+=10;dailyGoal=Math.min(100,dailyGoal);const status=todayQuestions>=dailyGoal?'✅ Meta de hoy completada':todayQuestions>=Math.ceil(dailyGoal/2)?'🟡 Vas a buen ritmo':'🔵 Continúa con el plan';return{target,days,mastered,pending,errors,todayQuestions,dailyGoal,status};
+}
+function renderExamPlan(){
+ const plan=getExamPlan(),today=dailyDateKey();if(!plan)return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>🎓 Define tu fecha de examen</h2><p>La app calculará automáticamente tu meta diaria según el tiempo disponible y tu progreso.</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Guardar fecha</button></div></div>`;
+ if(plan.days<0)return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>📅 Actualiza tu fecha de examen</h2><p>La fecha guardada ya pasó.</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Guardar nueva fecha</button></div></div>`;
+ return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>🎓 ${plan.days===0?'¡El examen es hoy!':`Faltan ${plan.days} día${plan.days===1?'':'s'}`}</h2><p>${esc(plan.target.toLocaleDateString('es-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}))}</p><div class="exam-plan-number">${plan.todayQuestions}/${plan.dailyGoal} preguntas hoy</div><div class="progressbar"><span style="width:${weeklyBar(plan.todayQuestions,plan.dailyGoal)}%"></span></div><p><b>${plan.status}</b></p><div class="exam-plan-details"><div><b>${plan.mastered}/20</b>Módulos dominados</div><div><b>${plan.pending}</b>Módulos por dominar</div><div><b>${plan.errors}</b>Errores pendientes</div></div><div class="actions"><button class="goodbtn" onclick="startDailyPractice()">Estudiar ahora</button><input class="exam-plan-date" type="date" min="${today}" value="${esc(appState.examPlan.targetDate)}"><button class="secondary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Cambiar fecha</button><button class="secondary" onclick="clearExamTargetDate()">Eliminar fecha</button></div></div>`;
+}
 const ACHIEVEMENT_DEFS=[
  {id:'first_question',icon:'🌟',title:'Primer paso',desc:'Responder la primera pregunta',test:()=>appState.lifetime.questions>=1},
  {id:'first_practice',icon:'🧩',title:'Primera práctica',desc:'Completar una sesión de práctica',test:()=>appState.lifetime.practiceSessions>=1},
@@ -2348,7 +2363,7 @@ function updateDashboard(){
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
- if(daily)daily.innerHTML=renderContinueCard()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
+ if(daily)daily.innerHTML=renderContinueCard()+renderExamPlan()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
  const hp=document.getElementById('homeStats');
  if(hp) hp.innerHTML=`<div class="final-stats">
   <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -2801,6 +2816,7 @@ function exportProgressReport(){
  closeProgressReport();
  updateAchievements();
  const weekly=ensureWeekly();
+ const examPlan=getExamPlan();
  const generated=new Date().toLocaleString('es-US',{dateStyle:'long',timeStyle:'short'});
  const completed=CORE_MODULES.filter(([key])=>appState.completed.includes(key));
  const notes=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
@@ -2823,6 +2839,7 @@ function exportProgressReport(){
   <div class="report-metric"><b>${weekly.modules}/${weekly.goals.modules}</b>Módulos esta semana</div>
   <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>Exámenes esta semana</div>
  </div>
+ <section class="report-section" style="display:block"><h2>🎓 Plan NCLEX</h2>${examPlan?`<p><b>Fecha prevista:</b> ${esc(examPlan.target.toLocaleDateString('es-US'))} · <b>${Math.max(0,examPlan.days)} días</b> · Meta diaria: <b>${examPlan.dailyGoal} preguntas</b> · Hoy: ${examPlan.todayQuestions}/${examPlan.dailyGoal}.</p>`:'<p class="report-empty">No se ha definido una fecha prevista para el examen.</p>'}</section>
  <section class="report-section" style="display:block"><h2>✅ Módulos completados</h2>${completed.length?`<ol>${completed.map(([,title])=>`<li>${esc(title)}</li>`).join('')}</ol>`:'<p class="report-empty">Aún no hay módulos marcados como completados.</p>'}</section>
  <section class="report-section" style="display:block"><h2>🏆 Logros conseguidos</h2>${earnedAchievements.length?`<ul>${earnedAchievements.map(a=>`<li>${a.icon} <b>${esc(a.title)}</b> — ${esc(a.desc)}</li>`).join('')}</ul>`:'<p class="report-empty">Todavía no hay medallas conseguidas.</p>'}</section>
  <section class="report-section" style="display:block"><h2>📘 Dominio de quizzes por módulo</h2>${masteryRows.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Último</th><th>Mejor</th><th>Intentos</th><th>Nivel</th></tr></thead><tbody>${masteryRows.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.last}%</td><td>${row.best}%</td><td>${row.attempts}</td><td>${row.level}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Todavía no hay quizzes de módulos completados.</p>'}</section>
@@ -2844,6 +2861,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
+ ${renderExamPlan()}
  ${renderStudyRecommendation()}
  ${renderWeeklyGoals()}
  ${renderActivityCalendar()}
@@ -2901,6 +2919,7 @@ function normalizeLoadedState(raw){
  appState.moduleProgress=appState.moduleProgress||{};
  appState.activityLog=appState.activityLog||{};
  appState.achievements=appState.achievements||{};
+ appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
