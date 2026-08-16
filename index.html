@@ -65,6 +65,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .achievement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.achievement{position:relative;text-align:center;border:2px solid #e4e6ef}.achievement .medal{font-size:44px;display:block;margin-bottom:8px}.achievement.earned{background:linear-gradient(145deg,#fff9df,#fff);border-color:#f2cf57}.achievement.locked{filter:grayscale(1);opacity:.58}.achievement .status{font-size:12px;font-weight:900;color:var(--muted)}.achievement.earned .status{color:#936600}
 .exam-plan-card{border:2px solid #4eb7c7;background:linear-gradient(135deg,#effcff,#f5f3ff)}.exam-plan-date{padding:11px 13px;border:1px solid #cfd8e6;border-radius:11px;background:#fff;font:inherit;min-height:44px}.exam-plan-number{font-size:34px;font-weight:900;color:var(--brand);margin:4px 0}.exam-plan-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}.exam-plan-details div{background:#fff;border-radius:12px;padding:12px;border:1px solid #dce4ee}.exam-plan-details b{display:block;font-size:21px;color:#315a9b}
 .flashcard-stage{max-width:760px;margin:18px auto}.flashcard{min-height:330px;border-radius:24px;padding:30px;background:linear-gradient(145deg,#fff,#f3f3ff);border:2px solid #dcdcf7;box-shadow:0 16px 42px #30306818;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer}.flashcard h2{font-size:29px;line-height:1.25}.flash-answer{margin-top:18px;padding-top:18px;border-top:2px dashed #d9dcec;line-height:1.6;text-align:left}.flash-hidden{display:none}.flash-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:15px}.flash-select{width:100%;padding:12px;border:1px solid #d8dbea;border-radius:11px;background:#fff;font-size:16px}.flash-config{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin:15px 0}.flash-stat b{font-size:25px;color:var(--brand);display:block}
+.ngn-case{border-left:6px solid #5a57d8}.ngn-scenario{background:#eef7ff;border:1px solid #cfe2f4;border-radius:15px;padding:16px;line-height:1.55;margin:12px 0 18px}.ngn-check{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #e1e5ed;border-radius:12px;padding:12px;margin:8px 0}.ngn-check input{width:21px;height:21px;flex:0 0 auto}.ngn-matrix{width:100%;border-collapse:separate;border-spacing:0 8px}.ngn-matrix th{font-size:13px;color:var(--muted)}.ngn-matrix td{background:#fff;padding:11px;border-top:1px solid #e1e5ed;border-bottom:1px solid #e1e5ed}.ngn-matrix td:first-child{border-left:1px solid #e1e5ed;border-radius:10px 0 0 10px}.ngn-matrix td:last-child{border-right:1px solid #e1e5ed;border-radius:0 10px 10px 0}.ngn-order-row{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center;margin:8px 0}.ngn-order-row select{padding:11px;border:1px solid #d8dbea;border-radius:10px;background:#fff;font-size:16px}.ngn-bowtie{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.ngn-bowtie>div{background:#f8f9fd;border:1px solid #e1e5ef;border-radius:13px;padding:12px}.ngn-points{font-size:25px;font-weight:900;color:var(--brand)}
 .report-preview{position:fixed;inset:0;z-index:10000;background:#edf0f7;overflow:auto;padding:24px}.report-sheet{max-width:900px;margin:auto;background:#fff;color:#172033;border-radius:18px;padding:34px;box-shadow:0 12px 45px #17203324}.report-toolbar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:9px;max-width:900px;margin:0 auto 12px;padding:10px;background:#edf0f7e8}.report-head{border-bottom:3px solid var(--brand);padding-bottom:15px;margin-bottom:20px}.report-head h1{color:#3532a5}.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.report-metric{border:1px solid #dfe3ee;border-radius:12px;padding:12px}.report-metric b{display:block;font-size:23px;color:var(--brand)}.report-section{margin-top:24px}.report-section h2{font-size:20px;border-bottom:1px solid #dfe3ee;padding-bottom:7px}.report-table{width:100%;border-collapse:collapse}.report-table th,.report-table td{text-align:left;border-bottom:1px solid #e6e8ef;padding:9px 6px;vertical-align:top}.report-note{white-space:pre-wrap;background:#f8f9fd;border-radius:10px;padding:12px;margin:8px 0 15px}.report-empty{color:var(--muted);font-style:italic}
 @media(max-width:650px){
   nav{position:relative;top:auto;z-index:1;background:var(--bg);padding:8px 0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
@@ -74,6 +75,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
   .search-panel{position:relative;top:auto;z-index:1}
   .report-preview{padding:10px}.report-sheet{padding:20px}.report-summary{grid-template-columns:repeat(2,1fr)}
   .flash-config{grid-template-columns:1fr}.flashcard{min-height:300px;padding:22px}.flashcard h2{font-size:24px}
+  .ngn-bowtie{grid-template-columns:1fr}.ngn-matrix{font-size:13px}.ngn-matrix td{padding:8px 4px}
 }
 
 @media print{
@@ -2170,12 +2172,13 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},ngn:{last:0,best:0,taken:0,history:[],mistakes:[]},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.flashcards=appState.flashcards||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.lifetime=Object.assign({questions:0,practiceSessions:0,flashcardSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
 appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
+appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[]},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2194,6 +2197,7 @@ function ensureFinalUI(){
   <button class="tab" data-tab="tarjetas">🧠 Tarjetas</button>
   <button class="tab" data-tab="quiz">Práctica</button>
   <button class="tab" data-tab="exam">Examen</button>
+  <button class="tab" data-tab="ngn">🧩 NGN</button>
   <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
   <button class="tab" data-tab="errores">⚠️ Errores</button>
   <button class="tab" data-tab="logros">🏆 Logros</button>
@@ -2210,6 +2214,9 @@ function ensureFinalUI(){
    const search=document.createElement('section');search.id='buscar';
    search.innerHTML=`<h2>🔎 Buscar contenido</h2><div class="search-panel"><input id="smartSearch" class="search-input" type="search" placeholder="Ejemplo: insulina, infarto, embarazo…" autocomplete="off" oninput="renderSearch(this.value)"></div><div id="searchResults"></div>`;
    main.insertBefore(search,footer);
+ }
+ if(!document.getElementById('ngn')){
+   const ngn=document.createElement('section');ngn.id='ngn';ngn.innerHTML=`<div id="ngnBox"></div>`;main.insertBefore(ngn,footer);
  }
  if(!document.getElementById('tarjetas')){
    const cards=document.createElement('section');cards.id='tarjetas';cards.innerHTML=`<div id="flashcardsBox"></div>`;main.insertBefore(cards,footer);
@@ -2244,6 +2251,7 @@ function ensureFinalUI(){
     <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
     <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
     <button class="goodbtn" onclick="startExam()">🎯 Simulacro NCLEX</button>
+    <button class="goodbtn" onclick="show('ngn')">🧩 Casos clínicos NGN</button>
    </div>
    <div class="install-note"><b>📱 Instalación:</b> este paquete está preparado como PWA. Cuando se abra desde un servidor/hosting, puede añadirse a la pantalla de inicio del teléfono y, en navegadores compatibles, instalarse en la computadora.</div>
   </div>
@@ -2258,6 +2266,7 @@ function ensureFinalUI(){
  renderFavorites();
  renderMistakes();
  renderAchievements();
+ renderNGN();
  renderProgress();
 }
 
@@ -2322,6 +2331,36 @@ function rateFlashcard(known){
 function finishFlashcards(){
  appState.lifetime.flashcardSessions=Math.max(0,Number(appState.lifetime.flashcardSessions||0)+1);saveState();const box=document.getElementById('flashcardsBox'),total=flashDeck.length;flashDeck=[];box.innerHTML=`<div class="card"><h2>✅ Sesión de tarjetas completada</h2><p>Terminaste ${total} tarjetas: <b>${flashKnown}</b> marcadas “Lo sé” y <b>${flashReview}</b> para repasar.</p><div class="actions"><button class="primary" onclick="renderFlashcards()">Elegir otra sesión</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
 }
+const NGN_CASES=[
+ {id:'hf',title:'Insuficiencia cardíaca',scenario:'Un paciente presenta ortopnea, crepitantes pulmonares y disminución del gasto urinario. El equipo evalúa congestión y planifica las intervenciones iniciales.',items:[
+  {type:'sata',prompt:'¿Qué hallazgos apoyan insuficiencia cardíaca izquierda? Selecciona todos.',options:['Ortopnea','Crepitantes pulmonares','Disminución del gasto urinario','Hepatomegalia','Edema dependiente'],correct:[0,1,2],explanation:'La insuficiencia izquierda produce congestión pulmonar, ortopnea y crepitantes; también puede disminuir la perfusión renal. Hepatomegalia y edema dependiente se asocian más con falla derecha.'},
+  {type:'matrix',prompt:'Clasifica cada hallazgo.',columns:['Falla izquierda','Falla derecha'],rows:[['Ortopnea',0],['Crepitantes',0],['Hepatomegalia',1],['Edema dependiente',1]],explanation:'La falla izquierda congestiona los pulmones; la derecha produce congestión venosa sistémica.'},
+  {type:'sata',prompt:'¿Qué intervenciones aparecen en el resumen para insuficiencia cardíaca? Selecciona todos.',options:['Elevar la cabecera','Restricción de líquidos según indicación','Dieta baja en sodio','Peso diario','Aumentar sodio a más de 4 g/día'],correct:[0,1,2,3],explanation:'Elevar la cabecera, controlar líquidos, reducir sodio y vigilar el peso ayudan a evaluar y reducir la congestión.'}
+ ]},
+ {id:'dka',title:'DKA y estado hiperosmolar',scenario:'Un paciente con diabetes presenta hiperglucemia, respiración profunda, aliento afrutado y dolor abdominal. Se inicia el manejo de una crisis hiperglucémica.',items:[
+  {type:'bowtie',prompt:'Completa el Bow-Tie: elige la condición, 2 acciones y 2 parámetros prioritarios.',condition:{options:['DKA','HHNK/HHS','SIADH'],correct:0},actions:{options:['Iniciar solución salina IV','Administrar insulina regular IV','Restringir agua','Administrar desmopresina'],correct:[0,1]},monitors:{options:['Glucosa','Potasio','Agudeza visual','Audición'],correct:[0,1]},explanation:'Kussmaul, aliento afrutado y dolor abdominal apoyan DKA. La prioridad comienza con solución salina, seguida de insulina regular IV; glucosa y potasio requieren vigilancia estrecha.'},
+  {type:'order',prompt:'Ordena las prioridades de manejo de DKA del 1 al 4.',options:['Iniciar solución salina IV','Evaluar y reemplazar potasio según orden','Administrar insulina regular IV','Cuando la glucosa sea menor de 250, añadir dextrosa'],correct:[0,1,2,3],explanation:'El resumen prioriza líquidos primero, manejo del potasio, insulina regular IV y luego dextrosa al bajar la glucosa.'},
+  {type:'matrix',prompt:'Clasifica cada hallazgo.',columns:['DKA','HHNK/HHS'],rows:[['Cetonas presentes',0],['Respiración de Kussmaul',0],['Aliento afrutado',0],['Ausencia de cetonas',1],['Alteración marcada del estado mental',1]],explanation:'DKA se caracteriza por cetosis y acidosis. HHNK/HHS suele tener hiperglucemia extrema, sin cetonas significativas y alteración neurológica.'}
+ ]},
+ {id:'siadh',title:'SIADH y diabetes insípida',scenario:'Un paciente presenta oliguria, aumento de peso, cefalea, confusión, sodio bajo y orina muy concentrada. Se compara SIADH con diabetes insípida.',items:[
+  {type:'sata',prompt:'¿Qué hallazgos apoyan SIADH? Selecciona todos.',options:['Oliguria','Aumento de peso','Sodio bajo','Densidad urinaria mayor de 1.030','Poliuria intensa','Densidad urinaria menor de 1.005'],correct:[0,1,2,3],explanation:'SIADH retiene agua: reduce la diuresis, aumenta el peso, diluye el sodio y concentra la orina.'},
+  {type:'matrix',prompt:'Clasifica cada hallazgo.',columns:['DI','SIADH'],rows:[['Poliuria',0],['Densidad urinaria <1.005',0],['Sodio plasmático alto',0],['Oliguria',1],['Densidad urinaria >1.030',1],['Sodio plasmático bajo',1]],explanation:'DI pierde agua y concentra el plasma; SIADH retiene agua, diluye el plasma y concentra la orina.'},
+  {type:'sata',prompt:'¿Qué tratamientos se incluyen para SIADH? Selecciona todos.',options:['Restricción de agua','Solución salina hipertónica al 3% según orden','Tolvaptán según orden','Desmopresina','Aumentar líquidos libremente'],correct:[0,1,2],explanation:'El resumen incluye restricción de agua, solución salina al 3% y antagonistas de vasopresina como tolvaptán. Desmopresina se usa en DI.'}
+ ]}
+];
+let ngnCase=null,ngnMode='practice',ngnPos=0,ngnEarned=0,ngnPossible=0,ngnResults=[];
+function ngnMax(item){if(item.type==='sata')return item.correct.length;if(item.type==='matrix')return item.rows.length;if(item.type==='order')return item.correct.length;return 1+item.actions.correct.length+item.monitors.correct.length}
+function renderNGN(){const box=document.getElementById('ngnBox');if(!box)return;if(ngnCase){renderNGNItem();return}const s=appState.ngn||{};box.innerHTML=`<div class="card"><span class="pill">NEXT GENERATION NCLEX</span><h2>🧩 Casos clínicos NGN</h2><p>Practica juicio clínico con selección múltiple, matrices, prioridades y Bow-Tie. La práctica muestra explicación inmediata; el examen la muestra al final.</p><div class="final-stats"><div class="stat"><b>${s.best||0}%</b>Mejor resultado</div><div class="stat"><b>${s.taken||0}</b>Casos completados</div><div class="stat"><b>${(s.mistakes||[]).length}</b>Ejercicios por repasar</div></div></div>${NGN_CASES.map(c=>`<div class="card ngn-case"><span class="pill">3 EJERCICIOS</span><h2>${esc(c.title)}</h2><p>${esc(c.scenario)}</p><div class="actions"><button class="primary" onclick="startNGN('${c.id}','practice')">Practicar con explicaciones</button><button class="secondary" onclick="startNGN('${c.id}','exam')">Modo examen</button></div></div>`).join('')}`}
+function startNGN(id,mode){ngnCase=NGN_CASES.find(c=>c.id===id);ngnMode=mode;ngnPos=0;ngnEarned=0;ngnPossible=0;ngnResults=[];rememberStudy('ngn',id,`NGN: ${ngnCase.title}`);show('ngn');renderNGNItem()}
+function ngnChecks(options,name){return options.map((o,i)=>`<label class="ngn-check"><input type="checkbox" name="${name}" value="${i}"> ${esc(o)}</label>`).join('')}
+function ngnItemHTML(item){if(item.type==='sata')return ngnChecks(item.options,'ngn-sata');if(item.type==='matrix')return `<div class="ngn-matrix"><table><tr><th>Hallazgo</th>${item.columns.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${item.rows.map((r,i)=>`<tr><td>${esc(r[0])}</td>${item.columns.map((c,j)=>`<td><input type="radio" name="ngn-row-${i}" value="${j}"></td>`).join('')}</tr>`).join('')}</table></div>`;if(item.type==='order')return item.options.map((o,i)=>`<div class="ngn-order-row"><select data-order="${i}"><option value="">Orden</option>${item.options.map((_,n)=>`<option value="${n+1}">${n+1}</option>`).join('')}</select><span>${esc(o)}</span></div>`).join('');return `<div class="ngn-bowtie"><div><b>Condición</b>${item.condition.options.map((o,i)=>`<label class="ngn-check"><input type="radio" name="ngn-condition" value="${i}"> ${esc(o)}</label>`).join('')}</div><div><b>2 acciones</b>${ngnChecks(item.actions.options,'ngn-actions')}</div><div><b>2 parámetros</b>${ngnChecks(item.monitors.options,'ngn-monitors')}</div></div>`}
+function renderNGNItem(){const box=document.getElementById('ngnBox'),item=ngnCase.items[ngnPos];box.innerHTML=`<div class="card ngn-case"><div class="exam-meta"><b>${esc(ngnCase.title)} · ${ngnMode==='practice'?'Práctica':'Examen'}</b><span>${ngnPos+1}/${ngnCase.items.length}</span></div><div class="ngn-scenario"><b>Escenario clínico</b><p>${esc(ngnCase.scenario)}</p></div><h2>${esc(item.prompt)}</h2><div id="ngnAnswers">${ngnItemHTML(item)}</div><div id="ngnFeedback"></div><button id="ngnSubmit" class="primary" onclick="submitNGNItem()">Confirmar respuesta</button></div>`}
+function checkedValues(name){return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>Number(x.value))}
+function partialScore(selected,correct){return Math.max(0,selected.filter(x=>correct.includes(x)).length-selected.filter(x=>!correct.includes(x)).length)}
+function scoreNGNItem(item){let earned=0,max=ngnMax(item);if(item.type==='sata'){const s=checkedValues('ngn-sata');if(!s.length)return null;earned=partialScore(s,item.correct)}else if(item.type==='matrix'){const vals=item.rows.map((r,i)=>document.querySelector(`input[name="ngn-row-${i}"]:checked`)?.value);if(vals.some(v=>v===undefined))return null;earned=vals.filter((v,i)=>Number(v)===item.rows[i][1]).length}else if(item.type==='order'){const vals=[...document.querySelectorAll('[data-order]')].map(x=>Number(x.value));if(vals.some(v=>!v)||new Set(vals).size!==vals.length)return null;earned=vals.filter((v,i)=>v===item.correct[i]+1).length}else{const condition=document.querySelector('input[name="ngn-condition"]:checked');const a=checkedValues('ngn-actions'),m=checkedValues('ngn-monitors');if(!condition||a.length!==2||m.length!==2)return null;earned=(Number(condition.value)===item.condition.correct?1:0)+partialScore(a,item.actions.correct)+partialScore(m,item.monitors.correct)}return{earned,max}}
+function submitNGNItem(){const item=ngnCase.items[ngnPos],score=scoreNGNItem(item);if(!score){alert('Completa todas las selecciones antes de continuar.');return}const id=`${ngnCase.id}:${ngnPos}`,full=score.earned===score.max;ngnEarned+=score.earned;ngnPossible+=score.max;ngnResults.push({...score,prompt:item.prompt,explanation:item.explanation});if(full)appState.ngn.mistakes=appState.ngn.mistakes.filter(x=>x!==id);else if(!appState.ngn.mistakes.includes(id))appState.ngn.mistakes.push(id);addDailyActivity('questions',1);saveState();if(ngnMode==='practice'){document.getElementById('ngnAnswers').querySelectorAll('input,select').forEach(x=>x.disabled=true);document.getElementById('ngnSubmit').style.display='none';document.getElementById('ngnFeedback').innerHTML=`<div class="feedback"><b>${full?'✅ Completo':'🟡 Puntuación parcial'}: ${score.earned}/${score.max} puntos</b><p>${esc(item.explanation)}</p><button class="primary" onclick="nextNGNItem()">${ngnPos===ngnCase.items.length-1?'Ver resultado':'Siguiente ejercicio'}</button></div>`}else nextNGNItem()}
+function nextNGNItem(){ngnPos++;if(ngnPos>=ngnCase.items.length)finishNGN();else{renderNGNItem();window.scrollTo({top:0,behavior:'smooth'})}}
+function finishNGN(){const pctScore=pct(ngnEarned,ngnPossible),title=ngnCase.title;appState.ngn.last=pctScore;appState.ngn.best=Math.max(appState.ngn.best||0,pctScore);appState.ngn.taken=(appState.ngn.taken||0)+1;appState.ngn.history=[{date:new Date().toISOString(),case:title,score:pctScore,earned:ngnEarned,total:ngnPossible},...(appState.ngn.history||[])].slice(0,10);saveState();const results=ngnResults.map((r,i)=>`<div class="lesson"><h3>${i+1}. ${esc(r.prompt)}</h3><p><b>${r.earned}/${r.max} puntos</b> · ${esc(r.explanation)}</p></div>`).join(''),id=ngnCase.id;ngnCase=null;document.getElementById('ngnBox').innerHTML=`<div class="card"><h2>${pctScore>=75?'✅':'📘'} Caso completado: ${esc(title)}</h2><div class="ngn-points">${ngnEarned}/${ngnPossible} puntos · ${pctScore}%</div>${results}<div class="actions"><button class="primary" onclick="startNGN('${id}','practice')">Repetir con explicaciones</button><button class="secondary" onclick="renderNGN()">Volver a casos</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`}
 const ACHIEVEMENT_DEFS=[
  {id:'first_question',icon:'🌟',title:'Primer paso',desc:'Responder la primera pregunta',test:()=>appState.lifetime.questions>=1},
   {id:'first_practice',icon:'🧩',title:'Primera práctica',desc:'Completar una sesión de práctica',test:()=>appState.lifetime.practiceSessions>=1},
@@ -2342,6 +2381,8 @@ const ACHIEVEMENT_DEFS=[
  {id:'streak30',icon:'💎',title:'Racha de 30 días',desc:'Estudiar treinta días seguidos',test:()=>appState.daily.streak>=30},
  {id:'exam_first',icon:'📝',title:'Primer examen',desc:'Completar un examen',test:()=>appState.exam.taken+appState.customExam.taken>=1},
  {id:'nclex_pass',icon:'🎓',title:'Meta NCLEX',desc:'Lograr 76 respuestas correctas en el simulacro',test:()=>appState.history.some(h=>h.type==='Simulacro NCLEX'&&Number(h.correct)>=76)}
+ ,{id:'ngn_first',icon:'🧩',title:'Primer caso NGN',desc:'Completar un caso clínico NGN',test:()=>appState.ngn.taken>=1}
+ ,{id:'ngn_perfect',icon:'🩺',title:'Juicio clínico perfecto',desc:'Lograr 100% en un caso NGN',test:()=>appState.ngn.best>=100}
 ];
 function updateAchievements(){appState.achievements=appState.achievements||{};ACHIEVEMENT_DEFS.forEach(a=>{if(!appState.achievements[a.id]&&a.test())appState.achievements[a.id]=new Date().toISOString()})}
 function renderAchievements(){
@@ -2405,6 +2446,7 @@ function updateDashboard(){
   <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>Módulos con notas</div>
   <div class="stat"><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b>Medallas logradas</div>
   <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
+  <div class="stat"><b>${appState.ngn.best||0}%</b>Mejor caso NGN<br><small>${appState.ngn.taken||0} completados</small></div>
  </div>`;
  const hm=document.getElementById('homeModules');
  if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}${moduleMasteryLabel(k)}</small></div>`).join('');
@@ -2896,6 +2938,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
+ <div class="card"><h3>🧩 Casos clínicos NGN</h3><p>Mejor resultado: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} casos completados · ${(appState.ngn.mistakes||[]).length} ejercicios por repasar.</p><button class="goodbtn" onclick="show('ngn')">Abrir casos NGN</button></div>
  ${renderExamPlan()}
  ${renderStudyRecommendation()}
  ${renderWeeklyGoals()}
@@ -2929,6 +2972,7 @@ show=function(id){
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
  if(id==='exam' && !examOrder.length && !customOrder.length)renderExamLanding();
+ if(id==='ngn')renderNGN();
 }
 
 if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
@@ -2958,6 +3002,7 @@ function normalizeLoadedState(raw){
  appState.flashcards=appState.flashcards||{};
  appState.achievements=appState.achievements||{};
  appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
+ appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[]},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
@@ -2969,7 +3014,7 @@ function normalizeLoadedState(raw){
  appState.updatedAt=Number(appState.updatedAt||0);
 }
 function refreshStateUI(){
- updateDashboard();renderTopics();renderFavorites();renderMistakes();renderFlashcards();renderAchievements();renderProgress();
+ updateDashboard();renderTopics();renderFavorites();renderMistakes();renderFlashcards();renderAchievements();renderNGN();renderProgress();
 }
 function scheduleCloudSync(){
  if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
