@@ -2190,6 +2190,7 @@ function ensureFinalUI(){
    <div class="actions">
     <button class="primary" onclick="show('temas')">📚 Estudiar módulos</button>
     <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
+    <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
     <button class="goodbtn" onclick="startExam()">🎯 Simulacro NCLEX</button>
    </div>
    <div class="install-note"><b>📱 Instalación:</b> este paquete está preparado como PWA. Cuando se abra desde un servidor/hosting, puede añadirse a la pantalla de inicio del teléfono y, en navegadores compatibles, instalarse en la computadora.</div>
@@ -2216,6 +2217,8 @@ function updateDashboard(){
  if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio</small></div>`).join('');
  const top=document.getElementById('scoreTop');
  if(top) top.textContent=`${pct(appState.practice.correct,appState.practice.attempts)}%`;
+ const weakBtn=document.getElementById('weakPracticeBtn');
+ if(weakBtn){const available=getWeakModuleKeys().length>0;weakBtn.disabled=!available;weakBtn.title=available?'Practicar los tres resultados más bajos del último examen':'Completa un examen para activar esta práctica'}
  renderProgress();
 }
 
@@ -2248,6 +2251,7 @@ function toggleComplete(k){
 
 let practiceOrder=[], practicePos=0, answeredFinal=false;
 let practiceModule='';
+let practiceLabel='';
 function buildPracticeOrder(){
  practiceOrder=[...Array(qs.length).keys()];
  for(let i=practiceOrder.length-1;i>0;i--){
@@ -2258,21 +2262,44 @@ function buildPracticeOrder(){
 }
 function startPractice(shuffle=false){
  practiceModule='';
+ practiceLabel='';
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  show('quiz');
 }
 function startModuleQuiz(k){
  practiceModule=k;
+ practiceLabel='';
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0; show('quiz');
+}
+function getWeakModuleKeys(){
+ const breakdown=appState.exam?.breakdown||{};
+ return CORE_MODULES.map(([key,title])=>{
+   const stat=breakdown[key]||{correct:0,total:0};
+   return stat.total?{key,title,percent:Math.round(stat.correct/stat.total*100)}:null;
+ }).filter(Boolean).sort((a,b)=>a.percent-b.percent).slice(0,3);
+}
+function startWeakPractice(){
+ const weak=getWeakModuleKeys();
+ if(!weak.length){alert('Completa primero un examen para identificar tus temas débiles.');show('exam');return}
+ const selected=[];
+ weak.forEach(({key})=>{
+   const pool=qs.reduce((a,q,i)=>{if(q[4]===key)a.push(i);return a},[]);
+   selected.push(...shuffled(pool).slice(0,10));
+ });
+ practiceModule='';
+ practiceLabel='Refuerzo: '+weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · ');
+ practiceOrder=shuffled(selected);
+ practicePos=0;
+ show('quiz');
 }
 function renderPractice(){
  answeredFinal=false;
  const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];
  document.getElementById('score').textContent=appState.practice.correct;
  const total=practiceOrder.length;
- const label=practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general';
+ const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
  document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>Pregunta ${practicePos+1} de ${total}</span><span>${pct(appState.practice.correct,appState.practice.attempts)}% correcto</span></div>
  <button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="Favorito">${appState.favorites.includes(idx)?'★':'☆'}</button>
  <p class="question">${esc(x[0])}</p>`+
@@ -2362,7 +2389,7 @@ function finishExam(timedOut=false){
    return {key,title:title.replace(/^Clase \d+ — /,''),correct:stat.correct,total:stat.total,percent,level};
  }).filter(Boolean).sort((a,b)=>a.percent-b.percent);
  const report=rows.map(r=>`<div class="module-report-row"><strong>${esc(r.title)}<br><small class="${r.level[1]}">${r.level[0]}</small></strong><span>${r.correct}/${r.total}<br>${r.percent}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Practicar</button></div>`).join('');
- box.innerHTML=`<div class="feedback"><h2>${passed?'🎉 APROBADO':'📚 NECESITA REPASO'}</h2><p><b>${examCorrect} correctas de ${NCLEX_EXAM_SIZE}</b> (${score}%).</p>${timedOut?`<p>El tiempo terminó después de ${answered} preguntas respondidas.</p>`:''}<p class="muted">Meta de práctica de esta app: 76 respuestas correctas. El NCLEX real utiliza evaluación adaptativa CAT, no una puntuación fija.</p></div><div class="card"><h2>📊 Rendimiento por módulo</h2><p class="muted">Los temas con menor porcentaje aparecen primero.</p><div class="module-report">${report}</div><button class="primary" onclick="startExam()">Repetir simulacro</button></div>`;
+ box.innerHTML=`<div class="feedback"><h2>${passed?'🎉 APROBADO':'📚 NECESITA REPASO'}</h2><p><b>${examCorrect} correctas de ${NCLEX_EXAM_SIZE}</b> (${score}%).</p>${timedOut?`<p>El tiempo terminó después de ${answered} preguntas respondidas.</p>`:''}<p class="muted">Meta de práctica de esta app: 76 respuestas correctas. El NCLEX real utiliza evaluación adaptativa CAT, no una puntuación fija.</p><button class="warnbtn" onclick="startWeakPractice()">🎯 Practicar automáticamente los temas débiles</button></div><div class="card"><h2>📊 Rendimiento por módulo</h2><p class="muted">Los temas con menor porcentaje aparecen primero.</p><div class="module-report">${report}</div><button class="primary" onclick="startExam()">Repetir simulacro</button></div>`;
  examOrder=[];
 }
 function renderExam(){
@@ -2390,6 +2417,7 @@ function renderProgress(){
  <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>Práctica<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div></div>
+ <div class="card"><h3>🎯 Refuerzo inteligente</h3><p>${getWeakModuleKeys().length?'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.'}</p><button class="warnbtn" onclick="startWeakPractice()" ${getWeakModuleKeys().length?'':'disabled'}>Practicar temas débiles</button></div>
  <div class="card"><h3>Módulos completados</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(t.replace(/^Clase \\d+ — /,''))}</p>`).join('')}
  <button class="secondary" onclick="if(confirm('¿Borrar todo el progreso guardado?')){localStorage.removeItem(STORE_KEY);location.reload()}">Reiniciar progreso</button></div>`;
 }
