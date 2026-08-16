@@ -39,6 +39,10 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .exam-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .exam-timer{font-weight:900;color:#b42318;background:#fff1f0;border:1px solid #ffc9c5;border-radius:10px;padding:7px 10px;font-variant-numeric:tabular-nums}
 .option.selected{border-color:var(--brand)!important;background:#eef0ff!important}
+.module-report{display:grid;gap:9px;margin:16px 0}
+.module-report-row{display:grid;grid-template-columns:minmax(150px,1fr) 70px 105px;gap:9px;align-items:center;background:#fff;border:1px solid #e1e5ef;border-radius:12px;padding:10px}
+.module-report-row strong{line-height:1.25}.module-report-row span{text-align:center;font-weight:800}
+.level-good{color:#087a55}.level-mid{color:#8a5a00}.level-low{color:#b42318}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .install-note{background:#fff9e8;border:1px solid #f1df9f;border-radius:14px;padding:14px;margin-top:14px}
 .module-visuals{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
@@ -49,6 +53,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
   nav{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;overflow-x:auto;flex-wrap:nowrap}
   .tab{white-space:nowrap}
   .card{padding:16px}
+  .module-report-row{grid-template-columns:1fr 58px}.module-report-row button{grid-column:1/-1}
 }
 
 
@@ -2141,11 +2146,11 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0}};
+let appState={completed:[],favorites:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}}};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
-appState.exam=Object.assign({last:0,best:0,taken:0},appState.exam||{});
+appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(appState));updateDashboard()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function pct(a,b){return b?Math.round(a*100/b):0}
@@ -2308,7 +2313,7 @@ function renderFavorites(){
 const NCLEX_EXAM_SIZE=85;
 const NCLEX_TIME_SECONDS=5*60*60;
 const NCLEX_PASS_CORRECT=76;
-let examOrder=[],examPos=0,examCorrect=0,examAnswered=false,examStartedAt=0,examTimerId=null;
+let examOrder=[],examPos=0,examCorrect=0,examAnswered=false,examStartedAt=0,examTimerId=null,examBreakdown={};
 function formatExamTime(seconds){
  const safe=Math.max(0,seconds),h=Math.floor(safe/3600),m=Math.floor((safe%3600)/60),sec=safe%60;
  return [h,m,sec].map(n=>String(n).padStart(2,'0')).join(':');
@@ -2322,10 +2327,25 @@ function updateExamTimer(){
  if(timer)timer.textContent='⏱ '+formatExamTime(left);
  if(left<=0&&examOrder.length)finishExam(true);
 }
+function shuffled(list){
+ const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;
+}
+function buildNclexExamOrder(){
+ const selected=[];
+ CORE_MODULES.forEach(([key])=>{
+   const modulePool=qs.reduce((a,q,i)=>{if(q[4]===key)a.push(i);return a},[]);
+   selected.push(...shuffled(modulePool).slice(0,4));
+ });
+ const used=new Set(selected);
+ const extras=qs.reduce((a,q,i)=>{if(q[4]&&!used.has(i))a.push(i);return a},[]);
+ selected.push(...shuffled(extras).slice(0,NCLEX_EXAM_SIZE-selected.length));
+ return shuffled(selected);
+}
 function startExam(){
  if(examTimerId)clearInterval(examTimerId);
- examOrder=[...Array(qs.length).keys()].sort(()=>Math.random()-.5).slice(0,NCLEX_EXAM_SIZE);
- examPos=0;examCorrect=0;examAnswered=false;examStartedAt=Date.now();
+ examOrder=buildNclexExamOrder();
+ examPos=0;examCorrect=0;examAnswered=false;examStartedAt=Date.now();examBreakdown={};
+ CORE_MODULES.forEach(([key])=>examBreakdown[key]={correct:0,total:0});
  examTimerId=setInterval(updateExamTimer,1000);
  show('exam');renderExam();updateExamTimer();
 }
@@ -2333,9 +2353,16 @@ function finishExam(timedOut=false){
  if(examTimerId)clearInterval(examTimerId);examTimerId=null;
  const answered=Math.min(examPos,examOrder.length),score=Math.round(examCorrect/NCLEX_EXAM_SIZE*100);
  const passed=!timedOut&&answered===NCLEX_EXAM_SIZE&&examCorrect>=NCLEX_PASS_CORRECT;
- appState.exam.last=score;appState.exam.best=Math.max(appState.exam.best,score);appState.exam.taken++;saveState();
+ appState.exam.last=score;appState.exam.best=Math.max(appState.exam.best,score);appState.exam.taken++;appState.exam.breakdown=examBreakdown;saveState();
  const box=document.getElementById('examBox');
- box.innerHTML=`<div class="feedback"><h2>${passed?'🎉 APROBADO':'📚 NECESITA REPASO'}</h2><p><b>${examCorrect} correctas de ${NCLEX_EXAM_SIZE}</b> (${score}%).</p>${timedOut?`<p>El tiempo terminó después de ${answered} preguntas respondidas.</p>`:''}<p class="muted">Meta de práctica de esta app: 76 respuestas correctas. El NCLEX real utiliza evaluación adaptativa CAT, no una puntuación fija.</p><button class="primary" onclick="startExam()">Repetir simulacro</button></div>`;
+ const rows=CORE_MODULES.map(([key,title])=>{
+   const stat=examBreakdown[key]||{correct:0,total:0};if(!stat.total)return null;
+   const percent=Math.round(stat.correct/stat.total*100);
+   const level=percent>=80?['Fortaleza','level-good']:percent>=65?['En progreso','level-mid']:['Repasar','level-low'];
+   return {key,title:title.replace(/^Clase \d+ — /,''),correct:stat.correct,total:stat.total,percent,level};
+ }).filter(Boolean).sort((a,b)=>a.percent-b.percent);
+ const report=rows.map(r=>`<div class="module-report-row"><strong>${esc(r.title)}<br><small class="${r.level[1]}">${r.level[0]}</small></strong><span>${r.correct}/${r.total}<br>${r.percent}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Practicar</button></div>`).join('');
+ box.innerHTML=`<div class="feedback"><h2>${passed?'🎉 APROBADO':'📚 NECESITA REPASO'}</h2><p><b>${examCorrect} correctas de ${NCLEX_EXAM_SIZE}</b> (${score}%).</p>${timedOut?`<p>El tiempo terminó después de ${answered} preguntas respondidas.</p>`:''}<p class="muted">Meta de práctica de esta app: 76 respuestas correctas. El NCLEX real utiliza evaluación adaptativa CAT, no una puntuación fija.</p></div><div class="card"><h2>📊 Rendimiento por módulo</h2><p class="muted">Los temas con menor porcentaje aparecen primero.</p><div class="module-report">${report}</div><button class="primary" onclick="startExam()">Repetir simulacro</button></div>`;
  examOrder=[];
 }
 function renderExam(){
@@ -2350,7 +2377,8 @@ function answerExam(n){
  if(examAnswered||examSecondsLeft()<=0)return;examAnswered=true;
  const x=qs[examOrder[examPos]],ops=document.querySelectorAll('#examBox .option');
  ops.forEach(o=>o.disabled=true);ops[n].classList.add('selected');
- if(n===x[2])examCorrect++;
+ const key=x[4];if(key){if(!examBreakdown[key])examBreakdown[key]={correct:0,total:0};examBreakdown[key].total++}
+ if(n===x[2]){examCorrect++;if(key)examBreakdown[key].correct++}
  examPos++;setTimeout(renderExam,180);
 }
 
