@@ -2252,6 +2252,7 @@ function toggleComplete(k){
 let practiceOrder=[], practicePos=0, answeredFinal=false;
 let practiceModule='';
 let practiceLabel='';
+let practiceFinite=false;
 function buildPracticeOrder(){
  practiceOrder=[...Array(qs.length).keys()];
  for(let i=practiceOrder.length-1;i>0;i--){
@@ -2263,12 +2264,14 @@ function buildPracticeOrder(){
 function startPractice(shuffle=false){
  practiceModule='';
  practiceLabel='';
+ practiceFinite=false;
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  show('quiz');
 }
 function startModuleQuiz(k){
  practiceModule=k;
  practiceLabel='';
+ practiceFinite=true;
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0; show('quiz');
@@ -2290,6 +2293,7 @@ function startWeakPractice(){
  });
  practiceModule='';
  practiceLabel='Refuerzo: '+weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · ');
+ practiceFinite=true;
  practiceOrder=shuffled(selected);
  practicePos=0;
  show('quiz');
@@ -2318,8 +2322,19 @@ function answerPractice(idx,n){
 nextQ=function(){
  if(!practiceOrder.length) buildPracticeOrder();
  practicePos++;
- if(practicePos>=practiceOrder.length) buildPracticeOrder();
+ if(practicePos>=practiceOrder.length){
+   if(practiceFinite){finishPractice();return}
+   buildPracticeOrder();
+ }
  renderPractice();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function finishPractice(){
+ const total=practiceOrder.length;
+ const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
+ const repeat=practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
+ document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ Práctica completada</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p><div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
+ document.getElementById('next').style.display='none';
  window.scrollTo({top:0,behavior:'smooth'});
 }
 renderQ=function(){
