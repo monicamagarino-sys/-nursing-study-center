@@ -2254,18 +2254,24 @@ renderTopics=function(){
 function normalizeSearchText(value){
  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
+const SEARCH_ALIASES={
+ 'insulina':['insulin'],'azucar':['sugar','glucose'],'glucosa':['glucose'],'embarazo':['pregnancy','pregnant','maternal'],'parto':['labor','delivery','birth'],'recien nacido':['newborn','neonatal'],'corazon':['heart','cardiac'],'insuficiencia cardiaca':['heart failure'],'infarto':['infarction','myocardial infarction'],'presion arterial':['blood pressure','hypertension'],'hipertension':['hypertension','high blood pressure'],'pulmon':['lung','pulmonary'],'respiracion':['breathing','respiratory'],'rinon':['kidney','renal'],'orina':['urine','urinary'],'higado':['liver','hepatic'],'cerebro':['brain','neurologic'],'derrame cerebral':['stroke','cerebrovascular accident'],'convulsion':['seizure'],'sangre':['blood'],'transfusion':['transfusion'],'anemia':['anemia'],'piel':['skin'],'cancer':['cancer','oncology'],'dolor':['pain'],'infeccion':['infection'],'medicamento':['medication','drug'],'medicamentos':['medications','drugs'],'nutricion':['nutrition'],'electrolitos':['electrolytes'],'fractura':['fracture'],'hueso':['bone'],'musculo':['muscle'],'ojo':['eye','vision'],'oido':['ear','hearing'],'salud mental':['mental health','psychiatric'],'ansiedad':['anxiety'],'depresion':['depression']
+};
+function searchTermsFor(term){return [term,...(SEARCH_ALIASES[term]||[])].map(normalizeSearchText)}
 function renderSearch(query){
  const box=document.getElementById('searchResults');if(!box)return;
  const term=normalizeSearchText(query);
  if(term.length<2){box.innerHTML='<div class="card empty">Escribe al menos dos letras para buscar en los 20 módulos.</div>';return}
+ const terms=searchTermsFor(term);
+ const matches=text=>{const normalized=normalizeSearchText(text);return terms.some(t=>normalized.includes(t))};
  const results=[];
  CORE_MODULES.forEach(([key,moduleTitle],moduleIndex)=>{
    const lesson=lessons[key];if(!lesson)return;
    const cleanModule=moduleTitle.replace(/^Clase \d+ — /,'');
-   if(normalizeSearchText(cleanModule).includes(term))results.push({key,moduleIndex,title:cleanModule,text:`Módulo ${moduleIndex+1}`});
+   if(matches(cleanModule))results.push({key,moduleIndex,title:cleanModule,text:`Módulo ${moduleIndex+1}`});
    lesson.items.forEach(item=>{
      const heading=item[0]||'',body=item[1]||'';
-     if(normalizeSearchText(heading+' '+body).includes(term))results.push({key,moduleIndex,title:heading,text:body});
+     if(matches(heading+' '+body))results.push({key,moduleIndex,title:heading,text:body});
    });
  });
  const shown=results.slice(0,50);
