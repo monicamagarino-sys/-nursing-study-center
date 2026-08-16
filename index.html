@@ -2152,14 +2152,16 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
+appState.daily=Object.assign({completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},appState.daily||{});
 function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');updateDashboard();scheduleCloudSync()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function pct(a,b){return b?Math.round(a*100/b):0}
+function dailyDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
 
 function ensureFinalUI(){
  const nav=document.querySelector('nav');
@@ -2214,6 +2216,7 @@ function ensureFinalUI(){
    </div>
    <div class="install-note"><b>📱 Instalación:</b> este paquete está preparado como PWA. Cuando se abra desde un servidor/hosting, puede añadirse a la pantalla de inicio del teléfono y, en navegadores compatibles, instalarse en la computadora.</div>
   </div>
+  <div id="dailyPlan"></div>
   <div id="homeStats"></div>
   <h2>20 módulos</h2><div id="homeModules" class="grid"></div>`;
  document.querySelector('#repaso').style.display='none';
@@ -2227,6 +2230,9 @@ function ensureFinalUI(){
 
 function updateDashboard(){
  const done=appState.completed.length;
+ const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
+ const daily=document.getElementById('dailyPlan');
+ if(daily)daily.innerHTML=`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
  const hp=document.getElementById('homeStats');
  if(hp) hp.innerHTML=`<div class="final-stats">
   <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -2304,6 +2310,7 @@ let practiceModule='';
 let practiceLabel='';
 let practiceFinite=false;
 let mistakePractice=false;
+let dailyPractice=false,dailyCorrect=0;
 function buildPracticeOrder(){
  practiceOrder=[...Array(qs.length).keys()];
  for(let i=practiceOrder.length-1;i>0;i--){
@@ -2317,6 +2324,7 @@ function startPractice(shuffle=false){
  practiceLabel='';
  practiceFinite=false;
  mistakePractice=false;
+ dailyPractice=false;
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  show('quiz');
 }
@@ -2325,6 +2333,7 @@ function startModuleQuiz(k){
  practiceLabel='';
  practiceFinite=true;
  mistakePractice=false;
+ dailyPractice=false;
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0; show('quiz');
@@ -2348,6 +2357,7 @@ function startWeakPractice(){
  practiceLabel='Refuerzo: '+weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · ');
  practiceFinite=true;
  mistakePractice=false;
+ dailyPractice=false;
  practiceOrder=shuffled(selected);
  practicePos=0;
  show('quiz');
@@ -2359,9 +2369,21 @@ function startMistakePractice(){
  practiceLabel='Cuaderno de errores';
  practiceFinite=true;
  mistakePractice=true;
+ dailyPractice=false;
  practiceOrder=shuffled(valid);
  practicePos=0;
  show('quiz');
+}
+function startDailyPractice(){
+ const selected=[],used=new Set();
+ const add=list=>list.forEach(idx=>{if(selected.length<10&&qs[idx]&&!used.has(idx)){used.add(idx);selected.push(idx)}});
+ add(shuffled(appState.mistakes).slice(0,5));
+ const weakKeys=new Set(getWeakModuleKeys().map(x=>x.key));
+ const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.has(q[4]))a.push(i);return a},[]);
+ add(shuffled(weakPool));
+ add(shuffled([...Array(qs.length).keys()]));
+ practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;
+ practiceOrder=shuffled(selected);practicePos=0;show('quiz');
 }
 function renderPractice(){
  answeredFinal=false;
@@ -2382,6 +2404,7 @@ function answerPractice(idx,n){
  appState.practice.attempts++;
  if(n===x[2]){
    appState.practice.correct++;
+   if(dailyPractice)dailyCorrect++;
    if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx);
  }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  saveState();
@@ -2401,10 +2424,17 @@ nextQ=function(){
 function finishPractice(){
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
- const repeat=mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
- document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ Práctica completada</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p><div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
+ if(dailyPractice)completeDailyPlan(total);
+ const repeat=dailyPractice?'startDailyPractice()':mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
+ const dailyResult=dailyPractice?`<p><b>${dailyCorrect}/${total}</b> correctas (${pct(dailyCorrect,total)}%). Racha actual: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.</p>`:'';
+ document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ ${dailyPractice?'Plan diario completado':'Práctica completada'}</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p>${dailyResult}<div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
  document.getElementById('next').style.display='none';
  window.scrollTo({top:0,behavior:'smooth'});
+}
+function completeDailyPlan(total){
+ const today=dailyDateKey(),yesterdayDate=new Date();yesterdayDate.setDate(yesterdayDate.getDate()-1);const yesterday=dailyDateKey(yesterdayDate);
+ if(appState.daily.completedDate!==today){appState.daily.streak=appState.daily.lastCompletedDate===yesterday?appState.daily.streak+1:1}
+ appState.daily.completedDate=today;appState.daily.lastCompletedDate=today;appState.daily.correct=dailyCorrect;appState.daily.total=total;saveState();
 }
 renderQ=function(){
  if(!practiceOrder.length) buildPracticeOrder();
@@ -2512,7 +2542,9 @@ function renderProgress(){
  <div class="stat"><b>${done}/20</b>Módulos<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
  <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>Práctica<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
- <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div></div>
+ <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
+ <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
+ <div class="card"><h3>📅 Plan diario</h3><p>10 preguntas priorizadas según tus errores y módulos débiles.</p><button class="goodbtn" onclick="startDailyPractice()">${appState.daily.completedDate===dailyDateKey()?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>
  <div class="card"><h3>🎯 Refuerzo inteligente</h3><p>${getWeakModuleKeys().length?'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.'}</p><button class="warnbtn" onclick="startWeakPractice()" ${getWeakModuleKeys().length?'':'disabled'}>Practicar temas débiles</button></div>
  <div class="card"><h3>☁️ Sincronización</h3><p id="syncStatus" class="muted">Comprobando tu cuenta…</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm('¿Usar el progreso de este dispositivo como copia principal?'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>
  <div class="card"><h3>Módulos completados</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(t.replace(/^Clase \\d+ — /,''))}</p>`).join('')}
@@ -2559,6 +2591,7 @@ function normalizeLoadedState(raw){
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
  appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
+ appState.daily=Object.assign({completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},appState.daily||{});
  appState.updatedAt=Number(appState.updatedAt||0);
 }
 function refreshStateUI(){
