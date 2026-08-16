@@ -2152,12 +2152,12 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}}};
+let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
-function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(appState));updateDashboard()}
+function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));updateDashboard();scheduleCloudSync()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function pct(a,b){return b?Math.round(a*100/b):0}
 
@@ -2514,6 +2514,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div></div>
  <div class="card"><h3>🎯 Refuerzo inteligente</h3><p>${getWeakModuleKeys().length?'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.'}</p><button class="warnbtn" onclick="startWeakPractice()" ${getWeakModuleKeys().length?'':'disabled'}>Practicar temas débiles</button></div>
+ <div class="card"><h3>☁️ Sincronización</h3><p id="syncStatus" class="muted">Comprobando tu cuenta…</p><button class="secondary" onclick="syncCloudProgress()">Sincronizar ahora</button></div>
  <div class="card"><h3>Módulos completados</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(t.replace(/^Clase \\d+ — /,''))}</p>`).join('')}
  <button class="secondary" onclick="if(confirm('¿Borrar todo el progreso guardado?')){localStorage.removeItem(STORE_KEY);location.reload()}">Reiniciar progreso</button></div>`;
 }
@@ -2548,6 +2549,46 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_oDsA6a1L6dmP1FFUTAp_vw_vFW1HU9F
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
+const CLOUD_STATE_KEY='nursing_study_center_v1';
+let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false;
+
+function setSyncStatus(text){const el=document.getElementById('syncStatus');if(el)el.textContent=text}
+function normalizeLoadedState(raw){
+ appState=Object.assign(appState,raw||{});
+ appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];
+ appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
+ appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
+ appState.updatedAt=Number(appState.updatedAt||0);
+}
+function refreshStateUI(){
+ updateDashboard();renderTopics();renderFavorites();renderMistakes();renderProgress();
+}
+function scheduleCloudSync(){
+ if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
+ clearTimeout(cloudSyncTimer);cloudSyncTimer=setTimeout(()=>syncCloudProgress(true),1200);
+}
+async function syncCloudProgress(uploadLocal=false){
+ if(cloudSyncBusy)return;cloudSyncBusy=true;setSyncStatus('Sincronizando…');
+ try{
+   const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);
+   if(userError||!user)throw userError||new Error('NO_USER');
+   const cloud=user.user_metadata?.[CLOUD_STATE_KEY]||null;
+   const localTime=Number(appState.updatedAt||0),cloudTime=Number(cloud?.updatedAt||0);
+   if(cloud&&!uploadLocal&&cloudTime>localTime){
+     normalizeLoadedState(cloud);
+     localStorage.setItem(STORE_KEY,JSON.stringify(appState));
+     refreshStateUI();
+     setSyncStatus('Progreso actualizado desde tu cuenta.');
+   }else if(!cloud||uploadLocal||localTime>cloudTime){
+     const {error}=await authTimeout(sb.auth.updateUser({data:{[CLOUD_STATE_KEY]:JSON.parse(JSON.stringify(appState))}}),10000);
+     if(error)throw error;
+     setSyncStatus('Progreso sincronizado correctamente.');
+   }else setSyncStatus('Tu progreso ya está sincronizado.');
+   cloudSyncReady=true;
+ }catch(e){
+   setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');
+ }finally{cloudSyncBusy=false}
+}
 
 function setProLang(lang){
  document.querySelectorAll('#proLogin [data-es]').forEach(el=>{
@@ -2572,6 +2613,7 @@ function enterOfflineProfessional(){
  localStorage.setItem('mnsc_offline_access','1');
  document.getElementById('proLogin').classList.add('pro-hide');
  authMsg('');
+ setSyncStatus('Modo sin conexión: progreso guardado en este dispositivo.');
 }
 async function signInProfessional(){
  const email=document.getElementById('previewUser').value.trim();
@@ -2584,6 +2626,7 @@ async function signInProfessional(){
    localStorage.removeItem('mnsc_offline_access');
    document.getElementById('proLogin').classList.add('pro-hide');
    authMsg('');
+   await syncCloudProgress();
  }catch(e){
    authMsg('Supabase no respondió. Puedes entrar sin conexión y continuar estudiando.');
    showOfflineOption();
@@ -2598,11 +2641,13 @@ async function signUpProfessional(){
  if(error){ authMsg(error.message); return; }
  if(data.session){
    document.getElementById('proLogin').classList.add('pro-hide');
+   await syncCloudProgress();
  } else {
    authMsg('Cuenta creada. Revisa tu correo para confirmar / Account created. Check your email to confirm.', true);
  }
 }
 async function signOutProfessional(){
+ cloudSyncReady=false;clearTimeout(cloudSyncTimer);
  localStorage.removeItem('mnsc_offline_access');
  try{await authTimeout(sb.auth.signOut(),5000)}catch(e){}
  document.getElementById('proLogin').classList.remove('pro-hide');
@@ -2612,10 +2657,11 @@ document.addEventListener('DOMContentLoaded', async ()=>{
  setProLang(localStorage.getItem('mnsc_lang')||'es');
  if(localStorage.getItem('mnsc_offline_access')==='1'){
    document.getElementById('proLogin').classList.add('pro-hide');
+   setSyncStatus('Modo sin conexión: progreso guardado en este dispositivo.');
  }else{
    try{
      const { data:{ session } } = await authTimeout(sb.auth.getSession(),5000);
-     if(session) document.getElementById('proLogin').classList.add('pro-hide');
+     if(session){document.getElementById('proLogin').classList.add('pro-hide');await syncCloudProgress()}
    }catch(e){ showOfflineOption(); }
  }
  const nav=document.querySelector('nav');
@@ -2628,6 +2674,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
    nav.appendChild(b);
  }
 });
+window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 </script>
 </body>
 </html>
