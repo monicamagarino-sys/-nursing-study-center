@@ -54,6 +54,9 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .search-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px #5a57d81a}
 .search-result{border-left:5px solid var(--brand)}
 .search-result p{line-height:1.5;margin-bottom:12px}
+.exam-config{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+.exam-config label{display:grid;gap:6px;font-weight:800}.exam-config select{width:100%;padding:12px;border:1px solid #d8dbea;border-radius:12px;background:#fff;font-size:16px}
+.module-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:12px 0}.module-checks label{display:flex;gap:9px;align-items:center;background:#f8f9fd;border:1px solid #e1e5ef;border-radius:11px;padding:10px}.module-checks input{width:20px;height:20px}
 @media(max-width:650px){
   nav{position:relative;top:auto;z-index:1;background:var(--bg);padding:8px 0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
   .tab{white-space:nowrap}
@@ -2152,11 +2155,12 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
+appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
 appState.daily=Object.assign({completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},appState.daily||{});
 function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');updateDashboard();scheduleCloudSync()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -2493,6 +2497,7 @@ function buildNclexExamOrder(){
  return shuffled(selected);
 }
 function startExam(){
+ if(customTimerId)clearInterval(customTimerId);customTimerId=null;customOrder=[];
  if(examTimerId)clearInterval(examTimerId);
  examOrder=buildNclexExamOrder();
  examPos=0;examCorrect=0;examAnswered=false;examStartedAt=Date.now();examBreakdown={};
@@ -2535,6 +2540,65 @@ function answerExam(n){
  examPos++;setTimeout(renderExam,180);
 }
 
+let customOrder=[],customPos=0,customCorrect=0,customAnswered=false,customBreakdown={},customTimerId=null,customStartedAt=0;
+let customConfig={size:10,timeSeconds:0,mode:'practice',modules:[]};
+function renderExamLanding(){
+ const box=document.getElementById('examBox');if(!box)return;
+ box.innerHTML=`<div class="feedback"><h3>🎯 Simulacro NCLEX</h3><p>85 preguntas · 5 horas · sin explicaciones durante el examen.</p><button class="goodbtn" onclick="startExam()">Comenzar simulacro NCLEX</button></div>
+ <div class="card"><h2>⚙️ Examen personalizado</h2><p class="muted">Selecciona los módulos y configura tu sesión.</p>
+ <div class="exam-config"><label>Preguntas<select id="customCount"><option>10</option><option>25</option><option>50</option><option>85</option></select></label><label>Tiempo<select id="customTime"><option value="0">Sin límite</option><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="120">120 minutos</option></select></label><label>Modo<select id="customMode"><option value="practice">Práctica con explicaciones</option><option value="exam">Examen sin explicaciones</option></select></label></div>
+ <div class="actions"><button class="secondary" onclick="setAllCustomModules(true)">Seleccionar todos</button><button class="secondary" onclick="setAllCustomModules(false)">Quitar todos</button></div>
+ <div class="module-checks">${CORE_MODULES.map(([key,title],i)=>`<label><input class="custom-module" type="checkbox" value="${key}" checked><span>${i+1}. ${esc(title.replace(/^Clase \d+ — /,''))}</span></label>`).join('')}</div>
+ <button class="primary" onclick="startCustomExam()">Comenzar examen personalizado</button></div>`;
+}
+function setAllCustomModules(checked){document.querySelectorAll('.custom-module').forEach(x=>x.checked=checked)}
+function startCustomExam(){
+ const modules=[...document.querySelectorAll('.custom-module:checked')].map(x=>x.value);
+ if(!modules.length){alert('Selecciona al menos un módulo.');return}
+ const requested=Number(document.getElementById('customCount').value),minutes=Number(document.getElementById('customTime').value),mode=document.getElementById('customMode').value;
+ const pool=qs.reduce((a,q,i)=>{if(modules.includes(q[4]))a.push(i);return a},[]);
+ customOrder=shuffled(pool).slice(0,Math.min(requested,pool.length));
+ if(!customOrder.length){alert('No hay preguntas disponibles para esa selección.');return}
+ if(examTimerId)clearInterval(examTimerId);examTimerId=null;examOrder=[];
+ customConfig={size:customOrder.length,timeSeconds:minutes*60,mode,modules};customPos=0;customCorrect=0;customAnswered=false;customStartedAt=Date.now();customBreakdown={};
+ modules.forEach(key=>customBreakdown[key]={correct:0,total:0});
+ if(customConfig.timeSeconds)customTimerId=setInterval(updateCustomTimer,1000);
+ renderCustomExam();updateCustomTimer();window.scrollTo({top:0,behavior:'smooth'});
+}
+function customSecondsLeft(){return customConfig.timeSeconds?Math.max(0,customConfig.timeSeconds-Math.floor((Date.now()-customStartedAt)/1000)):0}
+function updateCustomTimer(){
+ const timer=document.getElementById('customTimer');if(timer)timer.textContent=customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):'Sin límite de tiempo';
+ if(customConfig.timeSeconds&&customSecondsLeft()<=0&&customOrder.length)finishCustomExam(true);
+}
+function renderCustomExam(){
+ const box=document.getElementById('examBox');if(!box)return;
+ if(customPos>=customOrder.length){finishCustomExam(false);return}
+ customAnswered=false;const idx=customOrder[customPos],x=qs[idx];
+ box.innerHTML=`<div class="exam-meta"><b>${customConfig.mode==='practice'?'Práctica personalizada':'Examen personalizado'} · Pregunta ${customPos+1}/${customConfig.size}</b><span id="customTimer" class="exam-timer">${customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):'Sin límite de tiempo'}</span></div><p class="question">${esc(x[0])}</p>${x[1].map((o,n)=>`<button class="option" onclick="answerCustomExam(${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')}<div id="customFeedback"></div>`;
+}
+function answerCustomExam(n){
+ if(customAnswered||(customConfig.timeSeconds&&customSecondsLeft()<=0))return;customAnswered=true;
+ const idx=customOrder[customPos],x=qs[idx],ops=document.querySelectorAll('#examBox .option'),key=x[4];
+ ops.forEach(o=>o.disabled=true);if(!customBreakdown[key])customBreakdown[key]={correct:0,total:0};customBreakdown[key].total++;
+ const correct=n===x[2];if(correct){customCorrect++;customBreakdown[key].correct++}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
+ if(customConfig.mode==='practice'){
+   appState.practice.attempts++;if(correct)appState.practice.correct++;
+   ops[x[2]].classList.add('correct');if(!correct)ops[n].classList.add('wrong');
+   document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="primary" onclick="nextCustomQuestion()">Siguiente</button></div></div>`;
+   saveState();
+ }else{ops[n].classList.add('selected');saveState();customPos++;setTimeout(renderCustomExam,180)}
+}
+function nextCustomQuestion(){customPos++;renderCustomExam();window.scrollTo({top:0,behavior:'smooth'})}
+function finishCustomExam(timedOut=false){
+ if(customTimerId)clearInterval(customTimerId);customTimerId=null;
+ const score=pct(customCorrect,customConfig.size),box=document.getElementById('examBox');
+ appState.customExam.last=score;appState.customExam.best=Math.max(appState.customExam.best,score);appState.customExam.taken++;saveState();
+ const rows=CORE_MODULES.map(([key,title])=>{const s=customBreakdown[key];if(!s?.total)return null;const percent=pct(s.correct,s.total),level=percent>=80?['Fortaleza','level-good']:percent>=65?['En progreso','level-mid']:['Repasar','level-low'];return{key,title:title.replace(/^Clase \d+ — /,''),correct:s.correct,total:s.total,percent,level}}).filter(Boolean).sort((a,b)=>a.percent-b.percent);
+ const report=rows.map(r=>`<div class="module-report-row"><strong>${esc(r.title)}<br><small class="${r.level[1]}">${r.level[0]}</small></strong><span>${r.correct}/${r.total}<br>${r.percent}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Practicar</button></div>`).join('');
+ box.innerHTML=`<div class="feedback"><h2>📊 Examen personalizado completado</h2><p><b>${customCorrect}/${customConfig.size}</b> correctas (${score}%).</p>${timedOut?'<p>El tiempo terminó.</p>':''}</div><div class="card"><h3>Rendimiento por módulo</h3><div class="module-report">${report}</div><button class="primary" onclick="customOrder=[];renderExamLanding()">Crear otro examen</button></div>`;
+ customOrder=[];
+}
+
 function renderProgress(){
  const box=document.getElementById('progressBox'); if(!box)return;
  const done=appState.completed.length;
@@ -2543,6 +2607,7 @@ function renderProgress(){
  <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>Práctica<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
+ <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  <div class="card"><h3>📅 Plan diario</h3><p>10 preguntas priorizadas según tus errores y módulos débiles.</p><button class="goodbtn" onclick="startDailyPractice()">${appState.daily.completedDate===dailyDateKey()?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>
  <div class="card"><h3>🎯 Refuerzo inteligente</h3><p>${getWeakModuleKeys().length?'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.'}</p><button class="warnbtn" onclick="startWeakPractice()" ${getWeakModuleKeys().length?'':'disabled'}>Practicar temas débiles</button></div>
@@ -2564,7 +2629,7 @@ show=function(id){
  if(id==='errores')renderMistakes();
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
- if(id==='exam' && !examOrder.length) document.getElementById('examBox').innerHTML='<div class="feedback"><p><b>Simulacro NCLEX:</b> 85 preguntas, 5 horas y meta de práctica de 76 correctas.</p><p class="muted">Una vez respondida una pregunta no podrás regresar. Las respuestas y explicaciones se mantienen ocultas durante el examen.</p><button class="primary" onclick="startExam()">Comenzar simulacro</button></div>';
+ if(id==='exam' && !examOrder.length && !customOrder.length)renderExamLanding();
 }
 
 if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
@@ -2591,6 +2656,7 @@ function normalizeLoadedState(raw){
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
  appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
+ appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
  appState.daily=Object.assign({completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},appState.daily||{});
  appState.updatedAt=Number(appState.updatedAt||0);
 }
