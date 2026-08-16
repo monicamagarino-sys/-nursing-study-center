@@ -2165,9 +2165,9 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
-appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
+appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
@@ -2262,6 +2262,17 @@ function renderWeeklyGoals(){
  <p><b>${w.exams}/${g.exams}</b> exámenes realizados</p><div class="progressbar"><span style="width:${weeklyBar(w.exams,g.exams)}%"></span></div>
  <small class="muted">Se reinicia automáticamente cada lunes. Meta: 100 preguntas, 2 módulos y 1 examen.</small></div>`;
 }
+function moduleMastery(key){
+ const p=appState.moduleProgress?.[key];if(!p?.attempts)return null;
+ const level=p.best>=80?'Dominado':p.best>=65?'En progreso':'Repasar';
+ const cls=p.best>=80?'level-good':p.best>=65?'level-mid':'level-low';return {...p,level,cls};
+}
+function moduleMasteryLabel(key){const p=moduleMastery(key);return p?` · <span class="${p.cls}"><b>${p.level}</b> · mejor ${p.best}%</span>`:' · Quiz pendiente'}
+function renderModuleMasteryOverview(){
+ const rows=CORE_MODULES.map(([key,title],i)=>{const p=moduleMastery(key);return p?{key,title:title.replace(/^Clase \d+ — /,''),number:i+1,...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best);
+ if(!rows.length)return '<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Completa el quiz de un módulo para comenzar este seguimiento.</p></div>';
+ return `<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Los módulos que necesitan más repaso aparecen primero.</p><div class="module-report">${rows.map(r=>`<div class="module-report-row"><strong>${r.number}. ${esc(r.title)}<br><small class="${r.cls}">${r.level} · ${r.attempts} intento${r.attempts===1?'':'s'}${r.lastDate?` · ${esc(new Date(r.lastDate).toLocaleDateString('es-US'))}`:''}</small></strong><span>Último ${r.last}%<br>Mejor ${r.best}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Repetir quiz</button></div>`).join('')}</div></div>`;
+}
 function rememberStudy(type,key='',label=''){
  const next={type,key,label,updatedAt:Date.now()};
  if(appState.lastStudy?.type===type&&appState.lastStudy?.key===key&&appState.lastStudy?.label===label)return;
@@ -2297,7 +2308,7 @@ function updateDashboard(){
   <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>Módulos con notas</div>
  </div>`;
  const hm=document.getElementById('homeModules');
- if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}</small></div>`).join('');
+ if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}${moduleMasteryLabel(k)}</small></div>`).join('');
  const top=document.getElementById('scoreTop');
  if(top) top.textContent=`${pct(appState.practice.correct,appState.practice.attempts)}%`;
  const weakBtn=document.getElementById('weakPracticeBtn');
@@ -2309,7 +2320,7 @@ renderTopics=function(){
  const grid=document.getElementById('topicGrid');
  grid.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')">
  <div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t)}</h3>
- <small>${lessons[k]?.items?.length||0} bloques de repaso</small></div>`).join('');
+ <small>${lessons[k]?.items?.length||0} bloques de repaso${moduleMasteryLabel(k)}</small></div>`).join('');
 }
 
 function normalizeSearchText(value){
@@ -2408,6 +2419,7 @@ function toggleComplete(k){
 let practiceOrder=[], practicePos=0, answeredFinal=false;
 let practiceModule='';
 let practiceLabel='';
+let practiceSessionCorrect=0;
 let practiceFinite=false;
 let mistakePractice=false;
 let dailyPractice=false,dailyCorrect=0;
@@ -2425,6 +2437,7 @@ function startPractice(shuffle=false){
  practiceFinite=false;
  mistakePractice=false;
  dailyPractice=false;
+ practiceSessionCorrect=0;
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  rememberStudy('practice','','Práctica general');
  show('quiz');
@@ -2435,6 +2448,7 @@ function startModuleQuiz(k){
  practiceFinite=true;
  mistakePractice=false;
  dailyPractice=false;
+ practiceSessionCorrect=0;
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0;rememberStudy('moduleQuiz',k,`Quiz: ${lessons[k]?.title||'módulo'}`);show('quiz');
@@ -2459,6 +2473,7 @@ function startWeakPractice(){
  practiceFinite=true;
  mistakePractice=false;
  dailyPractice=false;
+ practiceSessionCorrect=0;
  practiceOrder=shuffled(selected);
  practicePos=0;
  rememberStudy('weak','',practiceLabel);
@@ -2472,6 +2487,7 @@ function startMistakePractice(){
  practiceFinite=true;
  mistakePractice=true;
  dailyPractice=false;
+ practiceSessionCorrect=0;
  practiceOrder=shuffled(valid);
  practicePos=0;
  rememberStudy('mistakes','',practiceLabel);
@@ -2485,7 +2501,7 @@ function startDailyPractice(){
  const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.has(q[4]))a.push(i);return a},[]);
  add(shuffled(weakPool));
  add(shuffled([...Array(qs.length).keys()]));
- practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;
+ practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;
  practiceOrder=shuffled(selected);practicePos=0;rememberStudy('daily','',practiceLabel);show('quiz');
 }
 function renderPractice(){
@@ -2508,6 +2524,7 @@ function answerPractice(idx,n){
  addWeekly('questions');
  if(n===x[2]){
    appState.practice.correct++;
+   practiceSessionCorrect++;
    if(dailyPractice)dailyCorrect++;
    if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx);
  }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
@@ -2528,6 +2545,7 @@ nextQ=function(){
 function finishPractice(){
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
+ if(practiceModule){const score=pct(practiceSessionCorrect,total),old=appState.moduleProgress[practiceModule]||{attempts:0,last:0,best:0};appState.moduleProgress[practiceModule]={attempts:old.attempts+1,last:score,best:Math.max(old.best||0,score),lastCorrect:practiceSessionCorrect,total,lastDate:new Date().toISOString()};saveState()}
  if(dailyPractice)completeDailyPlan(total);
  const repeat=dailyPractice?'startDailyPractice()':mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
  const dailyResult=dailyPractice?`<p><b>${dailyCorrect}/${total}</b> correctas (${pct(dailyCorrect,total)}%). Racha actual: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.</p>`:'';
@@ -2733,6 +2751,7 @@ function exportProgressReport(){
  const notes=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
  const breakdown=appState.exam?.breakdown||{};
  const performance=CORE_MODULES.map(([key,title],i)=>{const row=breakdown[key];if(!row?.total)return null;const score=pct(row.correct,row.total);return{number:i+1,title:title.replace(/^Clase \d+ — /,''),correct:row.correct,total:row.total,score}}).filter(Boolean).sort((a,b)=>a.score-b.score);
+ const masteryRows=CORE_MODULES.map(([key,title],i)=>{const p=moduleMastery(key);return p?{number:i+1,title:title.replace(/^Clase \d+ — /,''),...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best);
  const history=(appState.history||[]).map(item=>`<tr><td>${esc(new Date(item.date).toLocaleString('es-US'))}</td><td>${esc(item.type||'Examen')}</td><td>${Number(item.correct)||0}/${Number(item.total)||0}</td><td><b>${Number(item.score)||0}%</b></td></tr>`).join('');
  const report=document.createElement('div');report.id='printReport';report.className='report-preview';
  report.innerHTML=`<div class="report-toolbar"><button class="secondary" onclick="closeProgressReport()">Cerrar</button><button class="primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button></div><article class="report-sheet">
@@ -2749,6 +2768,7 @@ function exportProgressReport(){
   <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>Exámenes esta semana</div>
  </div>
  <section class="report-section" style="display:block"><h2>✅ Módulos completados</h2>${completed.length?`<ol>${completed.map(([,title])=>`<li>${esc(title)}</li>`).join('')}</ol>`:'<p class="report-empty">Aún no hay módulos marcados como completados.</p>'}</section>
+ <section class="report-section" style="display:block"><h2>📘 Dominio de quizzes por módulo</h2>${masteryRows.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Último</th><th>Mejor</th><th>Intentos</th><th>Nivel</th></tr></thead><tbody>${masteryRows.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.last}%</td><td>${row.best}%</td><td>${row.attempts}</td><td>${row.level}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Todavía no hay quizzes de módulos completados.</p>'}</section>
  <section class="report-section" style="display:block"><h2>🎯 Rendimiento por módulo</h2>${performance.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Resultado</th><th>Nivel</th></tr></thead><tbody>${performance.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.correct}/${row.total} · ${row.score}%</td><td>${row.score>=80?'Fortaleza':row.score>=65?'En progreso':'Repasar'}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Completa un examen para generar el análisis de temas fuertes y débiles.</p>'}</section>
  <section class="report-section" style="display:block"><h2>📊 Historial de exámenes</h2>${history?`<table class="report-table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Correctas</th><th>Puntuación</th></tr></thead><tbody>${history}</tbody></table>`:'<p class="report-empty">No hay exámenes guardados.</p>'}</section>
  <section class="report-section" style="display:block"><h2>🗒️ Notas personales</h2>${notes.length?notes.map(([key,title])=>`<h3>${esc(title)}</h3><div class="report-note">${esc(String(appState.notes[key]))}</div>`).join(''):'<p class="report-empty">No hay notas personales guardadas.</p>'}</section>
@@ -2768,6 +2788,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  ${renderWeeklyGoals()}
+ ${renderModuleMasteryOverview()}
  <div class="card"><h3>📄 Informe de progreso y notas</h3><p>Crea una vista lista para imprimir o guardar como PDF desde tu teléfono, Mac, Android o Windows.</p><button class="primary" onclick="exportProgressReport()">Exportar informe PDF</button></div>
  ${renderExamHistory()}
  ${renderNotesOverview()}
@@ -2816,6 +2837,7 @@ function setSyncStatus(text){const el=document.getElementById('syncStatus');if(e
 function normalizeLoadedState(raw){
  appState=Object.assign(appState,raw||{});
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
+ appState.moduleProgress=appState.moduleProgress||{};
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
