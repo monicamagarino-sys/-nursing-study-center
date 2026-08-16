@@ -62,6 +62,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .audio-tools{background:#eef8ff;border:1px solid #cfe4f6;border-radius:14px;padding:13px;margin:14px 0}.audio-tools select{padding:10px;border:1px solid #cbd8e6;border-radius:10px;background:#fff;font-size:15px}.audio-tools .actions{align-items:center}
 .continue-card{background:linear-gradient(135deg,#eef0ff,#eafaff);border:1px solid #d9ddff}.continue-card h2{margin-bottom:7px}.continue-card .continue-meta{color:var(--muted);margin:4px 0 14px}
 .activity-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}.activity-day{min-height:58px;border-radius:10px;padding:7px 5px;background:#edf0f6;border:1px solid #e0e4ed;text-align:center;color:#596276}.activity-day b{display:block;font-size:14px}.activity-day small{font-size:11px}.activity-1{background:#dff6ec;color:#126946;border-color:#bcebd8}.activity-2{background:#aee7cf;color:#075c3c;border-color:#86d7b9}.activity-3{background:#38aa79;color:#fff;border-color:#279467}.activity-legend{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}.activity-dot{width:14px;height:14px;border-radius:4px;display:inline-block}
+.achievement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.achievement{position:relative;text-align:center;border:2px solid #e4e6ef}.achievement .medal{font-size:44px;display:block;margin-bottom:8px}.achievement.earned{background:linear-gradient(145deg,#fff9df,#fff);border-color:#f2cf57}.achievement.locked{filter:grayscale(1);opacity:.58}.achievement .status{font-size:12px;font-weight:900;color:var(--muted)}.achievement.earned .status{color:#936600}
 .report-preview{position:fixed;inset:0;z-index:10000;background:#edf0f7;overflow:auto;padding:24px}.report-sheet{max-width:900px;margin:auto;background:#fff;color:#172033;border-radius:18px;padding:34px;box-shadow:0 12px 45px #17203324}.report-toolbar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:9px;max-width:900px;margin:0 auto 12px;padding:10px;background:#edf0f7e8}.report-head{border-bottom:3px solid var(--brand);padding-bottom:15px;margin-bottom:20px}.report-head h1{color:#3532a5}.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.report-metric{border:1px solid #dfe3ee;border-radius:12px;padding:12px}.report-metric b{display:block;font-size:23px;color:var(--brand)}.report-section{margin-top:24px}.report-section h2{font-size:20px;border-bottom:1px solid #dfe3ee;padding-bottom:7px}.report-table{width:100%;border-collapse:collapse}.report-table th,.report-table td{text-align:left;border-bottom:1px solid #e6e8ef;padding:9px 6px;vertical-align:top}.report-note{white-space:pre-wrap;background:#f8f9fd;border-radius:10px;padding:12px;margin:8px 0 15px}.report-empty{color:var(--muted);font-style:italic}
 @media(max-width:650px){
   nav{position:relative;top:auto;z-index:1;background:var(--bg);padding:8px 0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
@@ -2166,15 +2167,16 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},achievements:{},lifetime:{questions:0,practiceSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
-appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};
+appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
+appState.lifetime=Object.assign({questions:0,practiceSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
 appState.daily=Object.assign({completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},appState.daily||{});
-function saveState(){appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');updateDashboard();scheduleCloudSync()}
+function saveState(){updateAchievements();appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');updateDashboard();scheduleCloudSync()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function pct(a,b){return b?Math.round(a*100/b):0}
 function dailyDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
@@ -2189,6 +2191,7 @@ function ensureFinalUI(){
   <button class="tab" data-tab="exam">Examen</button>
   <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
   <button class="tab" data-tab="errores">⚠️ Errores</button>
+  <button class="tab" data-tab="logros">🏆 Logros</button>
   <button class="tab" data-tab="progreso">Progreso</button>`;
  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
  const main=document.querySelector('main');
@@ -2212,6 +2215,9 @@ function ensureFinalUI(){
    const mistakes=document.createElement('section'); mistakes.id='errores';
    mistakes.innerHTML=`<h2>⚠️ Cuaderno de errores</h2><div id="mistakesBox"></div>`;
    main.insertBefore(mistakes,footer);
+ }
+ if(!document.getElementById('logros')){
+   const achievements=document.createElement('section');achievements.id='logros';achievements.innerHTML=`<div id="achievementsBox"></div>`;main.insertBefore(achievements,footer);
  }
  if(!document.getElementById('progreso')){
    const pr=document.createElement('section'); pr.id='progreso';
@@ -2241,6 +2247,7 @@ function ensureFinalUI(){
  renderSearch('');
  renderFavorites();
  renderMistakes();
+ renderAchievements();
  renderProgress();
 }
 
@@ -2254,7 +2261,7 @@ function ensureWeekly(){
  return appState.weekly;
 }
 function addDailyActivity(kind,amount=1){
- appState.activityLog=appState.activityLog||{};const key=dailyDateKey(),row=appState.activityLog[key]||{questions:0,modules:0,exams:0};row[kind]=Math.max(0,Number(row[kind]||0)+amount);appState.activityLog[key]=row;
+ appState.activityLog=appState.activityLog||{};if(kind==='questions'){appState.lifetime=appState.lifetime||{questions:0};appState.lifetime.questions=Math.max(0,Number(appState.lifetime.questions||0)+amount)}const key=dailyDateKey(),row=appState.activityLog[key]||{questions:0,modules:0,exams:0};row[kind]=Math.max(0,Number(row[kind]||0)+amount);appState.activityLog[key]=row;
  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-90);const cutoffKey=dailyDateKey(cutoff);Object.keys(appState.activityLog).forEach(date=>{if(date<cutoffKey)delete appState.activityLog[date]});
 }
 function addWeekly(kind,amount=1){const week=ensureWeekly();week[kind]=Math.max(0,Number(week[kind]||0)+amount);addDailyActivity(kind,amount)}
@@ -2271,6 +2278,30 @@ function renderActivityCalendar(){
  const days=[];for(let offset=27;offset>=0;offset--){const date=new Date();date.setHours(0,0,0,0);date.setDate(date.getDate()-offset);const key=dailyDateKey(date),row=appState.activityLog?.[key]||{questions:0,modules:0,exams:0},total=Number(row.questions||0)+Number(row.modules||0)*5+Number(row.exams||0)*10,level=total===0?0:total<5?1:total<15?2:3;days.push({date,key,row,total,level})}
  const active=days.filter(d=>d.total>0).length,questions=days.reduce((sum,d)=>sum+Number(d.row.questions||0),0),modules=days.reduce((sum,d)=>sum+Number(d.row.modules||0),0),exams=days.reduce((sum,d)=>sum+Number(d.row.exams||0),0);
  return `<div class="card"><h2>🗓️ Actividad de los últimos 28 días</h2><p><b>${active}</b> días activos · <b>${questions}</b> preguntas · <b>${modules}</b> módulos · <b>${exams}</b> exámenes</p><div class="activity-calendar">${days.map(d=>`<div class="activity-day activity-${d.level}" title="${esc(d.date.toLocaleDateString('es-US'))}: ${d.row.questions||0} preguntas, ${d.row.modules||0} módulos, ${d.row.exams||0} exámenes"><b>${d.date.getDate()}</b><small>${d.total?`${d.row.questions||0} preg.`:'—'}</small></div>`).join('')}</div><div class="activity-legend"><span>Menos</span><i class="activity-dot" style="background:#edf0f6"></i><i class="activity-dot" style="background:#dff6ec"></i><i class="activity-dot" style="background:#aee7cf"></i><i class="activity-dot" style="background:#38aa79"></i><span>Más actividad</span></div></div>`;
+}
+const ACHIEVEMENT_DEFS=[
+ {id:'first_question',icon:'🌟',title:'Primer paso',desc:'Responder la primera pregunta',test:()=>appState.lifetime.questions>=1},
+ {id:'first_practice',icon:'🧩',title:'Primera práctica',desc:'Completar una sesión de práctica',test:()=>appState.lifetime.practiceSessions>=1},
+ {id:'q100',icon:'💯',title:'100 preguntas',desc:'Responder 100 preguntas',test:()=>appState.lifetime.questions>=100},
+ {id:'q500',icon:'📚',title:'500 preguntas',desc:'Responder 500 preguntas',test:()=>appState.lifetime.questions>=500},
+ {id:'q1000',icon:'🏅',title:'1,000 preguntas',desc:'Responder 1,000 preguntas',test:()=>appState.lifetime.questions>=1000},
+ {id:'module_done',icon:'✅',title:'Primer módulo',desc:'Completar un módulo',test:()=>appState.completed.length>=1},
+ {id:'master1',icon:'🥉',title:'Primer dominio',desc:'Lograr 80% o más en un quiz',test:()=>Object.values(appState.moduleProgress).filter(p=>(p.best||0)>=80).length>=1},
+ {id:'master5',icon:'🥈',title:'5 módulos dominados',desc:'Dominar cinco quizzes',test:()=>Object.values(appState.moduleProgress).filter(p=>(p.best||0)>=80).length>=5},
+ {id:'master10',icon:'🥇',title:'10 módulos dominados',desc:'Dominar diez quizzes',test:()=>Object.values(appState.moduleProgress).filter(p=>(p.best||0)>=80).length>=10},
+ {id:'master20',icon:'👑',title:'Maestría completa',desc:'Dominar los 20 módulos',test:()=>Object.values(appState.moduleProgress).filter(p=>(p.best||0)>=80).length>=20},
+ {id:'week_goal',icon:'🎯',title:'Semana perfecta',desc:'Completar las tres metas semanales',test:()=>{const w=ensureWeekly(),g=w.goals;return w.questions>=g.questions&&w.modules>=g.modules&&w.exams>=g.exams}},
+ {id:'streak3',icon:'🔥',title:'Racha de 3 días',desc:'Estudiar tres días seguidos',test:()=>appState.daily.streak>=3},
+ {id:'streak7',icon:'🔥',title:'Racha de 7 días',desc:'Estudiar siete días seguidos',test:()=>appState.daily.streak>=7},
+ {id:'streak14',icon:'⚡',title:'Racha de 14 días',desc:'Estudiar catorce días seguidos',test:()=>appState.daily.streak>=14},
+ {id:'streak30',icon:'💎',title:'Racha de 30 días',desc:'Estudiar treinta días seguidos',test:()=>appState.daily.streak>=30},
+ {id:'exam_first',icon:'📝',title:'Primer examen',desc:'Completar un examen',test:()=>appState.exam.taken+appState.customExam.taken>=1},
+ {id:'nclex_pass',icon:'🎓',title:'Meta NCLEX',desc:'Lograr 76 respuestas correctas en el simulacro',test:()=>appState.history.some(h=>h.type==='Simulacro NCLEX'&&Number(h.correct)>=76)}
+];
+function updateAchievements(){appState.achievements=appState.achievements||{};ACHIEVEMENT_DEFS.forEach(a=>{if(!appState.achievements[a.id]&&a.test())appState.achievements[a.id]=new Date().toISOString()})}
+function renderAchievements(){
+ updateAchievements();const box=document.getElementById('achievementsBox');if(!box)return;const earned=ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length;
+ box.innerHTML=`<div class="card"><h2>🏆 Mis logros</h2><p><b>${earned}/${ACHIEVEMENT_DEFS.length}</b> medallas conseguidas. Cada avance cuenta.</p><div class="progressbar"><span style="width:${pct(earned,ACHIEVEMENT_DEFS.length)}%"></span></div></div><div class="achievement-grid">${ACHIEVEMENT_DEFS.map(a=>{const date=appState.achievements[a.id];return `<div class="card achievement ${date?'earned':'locked'}"><span class="medal">${date?a.icon:'🔒'}</span><h3>${esc(a.title)}</h3><p>${esc(a.desc)}</p><span class="status">${date?`CONSEGUIDO · ${esc(new Date(date).toLocaleDateString('es-US'))}`:'BLOQUEADO'}</span></div>`}).join('')}</div>`;
 }
 function moduleMastery(key){
  const p=appState.moduleProgress?.[key];if(!p?.attempts)return null;
@@ -2313,6 +2344,7 @@ function renderContinueCard(){
  return `<div class="card continue-card"><span class="pill">CONTINUAR ESTUDIANDO</span><h2>▶ ${esc(last.label||'Continuar práctica')}</h2><p class="continue-meta">Última actividad${date?` · ${esc(date)}`:''}</p><button class="primary" onclick="resumeLastStudy()">Continuar ahora</button></div>`;
 }
 function updateDashboard(){
+ updateAchievements();
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
@@ -2325,6 +2357,7 @@ function updateDashboard(){
   <div class="stat"><b>${appState.favorites.length}</b>Favoritos guardados</div>
   <div class="stat"><b>${appState.mistakes.length}</b>Preguntas por dominar</div>
   <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>Módulos con notas</div>
+  <div class="stat"><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b>Medallas logradas</div>
  </div>`;
  const hm=document.getElementById('homeModules');
  if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}${moduleMasteryLabel(k)}</small></div>`).join('');
@@ -2564,8 +2597,10 @@ nextQ=function(){
 function finishPractice(){
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
+ appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);
  if(practiceModule){const score=pct(practiceSessionCorrect,total),old=appState.moduleProgress[practiceModule]||{attempts:0,last:0,best:0};appState.moduleProgress[practiceModule]={attempts:old.attempts+1,last:score,best:Math.max(old.best||0,score),lastCorrect:practiceSessionCorrect,total,lastDate:new Date().toISOString()};saveState()}
  if(dailyPractice)completeDailyPlan(total);
+ if(!practiceModule&&!dailyPractice)saveState();
  const repeat=dailyPractice?'startDailyPractice()':mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
  const dailyResult=dailyPractice?`<p><b>${dailyCorrect}/${total}</b> correctas (${pct(dailyCorrect,total)}%). Racha actual: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.</p>`:'';
  document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ ${dailyPractice?'Plan diario completado':'Práctica completada'}</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p>${dailyResult}<div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
@@ -2764,6 +2799,7 @@ function renderNotesOverview(){
 function closeProgressReport(){document.getElementById('printReport')?.remove()}
 function exportProgressReport(){
  closeProgressReport();
+ updateAchievements();
  const weekly=ensureWeekly();
  const generated=new Date().toLocaleString('es-US',{dateStyle:'long',timeStyle:'short'});
  const completed=CORE_MODULES.filter(([key])=>appState.completed.includes(key));
@@ -2771,6 +2807,7 @@ function exportProgressReport(){
  const breakdown=appState.exam?.breakdown||{};
  const performance=CORE_MODULES.map(([key,title],i)=>{const row=breakdown[key];if(!row?.total)return null;const score=pct(row.correct,row.total);return{number:i+1,title:title.replace(/^Clase \d+ — /,''),correct:row.correct,total:row.total,score}}).filter(Boolean).sort((a,b)=>a.score-b.score);
  const masteryRows=CORE_MODULES.map(([key,title],i)=>{const p=moduleMastery(key);return p?{number:i+1,title:title.replace(/^Clase \d+ — /,''),...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best);
+ const earnedAchievements=ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]);
  const history=(appState.history||[]).map(item=>`<tr><td>${esc(new Date(item.date).toLocaleString('es-US'))}</td><td>${esc(item.type||'Examen')}</td><td>${Number(item.correct)||0}/${Number(item.total)||0}</td><td><b>${Number(item.score)||0}%</b></td></tr>`).join('');
  const report=document.createElement('div');report.id='printReport';report.className='report-preview';
  report.innerHTML=`<div class="report-toolbar"><button class="secondary" onclick="closeProgressReport()">Cerrar</button><button class="primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button></div><article class="report-sheet">
@@ -2787,6 +2824,7 @@ function exportProgressReport(){
   <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>Exámenes esta semana</div>
  </div>
  <section class="report-section" style="display:block"><h2>✅ Módulos completados</h2>${completed.length?`<ol>${completed.map(([,title])=>`<li>${esc(title)}</li>`).join('')}</ol>`:'<p class="report-empty">Aún no hay módulos marcados como completados.</p>'}</section>
+ <section class="report-section" style="display:block"><h2>🏆 Logros conseguidos</h2>${earnedAchievements.length?`<ul>${earnedAchievements.map(a=>`<li>${a.icon} <b>${esc(a.title)}</b> — ${esc(a.desc)}</li>`).join('')}</ul>`:'<p class="report-empty">Todavía no hay medallas conseguidas.</p>'}</section>
  <section class="report-section" style="display:block"><h2>📘 Dominio de quizzes por módulo</h2>${masteryRows.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Último</th><th>Mejor</th><th>Intentos</th><th>Nivel</th></tr></thead><tbody>${masteryRows.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.last}%</td><td>${row.best}%</td><td>${row.attempts}</td><td>${row.level}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Todavía no hay quizzes de módulos completados.</p>'}</section>
  <section class="report-section" style="display:block"><h2>🎯 Rendimiento por módulo</h2>${performance.length?`<table class="report-table"><thead><tr><th>Módulo</th><th>Resultado</th><th>Nivel</th></tr></thead><tbody>${performance.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.correct}/${row.total} · ${row.score}%</td><td>${row.score>=80?'Fortaleza':row.score>=65?'En progreso':'Repasar'}</td></tr>`).join('')}</tbody></table>`:'<p class="report-empty">Completa un examen para generar el análisis de temas fuertes y débiles.</p>'}</section>
  <section class="report-section" style="display:block"><h2>📊 Historial de exámenes</h2>${history?`<table class="report-table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Correctas</th><th>Puntuación</th></tr></thead><tbody>${history}</tbody></table>`:'<p class="report-empty">No hay exámenes guardados.</p>'}</section>
@@ -2810,6 +2848,7 @@ function renderProgress(){
  ${renderWeeklyGoals()}
  ${renderActivityCalendar()}
  ${renderModuleMasteryOverview()}
+ <div class="card"><h3>🏆 Mis logros</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> medallas conseguidas.</p><button class="warnbtn" onclick="show('logros')">Ver todas las medallas</button></div>
  <div class="card"><h3>📄 Informe de progreso y notas</h3><p>Crea una vista lista para imprimir o guardar como PDF desde tu teléfono, Mac, Android o Windows.</p><button class="primary" onclick="exportProgressReport()">Exportar informe PDF</button></div>
  ${renderExamHistory()}
  ${renderNotesOverview()}
@@ -2831,6 +2870,7 @@ show=function(id){
  }
  if(id==='favoritos')renderFavorites();
  if(id==='errores')renderMistakes();
+ if(id==='logros')renderAchievements();
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
  if(id==='exam' && !examOrder.length && !customOrder.length)renderExamLanding();
@@ -2860,9 +2900,11 @@ function normalizeLoadedState(raw){
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
  appState.moduleProgress=appState.moduleProgress||{};
  appState.activityLog=appState.activityLog||{};
+ appState.achievements=appState.achievements||{};
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
  appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
+ appState.lifetime=Object.assign({questions:0,practiceSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
  appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
  appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
  appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2870,7 +2912,7 @@ function normalizeLoadedState(raw){
  appState.updatedAt=Number(appState.updatedAt||0);
 }
 function refreshStateUI(){
- updateDashboard();renderTopics();renderFavorites();renderMistakes();renderProgress();
+ updateDashboard();renderTopics();renderFavorites();renderMistakes();renderAchievements();renderProgress();
 }
 function scheduleCloudSync(){
  if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
