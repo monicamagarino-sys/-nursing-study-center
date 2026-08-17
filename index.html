@@ -2172,7 +2172,7 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},planLang:'es',ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.flashcards=appState.flashcards||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
@@ -2292,6 +2292,25 @@ function renderWeeklyGoals(){
  <p><b>${w.modules}/${g.modules}</b> módulos terminados</p><div class="progressbar"><span style="width:${weeklyBar(w.modules,g.modules)}%"></span></div>
  <p><b>${w.exams}/${g.exams}</b> exámenes realizados</p><div class="progressbar"><span style="width:${weeklyBar(w.exams,g.exams)}%"></span></div>
  <small class="muted">Se reinicia automáticamente cada lunes. Meta: 100 preguntas, 2 módulos y 1 examen.</small></div>`;
+}
+function setWeeklyPlanLang(lang){appState.planLang=lang==='en'?'en':'es';saveState();updateDashboard();renderProgress()}
+function smartWeeklyPlanItems(){
+ const en=appState.planLang==='en',rec=getStudyRecommendation(),weak=getWeakModuleKeys(),hasErrors=(appState.mistakes||[]).length>0,hasNGNErrors=(appState.ngn?.mistakes||[]).length>0,due=flashcardStats().due;
+ const moduleTitle=rec?`${en?'Module':'Módulo'} ${rec.index+1}: ${rec.title}`:(en?'Choose a module':'Elegir un módulo');
+ return [
+  {icon:'📘',title:en?'Focused module':'Módulo prioritario',detail:moduleTitle,action:rec?`openLesson('${rec.key}')`:`show('temas')`,button:en?'Study module':'Estudiar módulo'},
+  {icon:'📝',title:en?'Daily practice':'Práctica diaria',detail:en?'10 questions selected from your current needs.':'10 preguntas seleccionadas según tus necesidades.',action:'startDailyPractice()',button:en?'Start practice':'Comenzar práctica'},
+  {icon:'⚠️',title:en?'Error review':'Repaso de errores',detail:hasErrors?`${appState.mistakes.length} ${en?'questions pending':'preguntas pendientes'}`:(en?'No pending errors; use daily practice.':'Sin errores pendientes; usa la práctica diaria.'),action:hasErrors?'startMistakePractice()':'startDailyPractice()',button:en?'Review':'Repasar'},
+  {icon:'🧠',title:en?'Smart flashcards':'Tarjetas inteligentes',detail:`${due} ${en?'cards ready to review':'tarjetas listas para repasar'}`,action:`show('tarjetas')`,button:en?'Open cards':'Abrir tarjetas'},
+  {icon:'🎯',title:en?'Weak topics':'Temas débiles',detail:weak.length?weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · '):(en?'Complete an exam to identify them.':'Completa un examen para identificarlos.'),action:weak.length?'startWeakPractice()':`show('exam')`,button:en?(weak.length?'Practice topics':'Take exam'):(weak.length?'Practicar temas':'Hacer examen')},
+  {icon:'🧩',title:en?'NGN clinical judgment':'Juicio clínico NGN',detail:hasNGNErrors?`${appState.ngn.mistakes.length} ${en?'NGN items pending':'ejercicios NGN pendientes'}`:(en?'Mixed practice from the six clinical cases.':'Práctica mixta de los seis casos clínicos.'),action:hasNGNErrors?'startNGNErrors()':'startNGNMixed()',button:en?'Practice NGN':'Practicar NGN'},
+  {icon:'🏁',title:en?'Weekly exam':'Examen semanal',detail:en?'Measure progress and refresh weak topics.':'Mide tu avance y actualiza los temas débiles.',action:`show('exam')`,button:en?'Open exam':'Abrir examen'}
+ ];
+}
+function renderSmartWeeklyPlan(){
+ const en=appState.planLang==='en',monday=parseLocalDate(mondayWeekKey()),today=dailyDateKey(),items=smartWeeklyPlanItems(),names=en?['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+ const rows=items.map((item,i)=>{const date=new Date(monday);date.setDate(date.getDate()+i);const key=dailyDateKey(date),activity=appState.activityLog?.[key]||{},done=Number(activity.questions||0)+Number(activity.modules||0)+Number(activity.exams||0)>0,isToday=key===today,status=done?'✅':isToday?'🔵':'⬜';return `<div class="module-report-row" style="${isToday?'border:2px solid #8b5cf6;background:#fbf9ff':''}"><div><b>${status} ${names[i]} · ${item.icon} ${esc(item.title)}</b><br><small>${esc(item.detail)}</small></div><button class="${isToday?'primary':'secondary'}" onclick="${item.action}">${esc(item.button)}</button></div>`}).join('');
+ return `<div class="card" style="border:2px solid #8b5cf6"><div class="actions" style="justify-content:space-between"><span class="pill">${en?'SMART WEEKLY PLAN':'PLAN SEMANAL INTELIGENTE'}</span><span><button class="${en?'secondary':'primary'}" onclick="setWeeklyPlanLang('es')">ES</button> <button class="${en?'primary':'secondary'}" onclick="setWeeklyPlanLang('en')">EN</button></span></div><h2>📅 ${en?'Your personalized week':'Tu semana personalizada'}</h2><p>${en?'The plan adjusts automatically using your scores, pending errors, flashcards, and NGN progress.':'El plan se ajusta automáticamente usando tus resultados, errores pendientes, tarjetas y progreso NGN.'}</p><div class="module-report">${rows}</div><small class="muted">${en?'A check mark indicates that you studied that day. The blue row is today.':'La marca indica que estudiaste ese día. La fila azul corresponde a hoy.'}</small></div>`;
 }
 function renderActivityCalendar(){
  const days=[];for(let offset=27;offset>=0;offset--){const date=new Date();date.setHours(0,0,0,0);date.setDate(date.getDate()-offset);const key=dailyDateKey(date),row=appState.activityLog?.[key]||{questions:0,modules:0,exams:0},total=Number(row.questions||0)+Number(row.modules||0)*5+Number(row.exams||0)*10,level=total===0?0:total<5?1:total<15?2:3;days.push({date,key,row,total,level})}
@@ -2506,7 +2525,7 @@ function updateDashboard(){
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
- if(daily)daily.innerHTML=renderContinueCard()+renderExamPlan()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
+ if(daily)daily.innerHTML=renderContinueCard()+renderSmartWeeklyPlan()+renderExamPlan()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
  const hp=document.getElementById('homeStats');
  if(hp) hp.innerHTML=`<div class="final-stats">
   <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -3017,6 +3036,7 @@ function renderProgress(){
  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  <div class="card"><h3>🧩 Casos clínicos NGN</h3><p>Mejor resultado: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} casos completados · ${(appState.ngn.mistakes||[]).length} ejercicios por repasar.</p><button class="goodbtn" onclick="show('ngn')">Abrir casos NGN</button></div>
+ ${renderSmartWeeklyPlan()}
  ${renderExamPlan()}
  ${renderStudyRecommendation()}
  ${renderWeeklyGoals()}
@@ -3080,6 +3100,7 @@ function normalizeLoadedState(raw){
  appState.flashcards=appState.flashcards||{};
  appState.achievements=appState.achievements||{};
  appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
+ appState.planLang=appState.planLang==='en'?'en':'es';
  appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];appState.ngn.byCase=appState.ngn.byCase||{};
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
