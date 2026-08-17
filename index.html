@@ -147,6 +147,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <button class="tab" data-tab="temas">Módulos</button>
 <button class="tab" data-tab="quiz">Práctica</button>
 <button class="tab" data-tab="exam">Examen</button>
+<button class="tab" data-tab="medcalc">💊 Medicamentos</button>
 <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
 <button class="tab" data-tab="progreso">Progreso</button>
 </nav>
@@ -187,6 +188,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </section>
 
 <section id="exam"><div class="card"><h2>🎯 Simulacro NCLEX</h2><p>85 preguntas aleatorias de todos los módulos · 5 horas · meta de práctica: 76 correctas.</p><div id="examBox"></div></div></section>
+<section id="medcalc"><h2>💊 Medicamentos y cálculos</h2><div id="medCalcBox"></div></section>
 <section id="favoritos"><h2>⭐ Preguntas favoritas</h2><div id="favBox"></div></section>
 <section id="progreso"><h2>📈 Tu progreso</h2><div id="progressBox"></div></section>
 <footer>Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.</footer>
@@ -2172,7 +2174,7 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},planLang:'es',studyReminder:{enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},adaptive:{last:0,best:0,taken:0,level:2},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},planLang:'es',studyReminder:{enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},adaptive:{last:0,best:0,taken:0,level:2},medCalc:{correct:0,attempts:0,best:0,mistakes:[]},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.flashcards=appState.flashcards||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
@@ -2180,6 +2182,7 @@ appState.lifetime=Object.assign({questions:0,practiceSessions:0,flashcardSession
 appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
 appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];appState.ngn.byCase=appState.ngn.byCase||{};
 appState.adaptive=Object.assign({last:0,best:0,taken:0,level:2},appState.adaptive||{});
+appState.medCalc=Object.assign({correct:0,attempts:0,best:0,mistakes:[]},appState.medCalc||{});appState.medCalc.mistakes=appState.medCalc.mistakes||[];
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2545,6 +2548,7 @@ function resumeLastStudy(){
  else if(last.type==='ngn'&&last.key==='review')startNGNErrors();
  else if(last.type==='ngn'&&ngnCases().some(c=>c.id===last.key))startNGN(last.key,'practice');
  else if(last.type==='adaptive')startAdaptiveExam();
+ else if(last.type==='medcalc')startCalcPractice();
  else startPractice(true);
 }
 function renderContinueCard(){
@@ -3084,6 +3088,43 @@ function exportProgressReport(){
  document.body.appendChild(report);report.scrollTop=0;
 }
 
+const MEDICATION_STUDY=[
+ {name:'Insulin',cat:['Endocrino','Endocrine'],use:['Disminuye la glucosa sanguínea.','Lowers blood glucose.'],risk:['Hipoglucemia e hipopotasemia.','Hypoglycemia and hypokalemia.'],care:['Verificar el tipo y la etiqueta; controlar glucosa y relación con comidas según la orden.','Verify type and label; monitor glucose and timing with meals as ordered.']},
+ {name:'Digoxin',cat:['Cardiovascular','Cardiovascular'],use:['Insuficiencia cardíaca y algunas arritmias.','Heart failure and selected arrhythmias.'],risk:['Toxicidad: náuseas, bradicardia y alteraciones visuales como halos.','Toxicity: nausea, bradycardia, and visual changes such as halos.'],care:['Valorar pulso apical y revisar potasio y nivel del fármaco según indicación.','Assess apical pulse and review potassium and drug level as ordered.']},
+ {name:'Furosemide',cat:['Diurético','Diuretic'],use:['Edema y presión arterial elevada.','Edema and high blood pressure.'],risk:['Deshidratación, hipotensión y pérdida de electrolitos.','Dehydration, hypotension, and electrolyte loss.'],care:['Controlar peso diario, presión, balance de líquidos y electrolitos.','Monitor daily weight, blood pressure, fluid balance, and electrolytes.']},
+ {name:'Heparin',cat:['Anticoagulante','Anticoagulant'],use:['Previene y trata la formación de coágulos.','Prevents and treats blood clots.'],risk:['Sangrado y trombocitopenia.','Bleeding and thrombocytopenia.'],care:['Vigilar sangrado, plaquetas y aPTT cuando corresponda al tipo de terapia.','Monitor bleeding, platelets, and aPTT when appropriate for the therapy.']},
+ {name:'Warfarin',cat:['Anticoagulante','Anticoagulant'],use:['Prevención y tratamiento de coágulos.','Prevention and treatment of blood clots.'],risk:['Sangrado e interacciones con medicamentos y dieta.','Bleeding and medication/diet interactions.'],care:['Controlar PT/INR y mantener consumo consistente de vitamina K según enseñanza clínica.','Monitor PT/INR and maintain consistent vitamin K intake per clinical teaching.']},
+ {name:'Levothyroxine',cat:['Tiroides','Thyroid'],use:['Reemplazo hormonal en hipotiroidismo.','Hormone replacement for hypothyroidism.'],risk:['Dosis excesiva puede causar signos de hipertiroidismo o angina.','Excess dosing may cause hyperthyroid symptoms or angina.'],care:['Administrar en ayunas de forma consistente y vigilar TSH según indicación.','Give consistently on an empty stomach and monitor TSH as ordered.']},
+ {name:'Desmopressin',cat:['Endocrino','Endocrine'],use:['Tratamiento de diabetes insípida central.','Treatment of central diabetes insipidus.'],risk:['Retención de agua e hiponatremia.','Water retention and hyponatremia.'],care:['Controlar sodio, ingesta/eliminación y peso diario.','Monitor sodium, intake/output, and daily weight.']},
+ {name:'Albuterol',cat:['Respiratorio','Respiratory'],use:['Broncodilatación en broncoespasmo.','Bronchodilation for bronchospasm.'],risk:['Taquicardia, temblor y nerviosismo.','Tachycardia, tremor, and nervousness.'],care:['Valorar respiración y frecuencia cardíaca antes y después.','Assess breathing and heart rate before and after use.']},
+ {name:'ACE inhibitors',cat:['Cardiovascular','Cardiovascular'],use:['Hipertensión e insuficiencia cardíaca.','Hypertension and heart failure.'],risk:['Tos, hiperpotasemia, hipotensión y angioedema.','Cough, hyperkalemia, hypotension, and angioedema.'],care:['Controlar presión, potasio y función renal; reportar edema facial.','Monitor blood pressure, potassium, and renal function; report facial swelling.']},
+ {name:'Beta blockers',cat:['Cardiovascular','Cardiovascular'],use:['Hipertensión, control cardíaco e insuficiencia cardíaca seleccionada.','Hypertension, cardiac rate control, and selected heart failure.'],risk:['Bradicardia e hipotensión.','Bradycardia and hypotension.'],care:['Valorar pulso y presión; no suspender abruptamente sin indicación.','Assess pulse and blood pressure; do not stop abruptly without direction.']}
+];
+const CALC_STUDY=[
+ {q:['Orden: 500 mg. Disponible: 250 mg por tableta. ¿Cuántas tabletas?','Order: 500 mg. Available: 250 mg per tablet. How many tablets?'],a:2,unit:['tabletas','tablets'],e:['500 ÷ 250 × 1 = 2 tabletas.','500 ÷ 250 × 1 = 2 tablets.']},
+ {q:['Orden: 750 mg. Disponible: 250 mg/5 mL. ¿Cuántos mL?','Order: 750 mg. Available: 250 mg/5 mL. How many mL?'],a:15,unit:['mL','mL'],e:['750 ÷ 250 × 5 = 15 mL.','750 ÷ 250 × 5 = 15 mL.']},
+ {q:['Infundir 1000 mL en 8 horas. ¿mL/h?','Infuse 1000 mL over 8 hours. mL/hr?'],a:125,unit:['mL/h','mL/hr'],e:['1000 ÷ 8 = 125 mL/h.','1000 ÷ 8 = 125 mL/hr.']},
+ {q:['500 mL en 4 horas con factor 15 gtt/mL. ¿gtt/min?','500 mL over 4 hours with a 15 gtt/mL drop factor. gtt/min?'],a:31,unit:['gtt/min','gtt/min'],e:['(500 × 15) ÷ 240 = 31.25; redondear a 31 gtt/min.','(500 × 15) ÷ 240 = 31.25; round to 31 gtt/min.']},
+ {q:['Convertir 154 lb a kg.','Convert 154 lb to kg.'],a:70,unit:['kg','kg'],e:['154 ÷ 2.2 = 70 kg.','154 ÷ 2.2 = 70 kg.']},
+ {q:['Convertir 0.5 g a mg.','Convert 0.5 g to mg.'],a:500,unit:['mg','mg'],e:['0.5 × 1000 = 500 mg.','0.5 × 1000 = 500 mg.']},
+ {q:['Convertir 250 mcg a mg.','Convert 250 mcg to mg.'],a:.25,unit:['mg','mg'],e:['250 ÷ 1000 = 0.25 mg.','250 ÷ 1000 = 0.25 mg.']},
+ {q:['Convertir 1.5 L a mL.','Convert 1.5 L to mL.'],a:1500,unit:['mL','mL'],e:['1.5 × 1000 = 1500 mL.','1.5 × 1000 = 1500 mL.']},
+ {q:['Heparina 1200 unidades/h. Bolsa: 25,000 unidades en 500 mL. ¿mL/h?','Heparin 1200 units/hr. Bag: 25,000 units in 500 mL. mL/hr?'],a:24,unit:['mL/h','mL/hr'],e:['1200 ÷ 25,000 × 500 = 24 mL/h.','1200 ÷ 25,000 × 500 = 24 mL/hr.']},
+ {q:['Orden: 10 mg/kg para un paciente de 22 kg. ¿Dosis total?','Order: 10 mg/kg for a 22 kg patient. Total dose?'],a:220,unit:['mg','mg'],e:['10 × 22 = 220 mg.','10 × 22 = 220 mg.']},
+ {q:['100 mL deben pasar en 30 minutos. ¿mL/h?','100 mL must infuse over 30 minutes. mL/hr?'],a:200,unit:['mL/h','mL/hr'],e:['30 min = 0.5 h; 100 ÷ 0.5 = 200 mL/h.','30 min = 0.5 hr; 100 ÷ 0.5 = 200 mL/hr.']},
+ {q:['100 mL/h con microgoteo de 60 gtt/mL. ¿gtt/min?','100 mL/hr with microdrip tubing of 60 gtt/mL. gtt/min?'],a:100,unit:['gtt/min','gtt/min'],e:['(100 × 60) ÷ 60 = 100 gtt/min.','(100 × 60) ÷ 60 = 100 gtt/min.']}
+];
+let calcOrder=[],calcPos=0,calcCorrect=0;
+function medCalcEn(){return appState.planLang==='en'}
+function renderMedCalc(mode='home'){const box=document.getElementById('medCalcBox');if(!box)return;const en=medCalcEn(),s=appState.medCalc||{};if(mode==='meds'){renderMedicationCards();return}if(mode==='calc'){startCalcPractice();return}box.innerHTML=`<div class="card"><span class="pill">${en?'PHARMACOLOGY + MATH':'FARMACOLOGÍA + CÁLCULOS'}</span><h2>💊 ${en?'Medication and dosage study':'Estudio de medicamentos y dosis'}</h2><p>${en?'Built from the nursing summary, with calculation formulas checked against nursing references.':'Creado a partir del resumen de enfermería, con fórmulas verificadas en referencias de enfermería.'}</p><div class="final-stats"><div class="stat"><b>${MEDICATION_STUDY.length}</b>${en?'Drug cards':'Fichas'}</div><div class="stat"><b>${CALC_STUDY.length}</b>${en?'Calculations':'Cálculos'}</div><div class="stat"><b>${pct(s.correct,s.attempts)}%</b>${en?'Math accuracy':'Precisión matemática'}</div></div><div class="actions"><button class="primary" onclick="renderMedicationCards()">${en?'Study medications':'Estudiar medicamentos'}</button><button class="goodbtn" onclick="startCalcPractice()">${en?'Practice calculations':'Practicar cálculos'}</button><button class="warnbtn" onclick="startCalcPractice(true)" ${s.mistakes?.length?'':'disabled'}>${en?'Repeat errors':'Repetir errores'} (${s.mistakes?.length||0})</button></div><details><summary><b>${en?'Reference verification':'Verificación de referencias'}</b></summary><p><a href="https://www.ncbi.nlm.nih.gov/books/NBK593207/" target="_blank" rel="noopener">NCBI Nursing Skills — Math Calculations</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK430836/" target="_blank" rel="noopener">NCBI — Dose Calculation</a> · <a href="https://medlineplus.gov/druginformation.html" target="_blank" rel="noopener">MedlinePlus Drug Information</a></p></details><p class="muted">${en?'Educational review only. Always verify actual medication orders, concentrations, patient factors, and institutional policy.':'Solo repaso educativo. Verifica siempre órdenes reales, concentraciones, factores del paciente y normas institucionales.'}</p></div>`}
+function renderMedicationCards(){const box=document.getElementById('medCalcBox'),en=medCalcEn(),i=en?1:0;box.innerHTML=`<div class="card"><div class="actions"><button class="secondary" onclick="renderMedCalc()">← ${en?'Back':'Volver'}</button></div><h2>💊 ${en?'Medication cards':'Fichas de medicamentos'}</h2><input id="medSearch" class="search" placeholder="${en?'Search insulin, anticoagulant...':'Buscar insulina, anticoagulante...'}" oninput="filterMedicationCards(this.value)"><div id="medCards">${medicationCardsHTML('',i)}</div></div>`}
+function medicationCardsHTML(term='',i=medCalcEn()?1:0){const t=term.toLowerCase().trim(),list=MEDICATION_STUDY.filter(m=>!t||`${m.name} ${m.cat[0]} ${m.cat[1]} ${m.use[0]} ${m.use[1]}`.toLowerCase().includes(t));return list.length?list.map(m=>`<div class="lesson"><span class="pill">${esc(m.cat[i])}</span><h3>${esc(m.name)}</h3><p><b>${i?'Use':'Uso'}:</b> ${esc(m.use[i])}</p><p><b>${i?'Main risks':'Riesgos principales'}:</b> ${esc(m.risk[i])}</p><p><b>${i?'Nursing focus':'Enfoque de enfermería'}:</b> ${esc(m.care[i])}</p><button class="secondary" onclick='readTextAloud(${JSON.stringify(`${m.name}. ${m.use[i]} ${m.risk[i]} ${m.care[i]}`)})'>🔊 ${i?'Listen':'Escuchar'}</button></div>`).join(''):`<p>${i?'No results.':'No se encontraron resultados.'}</p>`}
+function filterMedicationCards(term){document.getElementById('medCards').innerHTML=medicationCardsHTML(term)}
+function startCalcPractice(errorsOnly=false){const ids=errorsOnly?(appState.medCalc.mistakes||[]).filter(i=>CALC_STUDY[i]):CALC_STUDY.map((_,i)=>i);if(!ids.length){alert(medCalcEn()?'No pending calculation errors.':'No hay errores de cálculo pendientes.');return}calcOrder=shuffled(ids);calcPos=0;calcCorrect=0;rememberStudy('medcalc','calc',medCalcEn()?'Dosage calculations':'Cálculos de dosis');show('medcalc');renderCalcQuestion()}
+function renderCalcQuestion(){const box=document.getElementById('medCalcBox'),en=medCalcEn(),i=en?1:0;if(calcPos>=calcOrder.length){finishCalcPractice();return}const id=calcOrder[calcPos],x=CALC_STUDY[id];box.innerHTML=`<div class="card"><div class="exam-meta"><b>${en?'Calculation':'Cálculo'} ${calcPos+1}/${calcOrder.length}</b><span>${calcCorrect} ${en?'correct':'correctas'}</span></div><h2>${esc(x.q[i])}</h2><label><b>${en?'Your numeric answer':'Tu respuesta numérica'}</b><input id="calcAnswer" class="search" type="number" step="any" inputmode="decimal"></label><p>${esc(x.unit[i])}</p><div id="calcFeedback"></div><button id="calcSubmit" class="primary" onclick="answerCalculation()">${en?'Check answer':'Comprobar respuesta'}</button></div>`;setTimeout(()=>document.getElementById('calcAnswer')?.focus(),100)}
+function answerCalculation(){const raw=document.getElementById('calcAnswer').value,value=Number(raw);if(raw===''||!Number.isFinite(value)){alert(medCalcEn()?'Enter a numeric answer.':'Escribe una respuesta numérica.');return}const id=calcOrder[calcPos],x=CALC_STUDY[id],correct=Math.abs(value-x.a)<0.011;appState.medCalc.attempts++;addWeekly('questions');if(correct){appState.medCalc.correct++;calcCorrect++;appState.medCalc.mistakes=appState.medCalc.mistakes.filter(n=>n!==id)}else if(!appState.medCalc.mistakes.includes(id))appState.medCalc.mistakes.push(id);saveState();const i=medCalcEn()?1:0;document.getElementById('calcSubmit').style.display='none';document.getElementById('calcAnswer').disabled=true;document.getElementById('calcFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ '+(i?'Correct':'Correcto'):'❌ '+(i?'Incorrect':'Incorrecto')}</b><p><b>${i?'Correct answer':'Respuesta correcta'}:</b> ${x.a} ${esc(x.unit[i])}</p><p>${esc(x.e[i])}</p><button class="primary" onclick="calcPos++;renderCalcQuestion()">${i?'Next':'Siguiente'} →</button></div>`}
+function finishCalcPractice(){const score=pct(calcCorrect,calcOrder.length);appState.medCalc.best=Math.max(appState.medCalc.best||0,score);saveState();document.getElementById('medCalcBox').innerHTML=`<div class="feedback"><h2>✅ ${medCalcEn()?'Calculation practice completed':'Práctica de cálculos completada'}</h2><p><b>${calcCorrect}/${calcOrder.length}</b> · ${score}%</p><div class="actions"><button class="primary" onclick="startCalcPractice()">${medCalcEn()?'Repeat':'Repetir'}</button><button class="secondary" onclick="renderMedCalc()">${medCalcEn()?'Back':'Volver'}</button></div></div>`;calcOrder=[]}
+
 function renderProgress(){
  const box=document.getElementById('progressBox'); if(!box)return;
  const done=appState.completed.length;
@@ -3094,9 +3135,11 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
  <div class="stat"><b>${appState.adaptive?.best||0}%</b>Mejor adaptativo<br><small>${appState.adaptive?.taken||0} realizados · nivel ${adaptiveLevelLabel(appState.adaptive?.level||2)}</small></div>
+ <div class="stat"><b>${appState.medCalc?.best||0}%</b>Cálculos de dosis<br><small>${appState.medCalc?.correct||0}/${appState.medCalc?.attempts||0} correctos</small></div>
  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  <div class="card"><h3>🧩 Casos clínicos NGN</h3><p>Mejor resultado: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} casos completados · ${(appState.ngn.mistakes||[]).length} ejercicios por repasar.</p><button class="goodbtn" onclick="show('ngn')">Abrir casos NGN</button></div>
+ <div class="card"><h3>💊 Medicamentos y cálculos</h3><p><b>${MEDICATION_STUDY.length}</b> fichas farmacológicas · <b>${CALC_STUDY.length}</b> ejercicios · mejor resultado <b>${appState.medCalc?.best||0}%</b>.</p><button class="primary" onclick="show('medcalc')">Abrir medicamentos y cálculos</button></div>
  ${renderNclexReadiness()}
  ${renderSmartWeeklyPlan()}
  ${renderStudyReminder()}
@@ -3133,6 +3176,7 @@ show=function(id){
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
  if(id==='exam' && !examOrder.length && !customOrder.length && !adaptiveActive)renderExamLanding();
+ if(id==='medcalc'&&!calcOrder.length)renderMedCalc();
  if(id==='ngn')renderNGN();
 }
 
@@ -3166,6 +3210,7 @@ function normalizeLoadedState(raw){
  appState.planLang=appState.planLang==='en'?'en':'es';
  appState.studyReminder=Object.assign({enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},appState.studyReminder||{});appState.studyReminder.days=Array.isArray(appState.studyReminder.days)?appState.studyReminder.days:[1,2,3,4,5];
  appState.adaptive=Object.assign({last:0,best:0,taken:0,level:2},appState.adaptive||{});
+ appState.medCalc=Object.assign({correct:0,attempts:0,best:0,mistakes:[]},appState.medCalc||{});appState.medCalc.mistakes=appState.medCalc.mistakes||[];
  appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];appState.ngn.byCase=appState.ngn.byCase||{};
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
