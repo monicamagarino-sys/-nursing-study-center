@@ -2172,13 +2172,14 @@ const MODULE_VISUALS={
  ]
 };
 const STORE_KEY='nursingStudyCenterFinal_v1';
-let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},planLang:'es',studyReminder:{enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
+let appState={completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},examPlan:{targetDate:''},planLang:'es',studyReminder:{enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},adaptive:{last:0,best:0,taken:0,level:2},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},audio:{lang:'es-US',rate:1},lastStudy:null,weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:0};
 try{appState=Object.assign(appState,JSON.parse(localStorage.getItem(STORE_KEY)||'{}'))}catch(e){}
 appState.completed=appState.completed||[]; appState.favorites=appState.favorites||[]; appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};appState.moduleProgress=appState.moduleProgress||{};appState.activityLog=appState.activityLog||{};appState.flashcards=appState.flashcards||{};appState.achievements=appState.achievements||{};
 appState.practice=Object.assign({correct:0,attempts:0},appState.practice||{});
 appState.lifetime=Object.assign({questions:0,practiceSessions:0,flashcardSessions:0},appState.lifetime||{});appState.lifetime.questions=Math.max(appState.lifetime.questions||0,appState.practice.attempts||0);
 appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
 appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];appState.ngn.byCase=appState.ngn.byCase||{};
+appState.adaptive=Object.assign({last:0,best:0,taken:0,level:2},appState.adaptive||{});
 appState.audio=Object.assign({lang:'es-US',rate:1},appState.audio||{});
 appState.exam=Object.assign({last:0,best:0,taken:0,breakdown:{}},appState.exam||{});
 appState.customExam=Object.assign({last:0,best:0,taken:0},appState.customExam||{});
@@ -2535,6 +2536,7 @@ function resumeLastStudy(){
  else if(last.type==='ngn'&&last.key==='mixed')startNGNMixed();
  else if(last.type==='ngn'&&last.key==='review')startNGNErrors();
  else if(last.type==='ngn'&&ngnCases().some(c=>c.id===last.key))startNGN(last.key,'practice');
+ else if(last.type==='adaptive')startAdaptiveExam();
  else startPractice(true);
 }
 function renderContinueCard(){
@@ -2924,11 +2926,36 @@ function answerExam(n){
  examPos++;setTimeout(renderExam,180);
 }
 
+const ADAPTIVE_SIZE=30;
+let adaptiveActive=false,adaptivePos=0,adaptiveCorrect=0,adaptiveLevel=2,adaptiveCurrent=-1,adaptiveUsed=[],adaptiveBreakdown={},adaptiveDifficulty={1:{correct:0,total:0},2:{correct:0,total:0},3:{correct:0,total:0}},adaptiveStreak=0;
+function adaptiveText(es,en){return appState.planLang==='en'?en:es}
+function questionDifficulty(q,index){const text=`${q?.[0]||''} ${q?.[3]||''}`.toLowerCase();let score=1;if(/primero|prioridad|inicial|mejor|más importante|excepto|contraind|first|priority|initial|best|most important|except/.test(text))score++;if(text.length>180||/seleccione|paciente|intervenci|complicaci|assessment|client|intervention|complication/.test(text))score++;return Math.max(1,Math.min(3,score||((index%3)+1)))}
+function adaptiveLevelLabel(level){return level===3?adaptiveText('Avanzado','Advanced'):level===2?adaptiveText('Intermedio','Intermediate'):adaptiveText('Fundamental','Fundamental')}
+function pickAdaptiveQuestion(){
+ const used=new Set(adaptiveUsed),moduleCounts={};adaptiveUsed.forEach(i=>{const key=qs[i]?.[4];if(key)moduleCounts[key]=(moduleCounts[key]||0)+1});let pool=qs.reduce((a,q,i)=>{if(!used.has(i)&&q[4]&&questionDifficulty(q,i)===adaptiveLevel)a.push(i);return a},[]);if(!pool.length)pool=qs.reduce((a,q,i)=>{if(!used.has(i)&&q[4])a.push(i);return a},[]);pool.sort((a,b)=>(moduleCounts[qs[a][4]]||0)-(moduleCounts[qs[b][4]]||0)||Math.random()-.5);return pool[0]??-1;
+}
+function startAdaptiveExam(){
+ if(examTimerId)clearInterval(examTimerId);if(customTimerId)clearInterval(customTimerId);examOrder=[];customOrder=[];adaptiveActive=true;adaptivePos=0;adaptiveCorrect=0;adaptiveLevel=2;adaptiveCurrent=-1;adaptiveUsed=[];adaptiveBreakdown={};adaptiveDifficulty={1:{correct:0,total:0},2:{correct:0,total:0},3:{correct:0,total:0}};adaptiveStreak=0;CORE_MODULES.forEach(([key])=>adaptiveBreakdown[key]={correct:0,total:0});rememberStudy('adaptive','',adaptiveText('Simulacro adaptativo','Adaptive exam'));show('exam');renderAdaptiveExam();
+}
+function renderAdaptiveExam(){
+ const box=document.getElementById('examBox');if(!box)return;if(adaptivePos>=ADAPTIVE_SIZE){finishAdaptiveExam();return}adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=qs[adaptiveCurrent];box.innerHTML=`<div class="exam-meta"><b>${adaptiveText('Simulacro adaptativo','Adaptive exam')} · ${adaptiveText('Pregunta','Question')} ${adaptivePos+1}/${ADAPTIVE_SIZE}</b><span class="pill">${adaptiveText('Nivel','Level')}: ${adaptiveLevelLabel(adaptiveLevel)}</span></div><div class="progressbar"><span style="width:${Math.round(adaptivePos/ADAPTIVE_SIZE*100)}%"></span></div><p class="question">${esc(x[0])}</p>${x[1].map((o,n)=>`<button class="option" onclick="answerAdaptiveExam(${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')}<p class="muted">${adaptiveText('La siguiente pregunta se ajustará según esta respuesta. No podrás regresar.','The next question will adjust to this answer. You cannot go back.')}</p>`;
+}
+function answerAdaptiveExam(n){
+ if(!adaptiveActive||adaptiveCurrent<0)return;const idx=adaptiveCurrent,x=qs[idx],key=x[4],correct=n===x[2],levelAsked=adaptiveLevel;adaptiveUsed.push(idx);adaptiveDifficulty[levelAsked].total++;if(!adaptiveBreakdown[key])adaptiveBreakdown[key]={correct:0,total:0};adaptiveBreakdown[key].total++;addWeekly('questions');
+ if(correct){adaptiveCorrect++;adaptiveDifficulty[levelAsked].correct++;adaptiveBreakdown[key].correct++;adaptiveStreak=adaptiveStreak>=0?adaptiveStreak+1:1;if(adaptiveStreak>=2&&adaptiveLevel<3){adaptiveLevel++;adaptiveStreak=0}}else{adaptiveStreak=adaptiveStreak<=0?adaptiveStreak-1:-1;if(adaptiveStreak<=-2&&adaptiveLevel>1){adaptiveLevel--;adaptiveStreak=0}if(!appState.mistakes.includes(idx))appState.mistakes.push(idx)}
+ saveState();adaptivePos++;setTimeout(renderAdaptiveExam,180);
+}
+function finishAdaptiveExam(){
+ adaptiveActive=false;const total=Math.max(1,adaptiveUsed.length),score=pct(adaptiveCorrect,total),finalLevel=adaptiveLevel;appState.adaptive.last=score;appState.adaptive.best=Math.max(appState.adaptive.best||0,score);appState.adaptive.taken=(appState.adaptive.taken||0)+1;appState.adaptive.level=finalLevel;appState.exam.breakdown=adaptiveBreakdown;addWeekly('exams');recordExamHistory({type:adaptiveText('Simulacro adaptativo','Adaptive exam'),score,correct:adaptiveCorrect,total,modules:['Todos los módulos']});saveState();
+ const rows=CORE_MODULES.map(([key,title])=>{const s=adaptiveBreakdown[key]||{correct:0,total:0};return s.total?{key,title:title.replace(/^Clase \d+ — /,''),correct:s.correct,total:s.total,score:pct(s.correct,s.total)}:null}).filter(Boolean).sort((a,b)=>a.score-b.score),weak=rows.slice(0,3),report=rows.map(r=>`<div class="module-report-row"><div><b>${esc(r.title)}</b><br><small>${r.correct}/${r.total} · ${r.score}%</small><div class="progressbar"><span style="width:${r.score}%"></span></div></div><button class="secondary" onclick="startModuleQuiz('${r.key}')">${adaptiveText('Practicar','Practice')}</button></div>`).join(''),levels=[1,2,3].map(l=>{const s=adaptiveDifficulty[l];return `<div class="stat"><b>${s.total?pct(s.correct,s.total):0}%</b>${adaptiveLevelLabel(l)}<br><small>${s.correct}/${s.total}</small></div>`}).join('');
+ document.getElementById('examBox').innerHTML=`<div class="feedback"><h2>📊 ${adaptiveText('Simulacro adaptativo completado','Adaptive exam completed')}</h2><p><b>${adaptiveCorrect}/${total}</b> · ${score}%</p><div class="ngn-points">${adaptiveText('Nivel final','Final level')}: ${adaptiveLevelLabel(finalLevel)}</div><p class="muted">${adaptiveText('Este resultado es educativo y no reproduce la decisión oficial del algoritmo CAT del NCLEX.','This educational result does not reproduce the official NCLEX CAT decision.')}</p></div><div class="final-stats">${levels}</div><div class="card"><h2>🎯 ${adaptiveText('Recomendaciones','Recommendations')}</h2><p>${weak.length?adaptiveText('Prioriza estos temas: ','Prioritize these topics: ')+weak.map(x=>esc(x.title)).join(' · '):adaptiveText('Continúa practicando todos los módulos.','Continue practicing all modules.')}</p><div class="actions"><button class="warnbtn" onclick="startWeakPractice()">${adaptiveText('Practicar temas débiles','Practice weak topics')}</button><button class="primary" onclick="startAdaptiveExam()">${adaptiveText('Repetir simulacro','Repeat exam')}</button><button class="secondary" onclick="renderExamLanding()">${adaptiveText('Volver a exámenes','Back to exams')}</button></div></div><div class="card"><h2>📚 ${adaptiveText('Rendimiento por tema','Performance by topic')}</h2><div class="module-report">${report}</div></div>`;
+}
+
 let customOrder=[],customPos=0,customCorrect=0,customAnswered=false,customBreakdown={},customTimerId=null,customStartedAt=0;
 let customConfig={size:10,timeSeconds:0,mode:'practice',modules:[]};
 function renderExamLanding(){
  const box=document.getElementById('examBox');if(!box)return;
- box.innerHTML=`<div class="feedback"><h3>🎯 Simulacro NCLEX</h3><p>85 preguntas · 5 horas · sin explicaciones durante el examen.</p><button class="goodbtn" onclick="startExam()">Comenzar simulacro NCLEX</button></div>
+ const en=appState.planLang==='en';box.innerHTML=`<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'ADAPTIVE PRACTICE':'PRÁCTICA ADAPTATIVA'}</span><h2>🧠 ${en?'Adaptive NCLEX-style exam':'Simulacro adaptativo tipo NCLEX'}</h2><p>${en?'30 questions that move between fundamental, intermediate, and advanced difficulty according to your answers.':'30 preguntas que cambian entre dificultad fundamental, intermedia y avanzada según tus respuestas.'}</p><div class="final-stats"><div class="stat"><b>${appState.adaptive?.last||0}%</b>${en?'Last':'Último'}</div><div class="stat"><b>${appState.adaptive?.best||0}%</b>${en?'Best':'Mejor'}</div><div class="stat"><b>${appState.adaptive?.taken||0}</b>${en?'Completed':'Completados'}</div></div><button class="primary" onclick="startAdaptiveExam()">${en?'Start adaptive exam':'Comenzar simulacro adaptativo'}</button><p class="muted">${en?'Educational simulation; it is not the official NCLEX CAT algorithm.':'Simulación educativa; no es el algoritmo CAT oficial del NCLEX.'}</p></div><div class="feedback"><h3>🎯 Simulacro NCLEX</h3><p>85 preguntas · 5 horas · sin explicaciones durante el examen.</p><button class="goodbtn" onclick="startExam()">Comenzar simulacro NCLEX</button></div>
  <div class="card"><h2>⚙️ Examen personalizado</h2><p class="muted">Selecciona los módulos y configura tu sesión.</p>
  <div class="exam-config"><label>Preguntas<select id="customCount"><option>10</option><option>25</option><option>50</option><option>85</option></select></label><label>Tiempo<select id="customTime"><option value="0">Sin límite</option><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="120">120 minutos</option></select></label><label>Modo<select id="customMode"><option value="practice">Práctica con explicaciones</option><option value="exam">Examen sin explicaciones</option></select></label></div>
  <div class="actions"><button class="secondary" onclick="setAllCustomModules(true)">Seleccionar todos</button><button class="secondary" onclick="setAllCustomModules(false)">Quitar todos</button></div>
@@ -3056,6 +3083,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.exam.last}%</b>Último examen</div>
  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen</div>
  <div class="stat"><b>${appState.customExam.best}%</b>Mejor personalizado<br><small>${appState.customExam.taken} realizados</small></div>
+ <div class="stat"><b>${appState.adaptive?.best||0}%</b>Mejor adaptativo<br><small>${appState.adaptive?.taken||0} realizados · nivel ${adaptiveLevelLabel(appState.adaptive?.level||2)}</small></div>
  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
  <div class="stat"><b>${appState.daily.streak}</b>Racha diaria<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} hoy`:'Meta pendiente hoy'}</small></div></div>
  <div class="card"><h3>🧩 Casos clínicos NGN</h3><p>Mejor resultado: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} casos completados · ${(appState.ngn.mistakes||[]).length} ejercicios por repasar.</p><button class="goodbtn" onclick="show('ngn')">Abrir casos NGN</button></div>
@@ -3093,7 +3121,7 @@ show=function(id){
  if(id==='logros')renderAchievements();
  if(id==='buscar')setTimeout(()=>document.getElementById('smartSearch')?.focus(),50);
  if(id==='progreso')renderProgress();
- if(id==='exam' && !examOrder.length && !customOrder.length)renderExamLanding();
+ if(id==='exam' && !examOrder.length && !customOrder.length && !adaptiveActive)renderExamLanding();
  if(id==='ngn')renderNGN();
 }
 
@@ -3126,6 +3154,7 @@ function normalizeLoadedState(raw){
  appState.examPlan=Object.assign({targetDate:''},appState.examPlan||{});
  appState.planLang=appState.planLang==='en'?'en':'es';
  appState.studyReminder=Object.assign({enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},appState.studyReminder||{});appState.studyReminder.days=Array.isArray(appState.studyReminder.days)?appState.studyReminder.days:[1,2,3,4,5];
+ appState.adaptive=Object.assign({last:0,best:0,taken:0,level:2},appState.adaptive||{});
  appState.ngn=Object.assign({last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},appState.ngn||{});appState.ngn.history=appState.ngn.history||[];appState.ngn.mistakes=appState.ngn.mistakes||[];appState.ngn.byCase=appState.ngn.byCase||{};
  appState.lastStudy=appState.lastStudy||null;
  appState.weekly=appState.weekly||{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}};ensureWeekly();
