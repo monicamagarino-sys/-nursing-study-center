@@ -173,7 +173,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </section>
 
 <section id="quiz">
-<div class="card"><h2>📝 Preguntas</h2><div class="score">Puntuación: <span id="score">0</span></div><div id="quizBox"></div><button class="primary" id="next" style="display:none" onclick="nextQ()">Siguiente →</button></div>
+<div class="card"><h2>📝 Preguntas</h2><div class="score">Correctas en esta sesión: <span id="score">0</span></div><div id="quizBox"></div><button class="primary" id="next" style="display:none" onclick="nextQ()">Siguiente →</button></div>
 </section>
 
 <section id="repaso">
@@ -2481,6 +2481,9 @@ function resumeLastStudy(){
  else if(last.type==='mistakes')startMistakePractice();
  else if(last.type==='daily')startDailyPractice();
  else if(last.type==='flashcards')show('tarjetas');
+ else if(last.type==='ngn'&&last.key==='mixed')startNGNMixed();
+ else if(last.type==='ngn'&&last.key==='review')startNGNErrors();
+ else if(last.type==='ngn'&&ngnCases().some(c=>c.id===last.key))startNGN(last.key,'practice');
  else startPractice(true);
 }
 function renderContinueCard(){
@@ -2620,6 +2623,7 @@ let practiceOrder=[], practicePos=0, answeredFinal=false;
 let practiceModule='';
 let practiceLabel='';
 let practiceSessionCorrect=0;
+let practiceSessionAnswered=0;
 let practiceFinite=false;
 let mistakePractice=false;
 let dailyPractice=false,dailyCorrect=0;
@@ -2638,6 +2642,7 @@ function startPractice(shuffle=false){
  mistakePractice=false;
  dailyPractice=false;
  practiceSessionCorrect=0;
+ practiceSessionAnswered=0;
  if(shuffle || !practiceOrder.length) buildPracticeOrder();
  rememberStudy('practice','','Práctica general');
  show('quiz');
@@ -2649,6 +2654,7 @@ function startModuleQuiz(k){
  mistakePractice=false;
  dailyPractice=false;
  practiceSessionCorrect=0;
+ practiceSessionAnswered=0;
  practiceOrder=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
  for(let i=practiceOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[practiceOrder[i],practiceOrder[j]]=[practiceOrder[j],practiceOrder[i]]}
  practicePos=0;rememberStudy('moduleQuiz',k,`Quiz: ${lessons[k]?.title||'módulo'}`);show('quiz');
@@ -2674,6 +2680,7 @@ function startWeakPractice(){
  mistakePractice=false;
  dailyPractice=false;
  practiceSessionCorrect=0;
+ practiceSessionAnswered=0;
  practiceOrder=shuffled(selected);
  practicePos=0;
  rememberStudy('weak','',practiceLabel);
@@ -2688,6 +2695,7 @@ function startMistakePractice(){
  mistakePractice=true;
  dailyPractice=false;
  practiceSessionCorrect=0;
+ practiceSessionAnswered=0;
  practiceOrder=shuffled(valid);
  practicePos=0;
  rememberStudy('mistakes','',practiceLabel);
@@ -2701,16 +2709,16 @@ function startDailyPractice(){
  const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.has(q[4]))a.push(i);return a},[]);
  add(shuffled(weakPool));
  add(shuffled([...Array(qs.length).keys()]));
- practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;
+ practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;practiceSessionAnswered=0;
  practiceOrder=shuffled(selected);practicePos=0;rememberStudy('daily','',practiceLabel);show('quiz');
 }
 function renderPractice(){
  answeredFinal=false;
  const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];
- document.getElementById('score').textContent=appState.practice.correct;
+ document.getElementById('score').textContent=practiceSessionCorrect;
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
- document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>Pregunta ${practicePos+1} de ${total}</span><span>${pct(appState.practice.correct,appState.practice.attempts)}% correcto</span></div>
+ document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>Pregunta ${practicePos+1} de ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} en esta sesión</span></div>
  <button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="Favorito">${appState.favorites.includes(idx)?'★':'☆'}</button>
  <p class="question">${esc(x[0])}</p>`+
  x[1].map((o,n)=>`<button class="option" onclick="answerPractice(${idx},${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')+
@@ -2721,6 +2729,7 @@ function answerPractice(idx,n){
  if(answeredFinal)return; answeredFinal=true; const x=qs[idx],ops=document.querySelectorAll('#quizBox .option');
  ops[x[2]].classList.add('correct'); if(n!==x[2])ops[n].classList.add('wrong');
  appState.practice.attempts++;
+ practiceSessionAnswered++;
  addWeekly('questions');
  if(n===x[2]){
    appState.practice.correct++;
@@ -2729,6 +2738,7 @@ function answerPractice(idx,n){
    if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx);
  }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  saveState();
+ document.getElementById('score').textContent=practiceSessionCorrect;
  document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 Escuchar explicación</button></div></div>`;
  document.getElementById('next').style.display='inline-block';
 }
