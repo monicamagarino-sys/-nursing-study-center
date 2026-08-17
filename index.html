@@ -2201,6 +2201,7 @@ function ensureFinalUI(){
   <button class="tab" data-tab="tarjetas">🧠 Tarjetas</button>
   <button class="tab" data-tab="quiz">Práctica</button>
   <button class="tab" data-tab="exam">Examen</button>
+  <button class="tab" data-tab="medcalc">💊 Medicamentos</button>
   <button class="tab" data-tab="ngn">🧩 NGN</button>
   <button class="tab" data-tab="favoritos">⭐ Favoritos</button>
   <button class="tab" data-tab="errores">⚠️ Errores</button>
@@ -2255,6 +2256,7 @@ function ensureFinalUI(){
     <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
     <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
     <button class="goodbtn" onclick="startExam()">🎯 Simulacro NCLEX</button>
+    <button class="primary" onclick="show('medcalc')">💊 Medicamentos y cálculos</button>
     <button class="goodbtn" onclick="show('ngn')">🧩 Casos clínicos NGN</button>
    </div>
    <div class="install-note"><b>📱 Instalación:</b> este paquete está preparado como PWA. Cuando se abra desde un servidor/hosting, puede añadirse a la pantalla de inicio del teléfono y, en navegadores compatibles, instalarse en la computadora.</div>
@@ -2271,6 +2273,7 @@ function ensureFinalUI(){
  renderMistakes();
  renderAchievements();
  renderNGN();
+ renderMedCalc();
  renderProgress();
 }
 
