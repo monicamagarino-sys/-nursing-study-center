@@ -1,52 +1,9 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cambiar contraseña · Nursing Study Center</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#172033;background:#f3f5fb}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
-.card{width:min(100%,460px);background:#fff;border-radius:28px;padding:30px;box-shadow:0 18px 55px #31386b22}
-.badge{display:inline-block;background:#ecebff;color:#5753dc;font-weight:800;border-radius:999px;padding:8px 12px}
-h1{font-size:30px;margin:18px 0 8px}.muted{color:#667085;line-height:1.45}
-label{display:block;font-weight:750;margin:18px 0 7px}input{width:100%;font-size:18px;padding:15px;border:2px solid #d9ddeb;border-radius:14px}
-button{width:100%;margin-top:20px;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,#5753dc,#8656ee);color:#fff;font-size:17px;font-weight:800}
-button:disabled{opacity:.55}.msg{margin-top:16px;padding:12px;border-radius:12px;display:none}.ok{display:block;background:#e9fbf2;color:#087a49}.err{display:block;background:#fff0f0;color:#a32323}
-a{color:#5753dc;font-weight:750}
-</style>
-</head>
-<body>
-<main class="card">
-<span class="badge">🔐 Monica Nursing Study Center</span>
-<h1 id="title">Crear contraseña nueva</h1>
-<p class="muted" id="intro">Escribe una contraseña nueva de 8 caracteres o más.</p>
-<form id="form">
-<label for="password">Contraseña nueva</label>
-<input id="password" type="password" minlength="8" autocomplete="new-password" required>
-<label for="confirm">Confirmar contraseña</label>
-<input id="confirm" type="password" minlength="8" autocomplete="new-password" required>
-<button id="save" type="submit">Guardar contraseña</button>
-</form>
-<div id="msg" class="msg" role="status"></div>
-</main>
-<script>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cambiar contraseña · Nursing Study Center</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#172033;background:#f3f5fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:min(100%,460px);background:#fff;border-radius:28px;padding:30px;box-shadow:0 18px 55px #31386b22}.badge{display:inline-block;background:#ecebff;color:#5753dc;font-weight:800;border-radius:999px;padding:8px 12px}h1{font-size:30px;margin:18px 0 8px}.muted{color:#667085;line-height:1.45}label{display:block;font-weight:750;margin:18px 0 7px}input{width:100%;font-size:18px;padding:15px;border:2px solid #d9ddeb;border-radius:14px}button{width:100%;margin-top:20px;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,#5753dc,#8656ee);color:#fff;font-size:17px;font-weight:800}button:disabled{opacity:.55}.msg{margin-top:16px;padding:12px;border-radius:12px;display:none}.ok{display:block;background:#e9fbf2;color:#087a49}.err{display:block;background:#fff0f0;color:#a32323}.mfa{display:none;margin-top:22px;padding:18px;border:2px solid #dcd9ff;border-radius:18px;background:#f7f6ff}.mfa h2{font-size:22px;margin:0 0 8px}.mfa input{text-align:center;letter-spacing:8px;font-size:24px}a{color:#5753dc;font-weight:750}</style></head><body><main class="card"><span class="badge">🔐 Monica Nursing Study Center</span><h1>Crear contraseña nueva</h1><p class="muted">Escribe una contraseña nueva de 8 caracteres o más.</p><form id="form"><label for="password">Contraseña nueva</label><input id="password" type="password" minlength="8" autocomplete="new-password" required><label for="confirm">Confirmar contraseña</label><input id="confirm" type="password" minlength="8" autocomplete="new-password" required><button id="save" type="submit">Continuar</button></form><section id="mfa" class="mfa"><h2>Verificación de dos pasos</h2><p class="muted">Abre tu aplicación Authenticator y escribe el código actual de 6 dígitos.</p><label for="mfaCode">Código del autenticador</label><input id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456"><button id="verify" type="button">Verificar y guardar contraseña</button></section><div id="msg" class="msg" role="status"></div></main><script>
 const sb=window.supabase.createClient('https://rqcofwzkyfsuxaxazqjx.supabase.co','sb_publishable_oDsA6a1L6dmP1FFUTAp_vw_vFW1HU9F',{auth:{persistSession:true,detectSessionInUrl:true}});
-const form=document.getElementById('form'),msg=document.getElementById('msg'),save=document.getElementById('save');
+const form=document.getElementById('form'),msg=document.getElementById('msg'),save=document.getElementById('save'),mfa=document.getElementById('mfa'),verify=document.getElementById('verify');let pendingPassword='',factorId='';
 function show(text,ok=false){msg.textContent=text;msg.className='msg '+(ok?'ok':'err')}
-form.addEventListener('submit',async e=>{
- e.preventDefault();const password=document.getElementById('password').value,confirm=document.getElementById('confirm').value;
- if(password.length<8)return show('La contraseña debe tener al menos 8 caracteres.');
- if(password!==confirm)return show('Las contraseñas no coinciden.');
- save.disabled=true;save.textContent='Guardando…';
- const {error}=await sb.auth.updateUser({password});
- if(error){show('No se pudo cambiar: '+error.message);save.disabled=false;save.textContent='Guardar contraseña';return}
- show('Contraseña actualizada. Ya puedes regresar a la app e iniciar sesión.',true);
- form.style.display='none';
- const a=document.createElement('p');a.innerHTML='<a href="./">Volver a Nursing Study Center</a>';msg.after(a);
-});
-(async()=>{const {data}=await sb.auth.getSession();if(!data.session)show('Este enlace no es válido o venció. Solicita un enlace nuevo.');})();
-</script>
-</body>
-</html>
+async function finish(){const {error}=await sb.auth.updateUser({password:pendingPassword});if(error)throw error;try{await sb.auth.signOut({scope:'local'})}catch(e){}form.style.display='none';mfa.style.display='none';show('Contraseña actualizada. Ya puedes regresar a la app e iniciar sesión.',true);const a=document.createElement('p');a.innerHTML='<a href="./">Volver a Nursing Study Center</a>';msg.after(a)}
+async function requireMfa(){const factors=await sb.auth.mfa.listFactors();if(factors.error)throw factors.error;const factor=(factors.data?.totp||[]).find(x=>x.status==='verified');if(!factor)throw new Error('No se encontró el autenticador de esta cuenta.');factorId=factor.id;form.style.display='none';mfa.style.display='block';msg.className='msg';document.getElementById('mfaCode').focus()}
+form.addEventListener('submit',async e=>{e.preventDefault();const password=document.getElementById('password').value,confirm=document.getElementById('confirm').value;if(password.length<8)return show('La contraseña debe tener al menos 8 caracteres.');if(password!==confirm)return show('Las contraseñas no coinciden.');pendingPassword=password;save.disabled=true;save.textContent='Comprobando seguridad…';try{const aal=await sb.auth.mfa.getAuthenticatorAssuranceLevel();if(aal.error)throw aal.error;if(aal.data?.nextLevel==='aal2'&&aal.data?.currentLevel!=='aal2')await requireMfa();else await finish()}catch(error){show('No se pudo continuar: '+error.message);save.disabled=false;save.textContent='Continuar'}});
+verify.addEventListener('click',async()=>{const code=document.getElementById('mfaCode').value.replace(/\s/g,'');if(!/^\d{6}$/.test(code))return show('Escribe el código actual de 6 dígitos.');verify.disabled=true;verify.textContent='Verificando…';try{const challenge=await sb.auth.mfa.challenge({factorId});if(challenge.error)throw challenge.error;const result=await sb.auth.mfa.verify({factorId,challengeId:challenge.data.id,code});if(result.error)throw result.error;await finish()}catch(error){show('Código incorrecto o vencido. Usa el código nuevo del autenticador.');verify.disabled=false;verify.textContent='Verificar y guardar contraseña'}});
+(async()=>{const {data}=await sb.auth.getSession();if(!data.session){form.style.display='none';show('Este enlace no es válido o venció. Solicita un enlace nuevo.')}})();</script></body></html>
