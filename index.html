@@ -3313,12 +3313,46 @@ function scheduleCloudSync(){
  if(!cloudSyncReady||localStorage.getItem('mnsc_offline_access')==='1')return;
  clearTimeout(cloudSyncTimer);cloudSyncTimer=setTimeout(()=>syncCloudProgress(true),1200);
 }
+async function syncNormalizedTables(userId){
+ const now=new Date().toISOString();
+ const moduleRows=(typeof CORE_MODULES!=='undefined'?CORE_MODULES:[]).map(([moduleId])=>{
+   const p=appState.moduleProgress?.[moduleId]||{};
+   const total=Math.max(0,Number(p.total||p.attempts||0));
+   const correct=Math.min(total,Math.max(0,Number(p.correct||0)));
+   const best=Math.min(100,Math.max(0,Number(p.best||(total?Math.round(correct*100/total):0))));
+   return {user_id:userId,module_id:String(moduleId),completed:(appState.completed||[]).includes(moduleId),correct_answers:correct,total_answers:total,progress_percent:best,last_activity_at:now,updated_at:now};
+ });
+ const favoriteRows=(appState.favorites||[]).map(idx=>{
+   const q=typeof qs!=='undefined'?qs[idx]:null;
+   return {user_id:userId,question_id:String(idx),module_id:q?.[4]||null,question_snapshot:q?{question:q[0],options:q[1],correct_index:q[2],explanation:q[3]}:{},created_at:now};
+ });
+ const errorRows=(appState.mistakes||[]).map(idx=>{
+   const q=typeof qs!=='undefined'?qs[idx]:null;
+   return {user_id:userId,question_id:String(idx),module_id:q?.[4]||null,error_count:1,correct_answer:q?String(q[1]?.[q[2]]||''):null,last_error_at:now,updated_at:now};
+ });
+ const examRows=(appState.history||[]).map(item=>({
+   user_id:userId,source_id:String(item.id),exam_type:String(item.type||'mixed'),
+   score:Math.max(0,Number(item.correct||0)),total_questions:Math.max(1,Number(item.total||1)),
+   answers:{score_percent:Number(item.score||0),modules:item.modules||[]},
+   completed_at:item.date||now
+ })).filter(x=>x.score<=x.total_questions);
+ const requests=[];
+ if(moduleRows.length)requests.push(sb.from('module_progress').upsert(moduleRows,{onConflict:'user_id,module_id'}));
+ requests.push((async()=>{const del=await sb.from('favorite_questions').delete().eq('user_id',userId);if(del.error)throw del.error;if(favoriteRows.length){const ins=await sb.from('favorite_questions').insert(favoriteRows);if(ins.error)throw ins.error}})());
+ requests.push((async()=>{const del=await sb.from('question_errors').delete().eq('user_id',userId);if(del.error)throw del.error;if(errorRows.length){const ins=await sb.from('question_errors').insert(errorRows);if(ins.error)throw ins.error}})());
+ if(examRows.length)requests.push(sb.from('exam_attempts').upsert(examRows,{onConflict:'user_id,source_id'}));
+ const results=await Promise.all(requests);
+ const failure=results.find(x=>x?.error);if(failure?.error)throw failure.error;
+}
+
 async function syncCloudProgress(uploadLocal=false,manual=false){
  if(cloudSyncBusy)return;cloudSyncBusy=true;setSyncStatus('Sincronizando…');
  try{
    const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);
    if(userError||!user)throw userError||new Error('NO_USER');
-   const cloud=user.user_metadata?.[CLOUD_STATE_KEY]||null;
+   const profileResult=await authTimeout(sb.from('profiles').select('preferences').eq('user_id',user.id).maybeSingle(),10000);
+   if(profileResult.error)throw profileResult.error;
+   const cloud=profileResult.data?.preferences?.[CLOUD_STATE_KEY]||user.user_metadata?.[CLOUD_STATE_KEY]||null;
    const pending=localStorage.getItem('mnsc_sync_pending')==='1';
    if(cloud&&!pending&&!manual&&!localStorage.getItem(SYNC_POLICY_KEY)){
      cloudSyncReady=true;
@@ -3331,16 +3365,21 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      refreshStateUI();
-     setSyncStatus('Progreso actualizado desde tu cuenta.');
+     setSyncStatus('Progreso actualizado desde Supabase.');
    }else if(!cloud||uploadLocal||pending){
-     const {error}=await authTimeout(sb.auth.updateUser({data:{[CLOUD_STATE_KEY]:JSON.parse(JSON.stringify(appState))}}),10000);
+     const stateCopy=JSON.parse(JSON.stringify(appState));
+     const {error}=await authTimeout(sb.from('profiles').upsert({
+       user_id:user.id,preferences:{[CLOUD_STATE_KEY]:stateCopy},updated_at:new Date().toISOString()
+     },{onConflict:'user_id'}),12000);
      if(error)throw error;
+     await authTimeout(syncNormalizedTables(user.id),15000);
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
-     setSyncStatus('Progreso de este dispositivo guardado en tu cuenta.');
+     setSyncStatus('Progreso guardado y organizado en Supabase.');
    }else setSyncStatus('Tu progreso ya está sincronizado.');
    cloudSyncReady=true;
  }catch(e){
+   console.error('Supabase sync error',e);
    setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');
  }finally{cloudSyncBusy=false}
 }
