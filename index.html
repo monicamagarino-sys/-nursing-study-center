@@ -131,6 +131,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <div class="pro-field"><label data-es="Correo electrónico" data-en="Email address">Correo electrónico</label><input id="previewUser" type="email" autocomplete="email" placeholder="correo@email.com"></div>
 <div class="pro-field"><label data-es="Contraseña" data-en="Password">Contraseña</label><input id="previewPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
 <button class="pro-login-btn" onclick="signInProfessional()" data-es="Entrar a la app" data-en="Enter the app">Entrar a la app</button>
+<button id="forgotPasswordBtn" class="pro-login-btn" style="margin-top:10px;background:transparent;color:#4050b5;border:0;padding:8px 12px" onclick="requestPasswordRecovery()" data-es="¿Olvidaste tu contraseña?" data-en="Forgot your password?">¿Olvidaste tu contraseña?</button>
 <button class="pro-login-btn" style="margin-top:10px;background:#fff;color:#4050b5;border:1px solid #cfd7ee" onclick="signUpProfessional()" data-es="Crear cuenta" data-en="Create account">Crear cuenta</button>
 <button id="offlineAccessBtn" class="pro-login-btn" style="display:none;margin-top:10px;background:#fff7df;color:#755300;border:1px solid #ead48b" onclick="enterOfflineProfessional()" data-es="Entrar sin conexión" data-en="Continue offline">Entrar sin conexión</button>
 </div>
@@ -3437,6 +3438,35 @@ async function signInProfessional(){
  }catch(e){
    authMsg('Supabase no respondió. Puedes entrar sin conexión y continuar estudiando.');
    showOfflineOption();
+ }
+}
+async function requestPasswordRecovery(){
+ const en=securityEnglish();
+ const email=document.getElementById('previewUser').value.trim();
+ const button=document.getElementById('forgotPasswordBtn');
+ if(!email){
+   authMsg(en?'Enter your email address first.':'Escribe primero tu correo electrónico.');
+   document.getElementById('previewUser').focus();
+   return;
+ }
+ authMsg(en?'Requesting a secure reset link…':'Solicitando un enlace seguro…',true);
+ if(button)button.disabled=true;
+ try{
+   const redirectTo=new URL('recovery.html',window.location.href).href;
+   const {error}=await authTimeout(sb.auth.resetPasswordForEmail(email,{redirectTo}),12000);
+   if(error)throw error;
+   authMsg(en?'Check your email for the password reset link. It may take a few minutes.':'Revisa tu correo para abrir el enlace de recuperación. Puede tardar unos minutos.',true);
+ }catch(e){
+   const message=String(e?.message||'');
+   if(/rate|too many|429/i.test(message)){
+     authMsg(en?'Too many email requests. Wait one hour, then try once more.':'Se solicitaron demasiados correos. Espera una hora y vuelve a intentarlo una sola vez.');
+   }else if(e?.message==='AUTH_TIMEOUT'){
+     authMsg(en?'Supabase did not respond. Check your connection and try again.':'Supabase no respondió. Revisa tu conexión e inténtalo nuevamente.');
+   }else{
+     authMsg(en?'The reset link could not be requested. Try again later.':'No se pudo solicitar el enlace. Inténtalo de nuevo más tarde.');
+   }
+ }finally{
+   if(button)button.disabled=false;
  }
 }
 async function signUpProfessional(){
