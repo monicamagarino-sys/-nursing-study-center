@@ -13,7 +13,7 @@
 <style>
 :root{--bg:#f6f7fb;--card:#fff;--ink:#182033;--muted:#69738a;--brand:#5a57d8;--brand2:#ecebff;--good:#15865b;--bad:#c83d4a}
 *{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:linear-gradient(135deg,#4947b8,#7774e8);color:#fff;padding:28px 18px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px}.tag{opacity:.9;margin-top:6px}
+header{background:linear-gradient(135deg,#4947b8,#7774e8);color:#fff;padding:28px 18px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px}.tag{opacity:.9;margin-top:6px}.mn-brand-title{display:flex;align-items:center;gap:10px}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:14px;padding:5px;background:linear-gradient(135deg,#08b4ca,#1747b8);box-shadow:0 7px 20px #142f8a38}
 nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0}.tab{border:0;border-radius:12px;padding:11px 16px;background:#fff;cursor:pointer;font-weight:700;color:var(--ink)}.tab.active{background:var(--brand);color:#fff}
 section{display:none}section.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}.card{background:var(--card);border-radius:18px;padding:20px;box-shadow:0 7px 24px #1c28520d;margin-bottom:15px}.card h2,.card h3{margin-top:0}.muted{color:var(--muted)}.pill{display:inline-block;padding:5px 9px;border-radius:99px;background:var(--brand2);color:var(--brand);font-size:12px;font-weight:800}
 .topic{cursor:pointer;transition:box-shadow .15s}.topic:hover{box-shadow:0 12px 28px #1c285218}.topic small{color:var(--muted)}
@@ -149,7 +149,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </div>
 </div>
 
-<header><div class="wrap head"><div><h1>💙 Monica Nursing Study Center</h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
+<header><div class="wrap head"><div><h1 class="mn-brand-title"><svg class="mn-brandmark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/><path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/></svg><span>Monica Nursing Study Center</span></h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
 
 <main class="wrap">
 <nav>
@@ -3549,6 +3549,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  header .head>div:first-child{min-width:0;flex:1}
  header .head>div:last-child{flex:0 0 auto;text-align:right}
  header h1{font-size:23px;line-height:1.08;margin-bottom:5px}
+ .mn-brand-title{gap:7px}.mn-brandmark{width:38px;height:38px;flex-basis:38px;border-radius:11px;padding:4px}
  header .tag{font-size:12px;line-height:1.25}
  header #scoreTop{font-size:21px}
  header .head>div:last-child .tag{max-width:70px;font-size:10px}
