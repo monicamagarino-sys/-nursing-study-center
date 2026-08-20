@@ -3520,12 +3520,12 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 <style>
 .mn-group-nav{position:sticky;top:0;z-index:100;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:12px 0;background:var(--bg)}
 .mn-group-nav .tab{min-height:54px;padding:9px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;line-height:1.1}
-.mn-group-nav .tab .nav-icon{font-size:21px}
-.mn-hub-title{margin:4px 0 14px}
+.mn-group-nav .tab .nav-icon{display:grid;place-items:center}.mn-group-nav .tab .nav-icon svg{width:23px;height:23px;stroke:currentColor}
+.mn-hub-title{margin:4px 0 14px;display:flex;align-items:center;gap:10px}.mn-hub-title svg{width:34px;height:34px;stroke:#1769b0}
 .mn-launch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
 .mn-launch{width:100%;min-height:120px;border:2px solid #e3e5f2;border-radius:18px;background:#fff;padding:18px;text-align:left;cursor:pointer;box-shadow:0 7px 24px #1c28520d;color:var(--ink)}
 .mn-launch:hover,.mn-launch:focus{border-color:var(--brand);transform:translateY(-1px)}
-.mn-launch .mn-icon{font-size:31px;display:block;margin-bottom:8px}
+.mn-launch .mn-icon{display:block;margin-bottom:10px;color:#1769b0}.mn-launch .mn-icon svg{width:36px;height:36px;stroke:currentColor}
 .mn-launch b{display:block;font-size:18px;margin-bottom:5px}
 .mn-launch small{display:block;color:var(--muted);line-height:1.35}
 .mn-back{margin:0 0 12px}
@@ -3540,7 +3540,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  .mn-group-nav{position:fixed;left:0;right:0;bottom:0;top:auto;padding:7px max(6px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:3px;background:#fff;border-top:1px solid #dfe3ed;box-shadow:0 -7px 24px #18203318}
  .mn-group-nav .tab{min-height:55px;border-radius:10px;padding:6px 2px;background:transparent;font-size:10px}
  .mn-group-nav .tab.active{background:var(--brand2);color:var(--brand)}
- .mn-group-nav .tab .nav-icon{font-size:20px}
+ .mn-group-nav .tab .nav-icon svg{width:22px;height:22px}
  .mn-launch-grid{grid-template-columns:1fr 1fr;gap:10px}
  .mn-launch{min-height:128px;padding:14px}
  .mn-launch b{font-size:16px}
@@ -3570,9 +3570,28 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   miprogreso:'miprogreso',favoritos:'miprogreso',errores:'miprogreso',logros:'miprogreso',progreso:'miprogreso',
   cuenta:'cuenta'
  };
+ const iconPaths={
+  home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  book:'<path d="M3 5.5A3.5 3.5 0 0 1 6.5 2H11v18H6.5A3.5 3.5 0 0 0 3 23.5Z"/><path d="M21 5.5A3.5 3.5 0 0 0 17.5 2H13v18h4.5a3.5 3.5 0 0 1 3.5 3.5Z"/>',
+  practice:'<path d="M4 4h10v16H4z"/><path d="M8 8h3M8 12h3"/><path d="m14 17 6-6 2 2-6 6-3 1z"/>',
+  chart:'<path d="M4 20V10M10 20V5M16 20v-8M22 20V2"/><path d="M2 20h22"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/>',
+  search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+  cards:'<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M2 8v10a2 2 0 0 0 2 2"/>',
+  questions:'<path d="M5 3h14v18H5z"/><path d="M9 9a3 3 0 1 1 4.8 2.4c-1 .7-1.8 1.2-1.8 2.6"/><path d="M12 17h.01"/>',
+  exam:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M21 12h-3M12 21v-3M3 12h3"/>',
+  medicine:'<path d="M8 3a5 5 0 0 0-3.5 8.5l8 8a5 5 0 0 0 7-7l-8-8A5 5 0 0 0 8 3Z"/><path d="m7 15 8-8"/>',
+  ngn:'<path d="M9 3h6v4h4v6h-4v4H9v-4H5V7h4Z"/><path d="M9 10h6M12 7v6"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/>',
+  warning:'<path d="M12 3 2.5 21h19Z"/><path d="M12 9v5M12 18h.01"/>',
+  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0Z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/>'
+ };
+ function icon(name){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(iconPaths[name]||iconPaths.star)+'</svg>'}
+ function titleIcon(name,label){return icon(name)+label}
  function launcher(icon,title,desc,target){
-  return '<button class="mn-launch" onclick="show(\''+target+'\')"><span class="mn-icon">'+icon+'</span><b>'+title+'</b><small>'+desc+'</small></button>';
+  return '<button class="mn-launch" onclick="show(\''+target+'\')"><span class="mn-icon">'+windowIcon(icon)+'</span><b>'+title+'</b><small>'+desc+'</small></button>';
  }
+ function windowIcon(name){return icon(name)}
  function ensureHub(id,title,items){
   let el=document.getElementById(id);
   if(!el){el=document.createElement('section');el.id=id;const main=document.querySelector('main');main.insertBefore(el,main.querySelector('footer'))}
@@ -3582,7 +3601,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const en=appState.planLang==='en';
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
-  return '<h2 class="mn-hub-title">👤 '+(en?'Account':'Cuenta')+'</h2>'+
+  return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
    '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setInterfaceLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setInterfaceLanguage(\'en\')">English</button></div></div>'+security+backup+
    '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button></div></div>'+
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
@@ -3607,29 +3626,29 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
   nav.className='mn-group-nav';
   nav.innerHTML=
-   '<button class="tab active" data-group="inicio" onclick="show(\'inicio\')"><span class="nav-icon">🏠</span>'+(en?'Home':'Inicio')+'</button>'+
-   '<button class="tab" data-group="estudio" onclick="show(\'estudio\')"><span class="nav-icon">📚</span>'+(en?'Study':'Estudiar')+'</button>'+
-   '<button class="tab" data-group="practicar" onclick="show(\'practicar\')"><span class="nav-icon">✍️</span>'+(en?'Practice':'Practicar')+'</button>'+
-   '<button class="tab" data-group="miprogreso" onclick="show(\'miprogreso\')"><span class="nav-icon">📈</span>'+(en?'Progress':'Mi progreso')+'</button>'+
-   '<button class="tab" data-group="cuenta" onclick="show(\'cuenta\')"><span class="nav-icon">👤</span>'+(en?'Account':'Cuenta')+'</button>';
-  ensureHub('estudio','📚 '+(en?'Study':'Estudiar'),[
-   launcher('📖',en?'Modules':'Módulos',en?'All classes organized by topic.':'Todas las clases organizadas por tema.','temas'),
-   launcher('🔎',en?'Search':'Buscar',en?'Quickly find any content.':'Encuentra rápidamente cualquier contenido.','buscar'),
-   launcher('🧠',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas')
+   '<button class="tab active" data-group="inicio" onclick="show(\'inicio\')"><span class="nav-icon">'+icon('home')+'</span>'+(en?'Home':'Inicio')+'</button>'+
+   '<button class="tab" data-group="estudio" onclick="show(\'estudio\')"><span class="nav-icon">'+icon('book')+'</span>'+(en?'Study':'Estudiar')+'</button>'+
+   '<button class="tab" data-group="practicar" onclick="show(\'practicar\')"><span class="nav-icon">'+icon('practice')+'</span>'+(en?'Practice':'Practicar')+'</button>'+
+   '<button class="tab" data-group="miprogreso" onclick="show(\'miprogreso\')"><span class="nav-icon">'+icon('chart')+'</span>'+(en?'Progress':'Mi progreso')+'</button>'+
+   '<button class="tab" data-group="cuenta" onclick="show(\'cuenta\')"><span class="nav-icon">'+icon('user')+'</span>'+(en?'Account':'Cuenta')+'</button>';
+  ensureHub('estudio',titleIcon('book',en?'Study':'Estudiar'),[
+   launcher('book',en?'Modules':'Módulos',en?'All classes organized by topic.':'Todas las clases organizadas por tema.','temas'),
+   launcher('search',en?'Search':'Buscar',en?'Quickly find any content.':'Encuentra rápidamente cualquier contenido.','buscar'),
+   launcher('cards',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas')
   ]);
-  ensureHub('practicar','✍️ '+(en?'Practice':'Practicar'),[
-   launcher('✅',en?'Questions':'Preguntas',en?'Practice with answers and explanations.':'Práctica con respuestas y explicaciones.','quiz'),
-   launcher('🎯',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
-   launcher('💊',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
-   launcher('🧩',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
+  ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
+   launcher('questions',en?'Questions':'Preguntas',en?'Practice with answers and explanations.':'Práctica con respuestas y explicaciones.','quiz'),
+   launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
+   launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
+   launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
   ]);
-  ensureHub('miprogreso','📈 '+(en?'My progress':'Mi progreso'),[
-   launcher('⭐',en?'Favorites':'Favoritos',en?'Your saved questions and topics.':'Tus preguntas y temas guardados.','favoritos'),
-   launcher('⚠️',en?'Errors':'Errores',en?'Review questions you missed.':'Repasa las preguntas que fallaste.','errores'),
-   launcher('🏆',en?'Achievements':'Logros',en?'Medals and goals achieved.':'Medallas y metas alcanzadas.','logros'),
-   launcher('📊',en?'Statistics':'Estadísticas',en?'Results, activity, and study plans.':'Resultados, actividad y planes de estudio.','progreso')
+  ensureHub('miprogreso',titleIcon('chart',en?'My progress':'Mi progreso'),[
+   launcher('star',en?'Favorites':'Favoritos',en?'Your saved questions and topics.':'Tus preguntas y temas guardados.','favoritos'),
+   launcher('warning',en?'Errors':'Errores',en?'Review questions you missed.':'Repasa las preguntas que fallaste.','errores'),
+   launcher('trophy',en?'Achievements':'Logros',en?'Medals and goals achieved.':'Medallas y metas alcanzadas.','logros'),
+   launcher('chart',en?'Statistics':'Estadísticas',en?'Results, activity, and study plans.':'Resultados, actividad y planes de estudio.','progreso')
   ]);
-  ensureHub('cuenta','👤 '+(en?'Account':'Cuenta'),[]);
+  ensureHub('cuenta',titleIcon('user',en?'Account':'Cuenta'),[]);
   document.getElementById('cuenta').innerHTML=accountHTML();
  }
  function markGroup(id){
