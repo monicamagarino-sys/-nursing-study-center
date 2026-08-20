@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nursing Study Center — Final 1.1</title>
+<title>Monica Nursing Study Center</title>
 <meta name="theme-color" content="#5a57d8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Nursing Study">
+<meta name="apple-mobile-web-app-title" content="Monica Nursing">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
@@ -83,10 +83,10 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 }
 
 
-#proLogin{position:fixed;inset:0;z-index:9999;overflow:auto;background:linear-gradient(135deg,#eef8ff 0%,#f8f5ff 55%,#fff 100%);color:#16233f}
+#proLogin{position:fixed;inset:0;z-index:9999;overflow:auto;background:linear-gradient(135deg,#eef8fff0 0%,#f8f5ffe8 55%,#ffffffdc 100%),url('monica-clinical-bg.png') center/cover fixed;color:#16233f}
 .pro-wrap{max-width:1180px;margin:0 auto;padding:28px 18px 40px}
 .pro-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
-.pro-brand{display:flex;align-items:center;gap:12px}.pro-logo{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#5a57d8,#4eb7c7);color:#fff;font-size:28px;box-shadow:0 10px 30px rgba(90,87,216,.25)}
+.pro-brand{display:flex;align-items:center;gap:12px}.pro-logo{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#07aeca,#1745b8);color:#fff;box-shadow:0 10px 30px rgba(20,73,184,.25)}.pro-logo svg{width:46px;height:46px}
 .pro-brand h1{font-size:24px;margin:0}.pro-brand p{margin:3px 0 0;color:#63708a;font-weight:700;letter-spacing:.04em}
 .pro-lang{display:flex;gap:8px}.pro-lang button{border:1px solid #d8def0;background:#fff;border-radius:999px;padding:9px 14px;font-weight:800;cursor:pointer}.pro-lang button.active{background:#182340;color:#fff}
 .pro-grid{display:grid;grid-template-columns:1.05fr .85fr;gap:24px;align-items:stretch}.pro-hero,.pro-card{background:#ffffffd9;backdrop-filter:blur(8px);border:1px solid #e5e9f5;border-radius:26px;box-shadow:0 18px 50px rgba(36,52,91,.10)}
@@ -108,7 +108,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <div id="proLogin">
 <div class="pro-wrap">
 <div class="pro-top">
-<div class="pro-brand"><div class="pro-logo">🩺</div><div><h1>Monica Nursing Study Center</h1><p>LEARN • PRACTICE • PASS</p></div></div>
+<div class="pro-brand"><div class="pro-logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/><path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/></svg></div><div><h1>Monica Nursing Study Center</h1><p>LEARN • PRACTICE • PASS</p></div></div>
 <div class="pro-lang"><button id="btnES" class="active" onclick="setProLang('es')">ES</button><button id="btnEN" onclick="setProLang('en')">EN</button></div>
 </div>
 <div class="pro-grid">
@@ -149,7 +149,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </div>
 </div>
 
-<header><div class="wrap head"><div><h1>📚 Nursing Study Center</h1><div class="tag">Tu resumen convertido en estudio interactivo</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
+<header><div class="wrap head"><div><h1>💙 Monica Nursing Study Center</h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
 
 <main class="wrap">
 <nav>
@@ -165,7 +165,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <section id="inicio" class="active">
 <div class="card">
 <span class="pill">FINAL • 20 MÓDULOS • PRÁCTICA CORREGIDA</span>
-<h2>Nursing Study Center</h2>
+<h2>Monica Nursing Study Center</h2>
 <p>Los 20 módulos de enfermería están reunidos en una sola app, con práctica, examen, favoritos y progreso.</p>
 <button class="primary" onclick="show('temas')">📚 Ver los 20 módulos →</button>
 </div>
@@ -2286,7 +2286,7 @@ function ensureFinalUI(){
  document.querySelector('#inicio').innerHTML=`
   <div class="card">
    <span class="pill">FINAL • 20 MÓDULOS • PRÁCTICA CORREGIDA</span>
-   <h2>Nursing Study Center</h2>
+   <h2>Monica Nursing Study Center</h2>
    <p>Estudio, práctica, examen, favoritos y progreso en una sola app.</p>
    <div class="actions">
     <button class="primary" onclick="show('temas')">📚 Estudiar módulos</button>
@@ -3594,7 +3594,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  function buildGroupedUI(){
   const en=appState.planLang==='en';
   const headerTags=document.querySelectorAll('header .tag');
-  if(headerTags[0])headerTags[0].textContent=en?'Your summary transformed into interactive study':'Tu resumen convertido en estudio interactivo';
+  if(headerTags[0])headerTags[0].textContent='LEARN • PRACTICE • PASS';
   if(headerTags[1])headerTags[1].textContent=en?'correct answers':'preguntas correctas';
   const homeCard=document.querySelector('#inicio>.card');
   if(homeCard){
