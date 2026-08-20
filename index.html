@@ -3576,39 +3576,47 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   el.innerHTML='<h2 class="mn-hub-title">'+title+'</h2><div class="mn-launch-grid">'+items.join('')+'</div>';
  }
  function accountHTML(){
+  const en=appState.planLang==='en';
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
-  return '<h2 class="mn-hub-title">👤 Cuenta</h2>'+security+backup+
-   '<div class="card"><h3>☁️ Sincronización</h3><p id="syncStatusAccount" class="muted">Tu progreso se guarda en tu cuenta.</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm(\'¿Usar el progreso de este dispositivo como copia principal?\'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>'+
-   '<div class="card"><h3>🚪 Sesión</h3><p class="muted">Cierra tu sesión de forma segura en este dispositivo.</p><button class="secondary" onclick="signOutProfessional()">Cerrar sesión</button></div>';
+  return '<h2 class="mn-hub-title">👤 '+(en?'Account':'Cuenta')+'</h2>'+
+   '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setInterfaceLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setInterfaceLanguage(\'en\')">English</button></div></div>'+security+backup+
+   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button></div></div>'+
+   '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
+ window.setInterfaceLanguage=function(lang){
+  const next=lang==='en'?'en':'es';localStorage.setItem('mnsc_interface_lang',next);localStorage.setItem('mnsc_lang',next);appState.planLang=next;
+  if(typeof ngnLang!=='undefined'){ngnLang=next;localStorage.setItem('mnsc_ngn_lang',next)}
+  saveState();buildGroupedUI();updateDashboard();show('cuenta');
+ };
  function buildGroupedUI(){
+  const en=appState.planLang==='en';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
   nav.className='mn-group-nav';
   nav.innerHTML=
-   '<button class="tab active" data-group="inicio" onclick="show(\'inicio\')"><span class="nav-icon">🏠</span>Inicio</button>'+
-   '<button class="tab" data-group="estudio" onclick="show(\'estudio\')"><span class="nav-icon">📚</span>Estudiar</button>'+
-   '<button class="tab" data-group="practicar" onclick="show(\'practicar\')"><span class="nav-icon">✍️</span>Practicar</button>'+
-   '<button class="tab" data-group="miprogreso" onclick="show(\'miprogreso\')"><span class="nav-icon">📈</span>Mi progreso</button>'+
-   '<button class="tab" data-group="cuenta" onclick="show(\'cuenta\')"><span class="nav-icon">👤</span>Cuenta</button>';
-  ensureHub('estudio','📚 Estudiar',[
-   launcher('📖','Módulos','Todas las clases organizadas por tema.','temas'),
-   launcher('🔎','Buscar','Encuentra rápidamente cualquier contenido.','buscar'),
-   launcher('🧠','Tarjetas','Repasa con tarjetas inteligentes.','tarjetas')
+   '<button class="tab active" data-group="inicio" onclick="show(\'inicio\')"><span class="nav-icon">🏠</span>'+(en?'Home':'Inicio')+'</button>'+
+   '<button class="tab" data-group="estudio" onclick="show(\'estudio\')"><span class="nav-icon">📚</span>'+(en?'Study':'Estudiar')+'</button>'+
+   '<button class="tab" data-group="practicar" onclick="show(\'practicar\')"><span class="nav-icon">✍️</span>'+(en?'Practice':'Practicar')+'</button>'+
+   '<button class="tab" data-group="miprogreso" onclick="show(\'miprogreso\')"><span class="nav-icon">📈</span>'+(en?'Progress':'Mi progreso')+'</button>'+
+   '<button class="tab" data-group="cuenta" onclick="show(\'cuenta\')"><span class="nav-icon">👤</span>'+(en?'Account':'Cuenta')+'</button>';
+  ensureHub('estudio','📚 '+(en?'Study':'Estudiar'),[
+   launcher('📖',en?'Modules':'Módulos',en?'All classes organized by topic.':'Todas las clases organizadas por tema.','temas'),
+   launcher('🔎',en?'Search':'Buscar',en?'Quickly find any content.':'Encuentra rápidamente cualquier contenido.','buscar'),
+   launcher('🧠',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas')
   ]);
-  ensureHub('practicar','✍️ Practicar',[
-   launcher('✅','Preguntas','Práctica con respuestas y explicaciones.','quiz'),
-   launcher('🎯','Exámenes','Simulacros y exámenes personalizados.','exam'),
-   launcher('💊','Medicamentos','Fármacos, farmacología y cálculos.','medcalc'),
-   launcher('🧩','Casos NGN','Entrena preguntas clínicas de nueva generación.','ngn')
+  ensureHub('practicar','✍️ '+(en?'Practice':'Practicar'),[
+   launcher('✅',en?'Questions':'Preguntas',en?'Practice with answers and explanations.':'Práctica con respuestas y explicaciones.','quiz'),
+   launcher('🎯',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
+   launcher('💊',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
+   launcher('🧩',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
   ]);
-  ensureHub('miprogreso','📈 Mi progreso',[
-   launcher('⭐','Favoritos','Tus preguntas y temas guardados.','favoritos'),
-   launcher('⚠️','Errores','Repasa las preguntas que fallaste.','errores'),
-   launcher('🏆','Logros','Medallas y metas alcanzadas.','logros'),
-   launcher('📊','Estadísticas','Resultados, actividad y planes de estudio.','progreso')
+  ensureHub('miprogreso','📈 '+(en?'My progress':'Mi progreso'),[
+   launcher('⭐',en?'Favorites':'Favoritos',en?'Your saved questions and topics.':'Tus preguntas y temas guardados.','favoritos'),
+   launcher('⚠️',en?'Errors':'Errores',en?'Review questions you missed.':'Repasa las preguntas que fallaste.','errores'),
+   launcher('🏆',en?'Achievements':'Logros',en?'Medals and goals achieved.':'Medallas y metas alcanzadas.','logros'),
+   launcher('📊',en?'Statistics':'Estadísticas',en?'Results, activity, and study plans.':'Resultados, actividad y planes de estudio.','progreso')
   ]);
-  ensureHub('cuenta','👤 Cuenta',[]);
+  ensureHub('cuenta','👤 '+(en?'Account':'Cuenta'),[]);
   document.getElementById('cuenta').innerHTML=accountHTML();
  }
  function markGroup(id){
@@ -3640,6 +3648,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   }
  };
  function start(){
+  const savedInterfaceLang=localStorage.getItem('mnsc_interface_lang')||'es';appState.planLang=savedInterfaceLang==='en'?'en':'es';localStorage.setItem('mnsc_lang',appState.planLang);
   buildGroupedUI();
   const oldRender=window.renderProgress;
   if(typeof oldRender==='function')window.renderProgress=function(){oldRender();removeAccountDuplicates()};
