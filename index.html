@@ -3515,5 +3515,124 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 });
 window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 </script>
+
+<!-- MNSC GROUPED NAVIGATION 2026 -->
+<style>
+.mn-group-nav{position:sticky;top:0;z-index:100;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:12px 0;background:var(--bg)}
+.mn-group-nav .tab{min-height:54px;padding:9px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;line-height:1.1}
+.mn-group-nav .tab .nav-icon{font-size:21px}
+.mn-hub-title{margin:4px 0 14px}
+.mn-launch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.mn-launch{width:100%;min-height:120px;border:2px solid #e3e5f2;border-radius:18px;background:#fff;padding:18px;text-align:left;cursor:pointer;box-shadow:0 7px 24px #1c28520d;color:var(--ink)}
+.mn-launch:hover,.mn-launch:focus{border-color:var(--brand);transform:translateY(-1px)}
+.mn-launch .mn-icon{font-size:31px;display:block;margin-bottom:8px}
+.mn-launch b{display:block;font-size:18px;margin-bottom:5px}
+.mn-launch small{display:block;color:var(--muted);line-height:1.35}
+.mn-back{margin:0 0 12px}
+#cuenta .card{margin-bottom:14px}
+@media(max-width:650px){
+ main.wrap{padding:0 12px 86px}
+ .mn-group-nav{position:fixed;left:0;right:0;bottom:0;top:auto;padding:7px max(6px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:3px;background:#fff;border-top:1px solid #dfe3ed;box-shadow:0 -7px 24px #18203318}
+ .mn-group-nav .tab{min-height:55px;border-radius:10px;padding:6px 2px;background:transparent;font-size:10px}
+ .mn-group-nav .tab.active{background:var(--brand2);color:var(--brand)}
+ .mn-group-nav .tab .nav-icon{font-size:20px}
+ .mn-launch-grid{grid-template-columns:1fr 1fr;gap:10px}
+ .mn-launch{min-height:128px;padding:14px}
+ .mn-launch b{font-size:16px}
+ header{padding:20px 14px}
+}
+@media(max-width:390px){.mn-launch-grid{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+ const groupFor={
+  inicio:'inicio',estudio:'estudio',temas:'estudio',buscar:'estudio',tarjetas:'estudio',
+  practicar:'practicar',quiz:'practicar',exam:'practicar',medcalc:'practicar',ngn:'practicar',
+  miprogreso:'miprogreso',favoritos:'miprogreso',errores:'miprogreso',logros:'miprogreso',progreso:'miprogreso',
+  cuenta:'cuenta'
+ };
+ function launcher(icon,title,desc,target){
+  return '<button class="mn-launch" onclick="show(\\''+target+'\\')"><span class="mn-icon">'+icon+'</span><b>'+title+'</b><small>'+desc+'</small></button>';
+ }
+ function ensureHub(id,title,items){
+  let el=document.getElementById(id);
+  if(!el){el=document.createElement('section');el.id=id;const main=document.querySelector('main');main.insertBefore(el,main.querySelector('footer'))}
+  el.innerHTML='<h2 class="mn-hub-title">'+title+'</h2><div class="mn-launch-grid">'+items.join('')+'</div>';
+ }
+ function accountHTML(){
+  const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
+  const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
+  return '<h2 class="mn-hub-title">👤 Cuenta</h2>'+security+backup+
+   '<div class="card"><h3>☁️ Sincronización</h3><p id="syncStatusAccount" class="muted">Tu progreso se guarda en tu cuenta.</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm(\\'¿Usar el progreso de este dispositivo como copia principal?\\'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>'+
+   '<div class="card"><h3>🚪 Sesión</h3><p class="muted">Cierra tu sesión de forma segura en este dispositivo.</p><button class="secondary" onclick="signOutProfessional()">Cerrar sesión</button></div>';
+ }
+ function buildGroupedUI(){
+  const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
+  nav.className='mn-group-nav';
+  nav.innerHTML=
+   '<button class="tab active" data-group="inicio" onclick="show(\\'inicio\\')"><span class="nav-icon">🏠</span>Inicio</button>'+
+   '<button class="tab" data-group="estudio" onclick="show(\\'estudio\\')"><span class="nav-icon">📚</span>Estudiar</button>'+
+   '<button class="tab" data-group="practicar" onclick="show(\\'practicar\\')"><span class="nav-icon">✍️</span>Practicar</button>'+
+   '<button class="tab" data-group="miprogreso" onclick="show(\\'miprogreso\\')"><span class="nav-icon">📈</span>Mi progreso</button>'+
+   '<button class="tab" data-group="cuenta" onclick="show(\\'cuenta\\')"><span class="nav-icon">👤</span>Cuenta</button>';
+  ensureHub('estudio','📚 Estudiar',[
+   launcher('📖','Módulos','Todas las clases organizadas por tema.','temas'),
+   launcher('🔎','Buscar','Encuentra rápidamente cualquier contenido.','buscar'),
+   launcher('🧠','Tarjetas','Repasa con tarjetas inteligentes.','tarjetas')
+  ]);
+  ensureHub('practicar','✍️ Practicar',[
+   launcher('✅','Preguntas','Práctica con respuestas y explicaciones.','quiz'),
+   launcher('🎯','Exámenes','Simulacros y exámenes personalizados.','exam'),
+   launcher('💊','Medicamentos','Fármacos, farmacología y cálculos.','medcalc'),
+   launcher('🧩','Casos NGN','Entrena preguntas clínicas de nueva generación.','ngn')
+  ]);
+  ensureHub('miprogreso','📈 Mi progreso',[
+   launcher('⭐','Favoritos','Tus preguntas y temas guardados.','favoritos'),
+   launcher('⚠️','Errores','Repasa las preguntas que fallaste.','errores'),
+   launcher('🏆','Logros','Medallas y metas alcanzadas.','logros'),
+   launcher('📊','Estadísticas','Resultados, actividad y planes de estudio.','progreso')
+  ]);
+  ensureHub('cuenta','👤 Cuenta',[]);
+  document.getElementById('cuenta').innerHTML=accountHTML();
+ }
+ function markGroup(id){
+  const group=groupFor[id]||id;
+  document.querySelectorAll('.mn-group-nav .tab').forEach(b=>b.classList.toggle('active',b.dataset.group===group));
+ }
+ function addBackButton(id){
+  const group=groupFor[id];
+  if(!group||id===group||id==='inicio')return;
+  const section=document.getElementById(id); if(!section||section.querySelector('.mn-back'))return;
+  const btn=document.createElement('button');btn.className='secondary mn-back';btn.textContent='← Volver';
+  btn.onclick=()=>show(group);section.insertBefore(btn,section.firstChild);
+ }
+ function removeAccountDuplicates(){
+  const box=document.getElementById('progressBox');if(!box)return;
+  [...box.querySelectorAll('.card')].forEach(card=>{
+   const h=(card.querySelector('h3')?.textContent||'').toLowerCase();
+   if(h.includes('verificación en dos pasos')||h.includes('two-step verification')||h.includes('copia cifrada')||h.includes('encrypted backup')||h.includes('sincronización'))card.remove();
+  });
+ }
+ const previousShow=window.show;
+ window.show=function(id){
+  if(typeof previousShow==='function')previousShow(id);
+  markGroup(id);addBackButton(id);
+  if(id==='progreso')removeAccountDuplicates();
+  if(id==='cuenta'){
+   const el=document.getElementById('cuenta');if(el)el.innerHTML=accountHTML();
+   setTimeout(()=>{if(typeof refreshMfaStatus==='function')refreshMfaStatus()},0);
+  }
+ };
+ function start(){
+  buildGroupedUI();
+  const oldRender=window.renderProgress;
+  if(typeof oldRender==='function')window.renderProgress=function(){oldRender();removeAccountDuplicates()};
+  markGroup(document.querySelector('section.active')?.id||'inicio');
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,0));
+ else setTimeout(start,0);
+})();
+</script>
+
 </body>
 </html>
