@@ -3530,6 +3530,9 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 .mn-launch small{display:block;color:var(--muted);line-height:1.35}
 .mn-back{margin:0 0 12px}
 #cuenta .card{margin-bottom:14px}
+#proLogout{display:none!important}
+#inicio>.card .actions,#inicio>.card .install-note,#homeStats,#homeModules,#homeStats+h2{display:none!important}
+#dailyPlan>*:not(.continue-card){display:none!important}
 @media(max-width:650px){
  main.wrap{padding:0 12px 86px}
  .mn-group-nav{position:fixed;left:0;right:0;bottom:0;top:auto;padding:7px max(6px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:3px;background:#fff;border-top:1px solid #dfe3ed;box-shadow:0 -7px 24px #18203318}
@@ -3539,7 +3542,13 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  .mn-launch-grid{grid-template-columns:1fr 1fr;gap:10px}
  .mn-launch{min-height:128px;padding:14px}
  .mn-launch b{font-size:16px}
- header{padding:20px 14px}
+ header{padding:14px 14px}
+ header .head{gap:8px;align-items:flex-start}
+ header h1{font-size:29px;line-height:1.08;margin-bottom:6px}
+ header .tag{font-size:15px;line-height:1.3}
+ header #scoreTop{font-size:25px}
+ #inicio>.card{padding:20px}
+ #inicio>.card h2{font-size:25px}
 }
 @media(max-width:390px){.mn-launch-grid{grid-template-columns:1fr}}
 </style>
