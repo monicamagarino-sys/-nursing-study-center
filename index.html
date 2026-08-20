@@ -3552,7 +3552,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   cuenta:'cuenta'
  };
  function launcher(icon,title,desc,target){
-  return '<button class="mn-launch" onclick="show(\\''+target+'\\')"><span class="mn-icon">'+icon+'</span><b>'+title+'</b><small>'+desc+'</small></button>';
+  return '<button class="mn-launch" onclick="show(\''+target+'\')"><span class="mn-icon">'+icon+'</span><b>'+title+'</b><small>'+desc+'</small></button>';
  }
  function ensureHub(id,title,items){
   let el=document.getElementById(id);
@@ -3563,18 +3563,18 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">👤 Cuenta</h2>'+security+backup+
-   '<div class="card"><h3>☁️ Sincronización</h3><p id="syncStatusAccount" class="muted">Tu progreso se guarda en tu cuenta.</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm(\\'¿Usar el progreso de este dispositivo como copia principal?\\'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>'+
+   '<div class="card"><h3>☁️ Sincronización</h3><p id="syncStatusAccount" class="muted">Tu progreso se guarda en tu cuenta.</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">Cargar desde mi cuenta</button><button class="primary" onclick="if(confirm(\'¿Usar el progreso de este dispositivo como copia principal?\'))syncCloudProgress(true,true)">Guardar este dispositivo</button></div></div>'+
    '<div class="card"><h3>🚪 Sesión</h3><p class="muted">Cierra tu sesión de forma segura en este dispositivo.</p><button class="secondary" onclick="signOutProfessional()">Cerrar sesión</button></div>';
  }
  function buildGroupedUI(){
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
   nav.className='mn-group-nav';
   nav.innerHTML=
-   '<button class="tab active" data-group="inicio" onclick="show(\\'inicio\\')"><span class="nav-icon">🏠</span>Inicio</button>'+
-   '<button class="tab" data-group="estudio" onclick="show(\\'estudio\\')"><span class="nav-icon">📚</span>Estudiar</button>'+
-   '<button class="tab" data-group="practicar" onclick="show(\\'practicar\\')"><span class="nav-icon">✍️</span>Practicar</button>'+
-   '<button class="tab" data-group="miprogreso" onclick="show(\\'miprogreso\\')"><span class="nav-icon">📈</span>Mi progreso</button>'+
-   '<button class="tab" data-group="cuenta" onclick="show(\\'cuenta\\')"><span class="nav-icon">👤</span>Cuenta</button>';
+   '<button class="tab active" data-group="inicio" onclick="show(\'inicio\')"><span class="nav-icon">🏠</span>Inicio</button>'+
+   '<button class="tab" data-group="estudio" onclick="show(\'estudio\')"><span class="nav-icon">📚</span>Estudiar</button>'+
+   '<button class="tab" data-group="practicar" onclick="show(\'practicar\')"><span class="nav-icon">✍️</span>Practicar</button>'+
+   '<button class="tab" data-group="miprogreso" onclick="show(\'miprogreso\')"><span class="nav-icon">📈</span>Mi progreso</button>'+
+   '<button class="tab" data-group="cuenta" onclick="show(\'cuenta\')"><span class="nav-icon">👤</span>Cuenta</button>';
   ensureHub('estudio','📚 Estudiar',[
    launcher('📖','Módulos','Todas las clases organizadas por tema.','temas'),
    launcher('🔎','Buscar','Encuentra rápidamente cualquier contenido.','buscar'),
