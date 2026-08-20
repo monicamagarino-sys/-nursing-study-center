@@ -2595,10 +2595,10 @@ function resumeLastStudy(){
  else startPractice(true);
 }
 function renderContinueCard(){
- const last=appState.lastStudy;
- if(!last)return `<div class="card continue-card"><span class="pill">CONTINUAR ESTUDIANDO</span><h2>📚 Comienza tu próximo módulo</h2><p class="continue-meta">La app recordará automáticamente dónde estudiaste.</p><button class="primary" onclick="show('temas')">Elegir un módulo</button></div>`;
- const date=last.updatedAt?new Date(last.updatedAt).toLocaleString('es-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
- return `<div class="card continue-card"><span class="pill">CONTINUAR ESTUDIANDO</span><h2>▶ ${esc(last.label||'Continuar práctica')}</h2><p class="continue-meta">Última actividad${date?` · ${esc(date)}`:''}</p><button class="primary" onclick="resumeLastStudy()">Continuar ahora</button></div>`;
+ const last=appState.lastStudy,en=appState.planLang==='en';
+ if(!last)return `<div class="card continue-card"><span class="pill">${en?'CONTINUE STUDYING':'CONTINUAR ESTUDIANDO'}</span><h2>📚 ${en?'Start your next module':'Comienza tu próximo módulo'}</h2><p class="continue-meta">${en?'The app will automatically remember where you studied.':'La app recordará automáticamente dónde estudiaste.'}</p><button class="primary" onclick="show('temas')">${en?'Choose a module':'Elegir un módulo'}</button></div>`;
+ const date=last.updatedAt?new Date(last.updatedAt).toLocaleString(en?'en-US':'es-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+ return `<div class="card continue-card"><span class="pill">${en?'CONTINUE STUDYING':'CONTINUAR ESTUDIANDO'}</span><h2>▶ ${esc(last.label||(en?'Continue practice':'Continuar práctica'))}</h2><p class="continue-meta">${en?'Last activity':'Última actividad'}${date?` · ${esc(date)}`:''}</p><button class="primary" onclick="resumeLastStudy()">${en?'Continue now':'Continuar ahora'}</button></div>`;
 }
 function updateDashboard(){
  updateAchievements();
@@ -3533,6 +3533,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 #proLogout{display:none!important}
 #inicio>.card .actions,#inicio>.card .install-note,#homeStats,#homeModules,#homeStats+h2{display:none!important}
 #dailyPlan>*:not(.continue-card){display:none!important}
+.mn-home-lang{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:#f6f7ff;border:1px solid #e0e2f5}
+.mn-home-lang b{font-size:14px}.mn-home-lang .pro-lang{flex:0 0 auto}
 @media(max-width:650px){
  main.wrap{padding:0 12px 86px}
  .mn-group-nav{position:fixed;left:0;right:0;bottom:0;top:auto;padding:7px max(6px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:3px;background:#fff;border-top:1px solid #dfe3ed;box-shadow:0 -7px 24px #18203318}
@@ -3587,10 +3589,20 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  window.setInterfaceLanguage=function(lang){
   const next=lang==='en'?'en':'es';localStorage.setItem('mnsc_interface_lang',next);localStorage.setItem('mnsc_lang',next);appState.planLang=next;
   if(typeof ngnLang!=='undefined'){ngnLang=next;localStorage.setItem('mnsc_ngn_lang',next)}
-  saveState();buildGroupedUI();updateDashboard();show('cuenta');
+  appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');location.reload();
  };
  function buildGroupedUI(){
   const en=appState.planLang==='en';
+  const headerTags=document.querySelectorAll('header .tag');
+  if(headerTags[0])headerTags[0].textContent=en?'Your summary transformed into interactive study':'Tu resumen convertido en estudio interactivo';
+  if(headerTags[1])headerTags[1].textContent=en?'correct answers':'preguntas correctas';
+  const homeCard=document.querySelector('#inicio>.card');
+  if(homeCard){
+   let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
+   language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setInterfaceLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setInterfaceLanguage(\'en\')">EN</button></div>';
+   const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');if(pill)pill.textContent=en?'FINAL · 20 MODULES · CORRECTED PRACTICE':'FINAL · 20 MÓDULOS · PRÁCTICA CORREGIDA';if(paragraph)paragraph.textContent=en?'Study, practice, exams, favorites, and progress in one app.':'Estudio, práctica, examen, favoritos y progreso en una sola app.'
+  }
+  const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
   nav.className='mn-group-nav';
   nav.innerHTML=
