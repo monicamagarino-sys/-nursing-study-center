@@ -3741,6 +3741,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
    launcher('questions',en?'Questions':'Preguntas',en?'Practice with answers and explanations.':'Práctica con respuestas y explicaciones.','quiz'),
+   `<button class="launcher-card" onclick="startNewQuestionsPractice()"><span class="launcher-icon">🆕</span><strong>${en?'New questions':'Preguntas nuevas'}</strong><small>${en?'Practice only recently added questions.':'Practica solo las preguntas recién añadidas.'}</small></button>`,
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
    launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
