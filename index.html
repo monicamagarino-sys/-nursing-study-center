@@ -49,10 +49,14 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .module-figure{margin:0;background:#f8f9fd;border:1px solid #e1e5ef;border-radius:16px;padding:10px}
 .module-figure img{display:block;width:100%;height:190px;object-fit:contain;border-radius:10px;background:white}
 .module-figure figcaption{font-size:13px;color:var(--muted);padding:8px 4px 2px;line-height:1.35}
-.lesson-with-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,34%);gap:18px;align-items:center}
-.lesson-with-visual .inline-figure{margin:0}
-.lesson-with-visual .inline-figure img{height:220px}
-@media(max-width:720px){.lesson-with-visual{grid-template-columns:1fr}.lesson-with-visual .inline-figure img{height:auto;max-height:260px}}
+.lesson{padding:18px 0;border-bottom:1px solid #edf0f5}.lesson:last-child{border-bottom:0}
+.lesson-with-visual{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:20px;align-items:start}
+.inline-visual-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;align-items:start}
+.lesson-with-visual .inline-figure{margin:0;min-width:0}
+.lesson-with-visual .inline-figure img{width:100%;height:210px;object-fit:contain}
+.inline-visual-grid.visual-count-1{grid-template-columns:1fr}
+@media(max-width:720px){.lesson-with-visual{grid-template-columns:1fr}.inline-visual-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.lesson-with-visual .inline-figure img{height:auto;max-height:260px}}
+@media(max-width:430px){.inline-visual-grid{grid-template-columns:1fr}}
 .search-panel{position:sticky;top:72px;z-index:10;background:var(--bg);padding:4px 0 10px}
 .search-input{width:100%;padding:15px 16px;border:2px solid #dfe2ee;border-radius:14px;font-size:17px;background:#fff;color:var(--ink)}
 .search-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px #5a57d81a}
@@ -2747,12 +2751,16 @@ const MODULE_VISUAL_TARGETS={
  ivblood:['Central venous access','Infiltration / extravasation','Compatibilidad sanguínea','PRBC y transfusión']
 };
 function inlineVisualsForLesson(k,title){
- let html='';
+ const matches=[];
  Object.entries(MODULE_VISUALS).forEach(([source,visuals])=>{
   const targets=MODULE_VISUAL_TARGETS[source]||[];
-  visuals.forEach((v,i)=>{const raw=targets[i]||'',parts=raw.split('::'),dest=parts.length===2?parts[0]:source,target=parts.length===2?parts[1]:raw;if(dest===k&&target===title)html+=`<figure class="module-figure inline-figure"><img src="${v[0]}" alt="${esc(v[1])}" loading="lazy"><figcaption>${esc(v[1])}</figcaption></figure>`});
+  visuals.forEach((v,i)=>{
+   const raw=targets[i]||'',parts=raw.split('::'),dest=parts.length===2?parts[0]:source,target=parts.length===2?parts[1]:raw;
+   if(dest===k&&target===title)matches.push(v);
+  });
  });
- return html;
+ if(!matches.length)return '';
+ return `<div class="inline-visual-grid visual-count-${matches.length}">${matches.map(v=>`<figure class="module-figure inline-figure"><img src="${v[0]}" alt="${esc(v[1])}" loading="lazy"><figcaption>${esc(v[1])}</figcaption></figure>`).join('')}</div>`;
 }
 openLesson=function(k){
  show('temas');
