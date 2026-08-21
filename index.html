@@ -3740,8 +3740,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    launcher('cards',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas')
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
-   launcher('questions',en?'Questions':'Preguntas',en?'Practice with answers and explanations.':'Práctica con respuestas y explicaciones.','quiz'),
-   `<button class="launcher-card" onclick="startNewQuestionsPractice()"><span class="launcher-icon">🆕</span><strong>${en?'New questions':'Preguntas nuevas'}</strong><small>${en?'Practice only recently added questions.':'Practica solo las preguntas recién añadidas.'}</small></button>`,
+   '<button class="mn-launch" onclick="startPractice(true)"><span class="mn-icon">'+windowIcon('questions')+'</span><b>'+(en?'Questions':'Preguntas')+'</b><small>'+(en?'All '+qs.length+' questions with answers and explanations.':qs.length+' preguntas con respuestas y explicaciones.')+'</small></button>',
+   `<button class="mn-launch" onclick="startNewQuestionsPractice()"><span class="mn-icon">🆕</span><b>${en?'New questions':'Preguntas nuevas'}</b><small>${qs.filter(q=>String(q[0]||'').trim().startsWith('🆕')).length} ${en?'recently added questions.':'preguntas recién añadidas.'}</small></button>`,
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
    launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
