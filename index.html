@@ -3792,6 +3792,104 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,0));
  else setTimeout(start,0);
 })();
+
+/* V26 — Opciones aleatorias + práctica exclusiva de preguntas nuevas */
+function mnQuestionView(idx){
+ const x=qs[idx];
+ const order=x[1].map((_,i)=>i);
+ for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+ return {order, correct:order.indexOf(x[2])};
+}
+let mnPracticeView=null,mnExamView=null,mnCustomView=null,mnAdaptiveView=null;
+
+function startNewQuestionsPractice(){
+ const fresh=qs.reduce((a,q,i)=>{if(String(q[0]||'').trim().startsWith('🆕'))a.push(i);return a},[]);
+ if(!fresh.length){alert('Todavía no hay preguntas marcadas como nuevas.');return}
+ practiceModule='';practiceLabel='🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
+ practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
+ rememberStudy('practice','','🆕 Preguntas nuevas');show('quiz');
+}
+
+renderPractice=function(){
+ answeredFinal=false;
+ const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];mnPracticeView=mnQuestionView(idx);
+ document.getElementById('score').textContent=practiceSessionCorrect;
+ const total=practiceOrder.length,label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
+ document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>Pregunta ${practicePos+1} de ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} en esta sesión</span></div>
+ <button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="Favorito">${appState.favorites.includes(idx)?'★':'☆'}</button>
+ <p class="question">${esc(x[0])}</p>`+
+ mnPracticeView.order.map((orig,n)=>`<button class="option" onclick="answerPractice(${idx},${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')+
+ `<div id="feedback"></div>`;
+ document.getElementById('next').style.display='none';
+}
+answerPractice=function(idx,n){
+ if(answeredFinal)return;answeredFinal=true;const x=qs[idx],view=mnPracticeView||mnQuestionView(idx),ops=document.querySelectorAll('#quizBox .option'),correctPos=view.correct;
+ ops[correctPos].classList.add('correct');if(n!==correctPos)ops[n].classList.add('wrong');
+ appState.practice.attempts++;practiceSessionAnswered++;addWeekly('questions');
+ if(n===correctPos){appState.practice.correct++;practiceSessionCorrect++;if(dailyPractice)dailyCorrect++;if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx)}
+ else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
+ saveState();document.getElementById('score').textContent=practiceSessionCorrect;
+ document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===correctPos?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 Escuchar explicación</button></div></div>`;
+ document.getElementById('next').style.display='inline-block';
+}
+
+renderExam=function(){
+ const box=document.getElementById('examBox');if(!box)return;if(examPos>=examOrder.length){finishExam(false);return}
+ examAnswered=false;const idx=examOrder[examPos],x=qs[idx];mnExamView=mnQuestionView(idx);
+ box.innerHTML=`<div class="exam-meta"><b>Pregunta ${examPos+1}/${NCLEX_EXAM_SIZE}</b><span id="examTimer" class="exam-timer">⏱ ${formatExamTime(examSecondsLeft())}</span></div>
+ <p class="question">${esc(x[0])}</p>${mnExamView.order.map((orig,n)=>`<button class="option" onclick="answerExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}
+ <p class="muted">Selecciona una respuesta para continuar. No podrás regresar.</p>`;
+}
+answerExam=function(n){
+ if(examAnswered||examSecondsLeft()<=0)return;examAnswered=true;const x=qs[examOrder[examPos]],view=mnExamView||mnQuestionView(examOrder[examPos]),ops=document.querySelectorAll('#examBox .option');
+ ops.forEach(o=>o.disabled=true);ops[n].classList.add('selected');const key=x[4];if(key){if(!examBreakdown[key])examBreakdown[key]={correct:0,total:0};examBreakdown[key].total++}
+ addWeekly('questions');if(n===view.correct){examCorrect++;if(key)examBreakdown[key].correct++}else if(!appState.mistakes.includes(examOrder[examPos]))appState.mistakes.push(examOrder[examPos]);
+ saveState();examPos++;setTimeout(renderExam,180);
+}
+
+renderCustomExam=function(){
+ const box=document.getElementById('examBox');if(!box)return;if(customPos>=customOrder.length){finishCustomExam(false);return}
+ customAnswered=false;const idx=customOrder[customPos],x=qs[idx];mnCustomView=mnQuestionView(idx);
+ box.innerHTML=`<div class="exam-meta"><b>${customConfig.mode==='practice'?'Práctica personalizada':'Examen personalizado'} · Pregunta ${customPos+1}/${customConfig.size}</b><span id="customTimer" class="exam-timer">${customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):'Sin límite de tiempo'}</span></div><p class="question">${esc(x[0])}</p>${mnCustomView.order.map((orig,n)=>`<button class="option" onclick="answerCustomExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<div id="customFeedback"></div>`;
+}
+answerCustomExam=function(n){
+ if(customAnswered||(customConfig.timeSeconds&&customSecondsLeft()<=0))return;customAnswered=true;
+ const idx=customOrder[customPos],x=qs[idx],view=mnCustomView||mnQuestionView(idx),ops=document.querySelectorAll('#examBox .option'),key=x[4];
+ ops.forEach(o=>o.disabled=true);if(!customBreakdown[key])customBreakdown[key]={correct:0,total:0};customBreakdown[key].total++;addWeekly('questions');
+ const correct=n===view.correct;if(correct){customCorrect++;customBreakdown[key].correct++}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
+ if(customConfig.mode==='practice'){appState.practice.attempts++;if(correct)appState.practice.correct++;ops[view.correct].classList.add('correct');if(!correct)ops[n].classList.add('wrong');
+ document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 Escuchar explicación</button><button class="primary" onclick="nextCustomQuestion()">Siguiente</button></div></div>`;saveState()}
+ else{ops[n].classList.add('selected');saveState();customPos++;setTimeout(renderCustomExam,180)}
+}
+
+renderAdaptiveExam=function(){
+ const box=document.getElementById('examBox');if(!box)return;if(adaptivePos>=ADAPTIVE_SIZE){finishAdaptiveExam();return}
+ adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=qs[adaptiveCurrent];mnAdaptiveView=mnQuestionView(adaptiveCurrent);
+ box.innerHTML=`<div class="exam-meta"><b>${adaptiveText('Simulacro adaptativo','Adaptive exam')} · ${adaptiveText('Pregunta','Question')} ${adaptivePos+1}/${ADAPTIVE_SIZE}</b><span class="pill">${adaptiveText('Nivel','Level')}: ${adaptiveLevelLabel(adaptiveLevel)}</span></div><div class="progressbar"><span style="width:${Math.round(adaptivePos/ADAPTIVE_SIZE*100)}%"></span></div><p class="question">${esc(x[0])}</p>${mnAdaptiveView.order.map((orig,n)=>`<button class="option" onclick="answerAdaptiveExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<p class="muted">${adaptiveText('La siguiente pregunta se ajustará según esta respuesta. No podrás regresar.','The next question will adjust to this answer. You cannot go back.')}</p>`;
+}
+answerAdaptiveExam=function(n){
+ if(!adaptiveActive||adaptiveCurrent<0)return;const idx=adaptiveCurrent,x=qs[idx],view=mnAdaptiveView||mnQuestionView(idx),key=x[4],correct=n===view.correct,levelAsked=adaptiveLevel;
+ adaptiveUsed.push(idx);adaptiveResults.push({idx,selected:view.order[n],correct:x[2],isCorrect:correct,level:levelAsked,key});adaptiveDifficulty[levelAsked].total++;if(!adaptiveBreakdown[key])adaptiveBreakdown[key]={correct:0,total:0};adaptiveBreakdown[key].total++;addWeekly('questions');
+ if(correct){adaptiveCorrect++;adaptiveDifficulty[levelAsked].correct++;adaptiveBreakdown[key].correct++;adaptiveStreak=adaptiveStreak>=0?adaptiveStreak+1:1;if(adaptiveStreak>=2&&adaptiveLevel<3){adaptiveLevel++;adaptiveStreak=0}}
+ else{adaptiveStreak=adaptiveStreak<=0?adaptiveStreak-1:-1;if(adaptiveStreak<=-2&&adaptiveLevel>1){adaptiveLevel--;adaptiveStreak=0}if(!appState.mistakes.includes(idx))appState.mistakes.push(idx)}
+ saveState();adaptivePos++;setTimeout(renderAdaptiveExam,180);
+}
+
+/* Añade acceso directo dentro de Practicar */
+(function mnAddNewQuestionsButton(){
+ const oldRender=renderAppShell;
+ renderAppShell=function(){
+   oldRender();
+   const hub=document.getElementById('practicar');
+   if(hub&&!hub.querySelector('#mnNewQuestionsBtn')){
+     const actions=hub.querySelector('.hub-grid,.grid,.actions')||hub;
+     const b=document.createElement('button');b.id='mnNewQuestionsBtn';b.className='launcher-card secondary';
+     b.innerHTML='<b>🆕 Preguntas nuevas</b><br><small>Practica solo las preguntas recién añadidas.</small>';
+     b.onclick=startNewQuestionsPractice;actions.appendChild(b);
+   }
+ }
+})();
+
 </script>
 
 </body>
