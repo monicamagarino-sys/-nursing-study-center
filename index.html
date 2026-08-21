@@ -49,6 +49,10 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .module-figure{margin:0;background:#f8f9fd;border:1px solid #e1e5ef;border-radius:16px;padding:10px}
 .module-figure img{display:block;width:100%;height:190px;object-fit:contain;border-radius:10px;background:white}
 .module-figure figcaption{font-size:13px;color:var(--muted);padding:8px 4px 2px;line-height:1.35}
+.lesson-with-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,34%);gap:18px;align-items:center}
+.lesson-with-visual .inline-figure{margin:0}
+.lesson-with-visual .inline-figure img{height:220px}
+@media(max-width:720px){.lesson-with-visual{grid-template-columns:1fr}.lesson-with-visual .inline-figure img{height:auto;max-height:260px}}
 .search-panel{position:sticky;top:72px;z-index:10;background:var(--bg);padding:4px 0 10px}
 .search-input{width:100%;padding:15px 16px;border:2px solid #dfe2ee;border-radius:14px;font-size:17px;background:#fff;color:var(--ink)}
 .search-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px #5a57d81a}
@@ -2720,21 +2724,49 @@ function readModuleNoteAloud(k){
  saveAudioSettings(k);const note=String(appState.notes[k]||'').trim();if(!note){alert('Primero escribe una nota.');return}readTextAloud(note);
 }
 
+const MODULE_VISUAL_TARGETS={
+ psych:['Personality disorders','Alzheimer’s / sundowning'],
+ ob:['Labor contractions / care','Fetal monitoring basics','Rh / Coombs / RhoGAM','Ectopic pregnancy','Cord prolapse / shoulder dystocia','Apgar / cord'],
+ skin:['Atopic dermatitis','Psoriasis','Melanoma / dysplastic nevi','Burn fluids / Parkland','Pressure-ulcer dressings','Pressure injury prevention'],
+ endo:['Hyperthyroidism / Graves','Cushing syndrome','Cushing syndrome','Insulin storage / sick day','Rapid/regular/NPH insulin','Insulin pump'],
+ heme:['Iron deficiency anemia','Macrocytic anemia','Pernicious anemia','Hemophilia','ITP','DIC'],
+ onc:['Breast screening','Post-mastectomy / lymphedema','Teletherapy / beam radiation','Teletherapy / beam radiation','Brachytherapy','Implant safety'],
+ renal:['Renal labs / circulation','Kidney stones','Urinary incontinence','Polycystic kidney disease','Hemodialysis fistula','Peritoneal dialysis / CAPD'],
+ gi:['Celiac disease','Appendicitis','GERD','Dumping syndrome','Cholelithiasis','T-tube care'],
+ msk:['Developmental Dysplasia of Hip','Osteoarthritis','Osteoarthritis','Gout','Fracture types / traction','Fracture types / traction'],
+ eyesent:['neuro::Temporal arteritis','Retinal detachment','Glaucoma','Cataracts','Hearing-impaired communication','Ménière disease'],
+ neuro:['Neural tube defects','Brain death evidence','Epidural vs subdural hematoma','Stroke','Stroke','Head injury / ICP care'],
+ cardio:['ECG basics','Metabolic syndrome / CAD risk','Hemodynamics','Heart failure','Pericarditis & tamponade','Myocardial infarction','Myocardial infarction','Cardioversion vs defibrillation','Pacemaker / ICD care'],
+ resp:['Positioning','Positioning','Infant respiratory distress','Metered-dose inhaler','Positioning','Pneumothorax / tension pneumothorax'],
+ abg:['Hyperkalemia','Hypokalemia','ABG normal values','Lungs & kidneys','ROME'],
+ labs:['Laboratorios básicos','Therapeutic drug levels','ABG sampling y pulse oximetry','Thoracentesis','Lumbar puncture'],
+ etica:['Documentación','Priorización','Principios éticos'],
+ prev:['Prevención primaria','Precauciones','Prevención primaria'],
+ fisico:['Tiroides','Pulmones','Dolor pediátrico','Dolor pediátrico'],
+ nutri:['Alimentación enteral','TPN','Alimentación enteral'],
+ ivblood:['Central venous access','Infiltration / extravasation','Compatibilidad sanguínea','PRBC y transfusión']
+};
+function inlineVisualsForLesson(k,title){
+ let html='';
+ Object.entries(MODULE_VISUALS).forEach(([source,visuals])=>{
+  const targets=MODULE_VISUAL_TARGETS[source]||[];
+  visuals.forEach((v,i)=>{const raw=targets[i]||'',parts=raw.split('::'),dest=parts.length===2?parts[0]:source,target=parts.length===2?parts[1]:raw;if(dest===k&&target===title)html+=`<figure class="module-figure inline-figure"><img src="${v[0]}" alt="${esc(v[1])}" loading="lazy"><figcaption>${esc(v[1])}</figcaption></figure>`});
+ });
+ return html;
+}
 openLesson=function(k){
  show('temas');
  const l=lessons[k], completed=appState.completed.includes(k);
  rememberStudy('module',k,l.title);
  const moduleQs=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
- const visuals=(MODULE_VISUALS[k]||[]).map(v=>`<figure class="module-figure"><img src="${v[0]}" alt="${esc(v[1])}" loading="lazy"><figcaption>${esc(v[1])}</figcaption></figure>`).join('');
  document.getElementById('topicGrid').innerHTML=`<div class="card">
  <div class="actions"><button class="secondary" onclick="renderTopics()">← Todos los módulos</button>
  <button class="${completed?'secondary':'goodbtn'}" onclick="toggleComplete('${k}')">${completed?'✅ Completado — marcar pendiente':'✓ Marcar módulo completado'}</button>
  ${moduleQs.length?`<button class="warnbtn" onclick="startModuleQuiz('${k}')">📝 Quiz del módulo (${moduleQs.length})</button>`:''}</div>
  <h2>${esc(l.title)}</h2>
  <div class="audio-tools"><b>🔊 Lectura en voz alta</b><div class="actions"><select id="audioLang-${k}" onchange="saveAudioSettings('${k}')"><option value="es-US" ${appState.audio.lang==='es-US'?'selected':''}>Español</option><option value="en-US" ${appState.audio.lang==='en-US'?'selected':''}>English</option></select><select id="audioRate-${k}" onchange="saveAudioSettings('${k}')"><option value="0.75" ${Number(appState.audio.rate)===0.75?'selected':''}>Lenta</option><option value="1" ${Number(appState.audio.rate)===1?'selected':''}>Normal</option><option value="1.25" ${Number(appState.audio.rate)===1.25?'selected':''}>Rápida</option></select><button class="primary" onclick="readModuleAloud('${k}')">▶ Leer módulo</button><button class="secondary" onclick="pauseSpeech()">⏸ Pausar</button><button class="secondary" onclick="resumeSpeech()">Continuar</button><button class="secondary" onclick="stopSpeech()">⏹ Detener</button></div></div>
- ${visuals?`<div class="module-visuals">${visuals}</div>`:''}
  <div class="card" style="background:#fffdf3"><h3>🗒️ Mis notas</h3><textarea class="note-area" maxlength="1500" placeholder="Escribe aquí tus apuntes, recordatorios o conceptos importantes…" oninput="saveModuleNote('${k}',this.value)">${esc(appState.notes[k]||'')}</textarea><div class="actions"><span id="noteStatus-${k}" class="note-saved">Guardado automático</span><button class="secondary" onclick="readModuleNoteAloud('${k}')">🔊 Leer nota</button><button class="secondary" onclick="deleteModuleNote('${k}')">Eliminar nota</button></div></div>
- ${l.items.map(x=>`<div class="lesson"><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></div>`).join('')}
+ ${l.items.map(x=>{const visual=inlineVisualsForLesson(k,x[0]);return `<div class="lesson ${visual?'lesson-with-visual':''}"><div><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></div>${visual}</div>`}).join('')}
  </div>`;
  window.scrollTo({top:0,behavior:'smooth'});
 }
