@@ -2579,7 +2579,7 @@ function mnEnglishClinicalText(text){
   [/^🆕\s*/,'🆕 '],
   [/Según la guía,?/gi,'According to the guide,'],[/según la guía/gi,'according to the guide'],[/La guía/gi,'The guide'],[/El resumen/gi,'The summary'],
   [/¿Qué hallazgo/gi,'Which finding'],[/¿Qué respuesta/gi,'Which answer'],[/¿Qué intervención/gi,'Which intervention'],[/¿Qué posición/gi,'Which position'],[/¿Qué medicamento/gi,'Which medication'],[/¿Qué valor/gi,'Which value'],[/¿Cuál es/gi,'What is'],[/¿Cuál/gi,'Which'],[/¿Cómo/gi,'How'],[/¿Dónde/gi,'Where'],[/¿Cuándo/gi,'When'],[/¿Por qué/gi,'Why'],[/¿Qué/gi,'What'],
-  [/se recomienda/gi,'is recommended'],[/se utiliza/gi,'is used'],[/se usa/gi,'is used'],[/se relaciona con/gi,'is associated with'],[/se asocia con/gi,'is associated with'],[/menciona/gi,'mentions'],[/indica/gi,'indicates'],[/describe/gi,'describes'],[/identifica/gi,'identifies'],[/incluye/gi,'includes'],[/requiere/gi,'requires'],[/representa/gi,'represents'],
+  [/intervención inicial/gi,'initial intervention'],[/descompensada/gi,'decompensated'],[/se recomienda/gi,'is recommended'],[/se utiliza/gi,'is used'],[/se usa/gi,'is used'],[/se relaciona con/gi,'is associated with'],[/se asocia con/gi,'is associated with'],[/menciona/gi,'mentions'],[/indica/gi,'indicates'],[/describe/gi,'describes'],[/identifica/gi,'identifies'],[/incluye/gi,'includes'],[/requiere/gi,'requires'],[/representa/gi,'represents'],
   [/insuficiencia cardíaca/gi,'heart failure'],[/insuficiencia renal/gi,'renal failure'],[/insuficiencia respiratoria/gi,'respiratory failure'],[/edema pulmonar/gi,'pulmonary edema'],[/shock cardiogénico/gi,'cardiogenic shock'],[/endocarditis/gi,'endocarditis'],[/infarto de miocardio/gi,'myocardial infarction'],
   [/presión arterial/gi,'blood pressure'],[/frecuencia cardíaca/gi,'heart rate'],[/ritmo cardíaco/gi,'cardiac rhythm'],[/gasto urinario/gi,'urine output'],[/nivel de conciencia/gi,'level of consciousness'],[/estado mental alterado/gi,'altered mental status'],
   [/puerto distal/gi,'distal port'],[/puerto proximal/gi,'proximal port'],[/catéter de Swan-Ganz/gi,'Swan-Ganz catheter'],[/eje flebostático/gi,'phlebostatic axis'],
@@ -2601,15 +2601,40 @@ function mnEnglishClinicalText(text){
  return s;
 }
 const MN_EN_QUESTION_OVERRIDES = {
+ '🆕 ¿Qué posición indica la guía como intervención inicial en el paciente con CHF descompensada?': ['🆕 Which position does the guide indicate as the initial intervention for a patient with decompensated CHF?',['Sitting','Trendelenburg','Supine','Prone'],'The guide includes sitting the patient upright as part of the treatment for decompensated CHF.'],
  '¿Qué vitamina aparece relacionada con la cicatrización junto con zinc?': ['What vitamin is associated with wound healing along with zinc?',['A','B1','C','K'],'The summary indicates vitamin C for wound healing along with zinc.'],
  '¿Qué vitamina ayuda a la cicatrización junto con zinc?': ['Which vitamin helps with wound healing along with zinc?',['Vitamin C','Vitamin K','Vitamin B3','Vitamin D'],'The summary indicates vitamin C for wound healing along with zinc.'],
  '🆕 ¿Cómo se provoca el signo de Trousseau según la guía?': ['🆕 How is Trousseau sign elicited according to the guide?',['By applying pressure with a blood pressure cuff for 3 minutes to provoke carpal spasm','By tapping gently in front of the ear','By flexing the neck toward the chest','By extending the knee with the hip flexed'],'The guide describes Trousseau sign as carpal spasm provoked by pressure over the brachial artery with a blood pressure cuff for 3 minutes.']
 };
+
+// V32: final English cleanup layer for the whole question bank.
+// This runs on question, options and explanation, not on individual question IDs.
+const MN_EN_FINAL_PAIRS=[
+ [/\\bse provoca\\b/gi,'is elicited'],[/\\bprovoca\\b/gi,'elicits'],[/\\baplicando\\b/gi,'by applying'],[/\\bpresión\\b/gi,'pressure'],[/\\bmanguito\\b/gi,'cuff'],[/\\bminutos?\\b/gi,'minutes'],[/\\bespasmo carpal\\b/gi,'carpal spasm'],
+ [/\\bgolpeando suavemente\\b/gi,'by tapping gently'],[/\\bflexionando\\b/gi,'by flexing'],[/\\bextendiendo\\b/gi,'by extending'],[/\\brodilla\\b/gi,'knee'],[/\\bcadera\\b/gi,'hip'],[/\\bflexionada\\b/gi,'flexed'],[/\\bpecho\\b/gi,'chest'],[/\\bcuello\\b/gi,'neck'],[/\\boreja\\b/gi,'ear'],
+ [/\\bintervención\\b/gi,'intervention'],[/\\binicial\\b/gi,'initial'],[/\\bposición\\b/gi,'position'],[/\\bsentad[oa]\\b/gi,'sitting'],[/\\bdecúbito\\b/gi,'lying'],[/\\bdescompensad[oa]\\b/gi,'decompensated'],
+ [/\\bvitamina\\b/gi,'vitamin'],[/\\bcicatrización\\b/gi,'wound healing'],[/\\bjunto\\b/gi,'along'],[/\\bzinc\\b/gi,'zinc'],[/\\bcoagulación\\b/gi,'clotting'],[/\\babsorción\\b/gi,'absorption'],[/\\bcalcio\\b/gi,'calcium'],
+ [/\\bqué\\b/gi,'what'],[/\\bcuál\\b/gi,'which'],[/\\bcómo\\b/gi,'how'],[/\\bsegún\\b/gi,'according to'],[/\\bguía\\b/gi,'guide'],[/\\bresumen\\b/gi,'summary'],[/\\bpaciente\\b/gi,'patient'],[/\\benfermera\\b/gi,'nurse'],[/\\benfermero\\b/gi,'nurse'],
+ [/\\baparece\\b/gi,'appears'],[/\\brelacionad[ao]\\b/gi,'associated'],[/\\bindica\\b/gi,'indicates'],[/\\bseñala\\b/gi,'indicates'],[/\\bdescribe\\b/gi,'describes'],[/\\bincluye\\b/gi,'includes'],[/\\brecomienda\\b/gi,'recommends'],[/\\bcorresponde\\b/gi,'corresponds'],
+ [/\\bausencia\\b/gi,'absence'],[/\\bonda\\b/gi,'wave'],[/\\balta\\b/gi,'tall'],[/\\bpicuda\\b/gi,'peaked'],[/\\bcambio\\b/gi,'change'],[/\\belevación\\b/gi,'elevation'],
+ [/\\bantes\\b/gi,'before'],[/\\bdespués\\b/gi,'after'],[/\\bdurante\\b/gi,'during'],[/\\bprimero\\b/gi,'first'],[/\\bfinal\\b/gi,'end'],[/\\bnunca\\b/gi,'never'],[/\\bsolo\\b/gi,'only'],
+ [/\\bderecho\\b/gi,'right'],[/\\bizquierdo\\b/gi,'left'],[/\\bsangre\\b/gi,'blood'],[/\\benfermedad\\b/gi,'disease'],[/\\btratamiento\\b/gi,'treatment'],[/\\bprevención\\b/gi,'prevention'],[/\\btemprano\\b/gi,'early'],
+ [/\\bhacer el bien\\b/gi,'do good'],[/\\bpalpación\\b/gi,'palpation'],[/\\babdominal\\b/gi,'abdominal'],[/\\bcuadrante\\b/gi,'quadrant'],[/\\bsintomático\\b/gi,'symptomatic'],[/\\brango\\b/gi,'range'],[/\\bnormal\\b/gi,'normal'],
+ [/\\bhabitación\\b/gi,'room'],[/\\bpresión negativa\\b/gi,'negative pressure'],[/\\bprecauciones\\b/gi,'precautions'],[/\\baérea\\b/gi,'airborne'],[/\\bgotas\\b/gi,'droplet'],[/\\bcontacto\\b/gi,'contact'],[/\\bestándar\\b/gi,'standard'],
+ [/\\binmunización\\b/gi,'immunization'],[/\\brehabilitación\\b/gi,'rehabilitation'],[/\\bcáncer\\b/gi,'cancer'],[/\\bcrónica\\b/gi,'chronic'],[/\\bequipo\\b/gi,'team'],[/\\bresponsable\\b/gi,'responsible'],[/\\bvaloración\\b/gi,'assessment'],[/\\bdiagnóstico\\b/gi,'diagnosis'],[/\\benseñanza\\b/gi,'teaching'],[/\\bevaluación\\b/gi,'evaluation'],
+ [/\\bninguna\\b/gi,'none'],[/\\bninguno\\b/gi,'none'],[/\\bningún\\b/gi,'no'],[/\\bmás\\b/gi,'more'],[/\\bmenos\\b/gi,'less'],[/\\baproximadamente\\b/gi,'approximately']
+];
+function mnFinalEnglishText(text){
+ let s=String(text??'');
+ for(const [a,b] of MN_EN_FINAL_PAIRS)s=s.replace(a,b);
+ // remove inverted Spanish punctuation and normalize whitespace
+ return s.replace(/[¿¡]/g,'').replace(/\\s+([,.;:!?])/g,'$1').replace(/\\s{2,}/g,' ').trim();
+}
 function mnBuildEnglishQuestion(idx){
  const q=qs[idx]||['',[],0,'',''];
  const ov=MN_EN_QUESTION_OVERRIDES[String(q[0]||'').trim()];
  if(ov)return [ov[0],ov[1],q[2],ov[2],q[4]];
- return [mnEnglishClinicalText(q[0]),(q[1]||[]).map(mnEnglishClinicalText),q[2],mnEnglishClinicalText(q[3]),q[4]];
+ return [mnFinalEnglishText(mnEnglishClinicalText(q[0])),(q[1]||[]).map(x=>mnFinalEnglishText(mnEnglishClinicalText(x))),q[2],mnFinalEnglishText(mnEnglishClinicalText(q[3])),q[4]];
 }
 
 function mnSpanishClinicalText(text){
