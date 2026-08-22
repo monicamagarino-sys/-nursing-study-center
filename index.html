@@ -4314,6 +4314,187 @@ answerAdaptiveExam=function(n){
 
 </script>
 
+
+<script>
+/* V28 — STRUCTURAL BILINGUAL CONSISTENCY LAYER
+   One language source for modules, cards, search, practice refresh, and shared controls. */
+(function(){
+  const _esc = (v)=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const isEn=()=>typeof appState!=='undefined' && appState && appState.planLang==='en';
+
+  const ES_REPL=[
+    ['Toddler','Niño pequeño'],['Preschool','Preescolar'],['Older adult','Adulto mayor'],['Infant','Lactante'],['newborn','recién nacido'],
+    ['Developmental Dysplasia of Hip','Displasia del desarrollo de la cadera'],['Central venous access','Acceso venoso central'],['Peripheral IV','IV periférica'],['Air embolism','Embolia aérea'],['CVC dressing','Apósito de CVC'],['Infiltration / extravasation','Infiltración / extravasación'],
+    ['IV fluids — hypo/hypertonic','Líquidos IV — hipo/hipertónicos'],['IV fluids — isotonic','Líquidos IV — isotónicos'],['Blood compatibility','Compatibilidad sanguínea'],['Transfusion reaction','Reacción transfusional'],
+    ['Platelets and coagulation','Plaquetas y coagulación'],['Liver, renal, and cardiac labs','Laboratorios hepáticos, renales y cardíacos'],['HIV, syphilis, and UTI','VIH, sífilis e ITU'],['Basic labs','Laboratorios básicos'],['Therapeutic drug levels','Niveles terapéuticos de fármacos'],
+    ['ABG sampling and pulse oximetry','Muestra de gases arteriales y oximetría de pulso'],['Upper GI endoscopy and bronchoscopy','Endoscopia digestiva alta y broncoscopia'],['Nuclear tests and MRI','Pruebas nucleares y resonancia magnética'],['Pre-op care','Cuidados preoperatorios'],['DVT prevention','Prevención de TVP'],
+    ['Hyponatremia','Hiponatremia'],['Hypernatremia','Hipernatremia'],['Hypokalemia','Hipopotasemia'],['Hyperkalemia','Hiperpotasemia'],['Hypocalcemia','Hipocalcemia'],['Hypercalcemia','Hipercalcemia'],['Hypomagnesemia','Hipomagnesemia'],['Hypermagnesemia','Hipermagnesemia'],
+    ['ABG normal values','Valores normales de gases arteriales'],['Lungs & kidneys','Pulmones y riñones'],['Metabolic acidosis','Acidosis metabólica'],['Respiratory acidosis','Acidosis respiratoria'],['Metabolic alkalosis','Alcalosis metabólica'],['Respiratory alkalosis','Alcalosis respiratoria'],
+    ['Positioning','Posicionamiento'],['Infant respiratory distress','Dificultad respiratoria del lactante'],['Metered-dose inhaler','Inhalador de dosis medida'],['Pneumothorax / tension pneumothorax','Neumotórax / neumotórax a tensión'],
+    ['Hemodynamics','Hemodinámica'],['Heart failure','Insuficiencia cardíaca'],['Myocardial infarction','Infarto de miocardio'],['Metabolic syndrome / CAD risk','Síndrome metabólico / riesgo de enfermedad coronaria'],['Cardioversion vs defibrillation','Cardioversión vs desfibrilación'],['Pacemaker / ICD care','Cuidados de marcapasos / DAI'],
+    ['Neurologic','Neurológico'],['Neuro positioning','Posicionamiento neurológico'],['Stroke','Accidente cerebrovascular'],['Seizure','Convulsión'],['Retinal detachment','Desprendimiento de retina'],['Eyes and ENT','Ojos y ORL'],
+    ['Gout nursing','Cuidados de enfermería para la gota'],['Musculoskeletal Disorders','Trastornos musculoesqueléticos'],['Gastrointestinal System','Sistema gastrointestinal'],['Neurologic Disorders','Trastornos neurológicos'],['Respiratory Disorders','Trastornos respiratorios'],['Labs and Procedures','Laboratorios y procedimientos'],['ABG & Electrolytes','Gases arteriales y electrolitos'],
+    ['Hirschsprung disease','Enfermedad de Hirschsprung'],['Hypertrophic pyloric stenosis','Estenosis pilórica hipertrófica'],['Cleft lip/palate','Labio y paladar hendido'],['Intussusception','Invaginación intestinal'],
+    ['Suicide precautions','Precauciones para suicidio'],['Mental health','Salud mental'],['Major depression','Depresión mayor'],['Personality disorders','Trastornos de personalidad'],['Eating disorders','Trastornos de la alimentación'],
+    ['heart failure','insuficiencia cardíaca'],['right-sided','del lado derecho'],['left-sided','del lado izquierdo'],['right-side','lado derecho'],['left-side','lado izquierdo'],['cardiac rhythm','ritmo cardíaco'],['cardiac monitor','monitor cardíaco'],['cardiac monitoring','monitorización cardíaca'],
+    ['blood pressure','presión arterial'],['blood return','retorno sanguíneo'],['blood flow','flujo sanguíneo'],['blood glucose','glucosa en sangre'],['blood','sangre'],['bleeding','sangrado'],['medical emergency','emergencia médica'],
+    ['water replacement','reposición de agua'],['volume expansion','expansión de volumen'],['low-potassium diet','dieta baja en potasio'],['low-sodium diet','dieta baja en sodio'],['high-potassium diet','dieta alta en potasio'],['water restriction','restricción de agua'],
+    ['central catheters','catéteres centrales'],['catheter tip','punta del catéter'],['catheter','catéter'],['transparent dressing','apósito transparente'],['dressing','apósito'],['nonsterile gloves','guantes no estériles'],['sterile gloves','guantes estériles'],['insertion site','sitio de inserción'],
+    ['respiratory distress','dificultad respiratoria'],['respiratory failure','insuficiencia respiratoria'],['hypotension','hipotensión'],['hypertension','hipertensión'],['tachycardia','taquicardia'],['bradycardia','bradicardia'],['dyspnea','disnea'],['orthopnea','ortopnea'],['crackles','crepitantes'],['wheezing','sibilancias'],
+    ['head down','cabeza abajo'],['left lateral','decúbito lateral izquierdo'],['right side','lado derecho'],['left side','lado izquierdo'],['prone','prono'],['supine','supino'],['head of bed','cabecera de la cama'],['HOB','cabecera de la cama'],
+    ['nurse','enfermera'],['client','paciente'],['mask','mascarilla'],['air dry','secar al aire'],['scrub','fricción'],['flush','lavado'],['syringe','jeringa'],['tourniquet','torniquete'],['bevel up','bisel hacia arriba'],['stylet','estilete'],
+    ['screening','detección'],['healing','cicatrización'],['wound','herida'],['pain','dolor'],['seizures','convulsiones'],['muscle weakness','debilidad muscular'],['brain edema','edema cerebral'],['confusion','confusión'],['altered mental status','alteración del estado mental'],
+    ['increased','aumentado'],['decreased','disminuido'],['normal','normal'],['risk','riesgo'],['source','resumen'],['summary','resumen'],['findings','hallazgos'],['interventions','intervenciones'],['causes','causas'],['treatment','tratamiento'],['nursing','enfermería'],
+    ['therapeutic','terapéutico'],['positive','positivo'],['negative','negativo'],['high','alto'],['low','bajo'],['daily','diario'],['weight','peso'],['fluid','líquido'],['urine','orina'],['kidney','riñón'],['liver','hígado'],['lung','pulmón'],['heart','corazón'],
+    ['and','y'],['with','con'],['without','sin'],['after','después de'],['before','antes de'],['during','durante'],['for','para'],['from','de'],['or','o']
+  ];
+  function spanishStudyText(value){
+    let s=String(value??'');
+    if(typeof mnSpanishClinicalText==='function')s=mnSpanishClinicalText(s);
+    for(const [a,b] of ES_REPL){
+      const re=new RegExp('\\b'+a.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+'\\b','gi');
+      s=s.replace(re,b);
+    }
+    s=s.replace(/\s+([,.;:!?])/g,'$1').replace(/\s{2,}/g,' ').trim();
+    return s;
+  }
+  window.mnSpanishStudyText=spanishStudyText;
+
+  function lessonForLang(key){
+    if(isEn() && typeof lessonsEn!=='undefined' && lessonsEn[key]) return lessonsEn[key];
+    const base=(typeof lessons!=='undefined'&&lessons[key])?lessons[key]:null;
+    if(!base)return null;
+    return {title:(typeof mnModuleTitle==='function'?mnModuleTitle(key,false):spanishStudyText(base.title)),items:(base.items||[]).map(x=>[spanishStudyText(x[0]),spanishStudyText(x[1])])};
+  }
+  window.mnLessonForLang=lessonForLang;
+
+  function localizedVisuals(k,originalTitle,displayTitle){
+    if(typeof inlineVisualsForLesson!=='function')return '';
+    let html=inlineVisualsForLesson(k,originalTitle)||'';
+    if(!html)return '';
+    const cap=(isEn()?'Clinical illustration: ':'Ilustración clínica: ')+displayTitle;
+    html=html.replace(/<figcaption>[\s\S]*?<\/figcaption>/g,'<figcaption>'+_esc(cap)+'</figcaption>');
+    html=html.replace(/alt="[^"]*"/g,'alt="'+_esc(cap)+'"');
+    return html;
+  }
+
+  window.renderTopics=function(){
+    const box=document.getElementById('topicGrid');if(!box)return;const en=isEn();
+    box.innerHTML=(typeof CORE_MODULES!=='undefined'?CORE_MODULES:Object.keys(lessons).map(k=>[k,lessons[k].title])).map(([k],i)=>{
+      const l=lessonForLang(k);if(!l)return '';
+      return `<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${_esc(l.title)}</h3><small>${l.items.length} ${en?'review blocks':'bloques de repaso'}</small></div>`;
+    }).join('');
+  };
+
+  window.openLesson=function(k){
+    if(typeof show==='function')show('temas');
+    const en=isEn(),l=lessonForLang(k),sourceLesson=lessons[k];if(!l)return;
+    const completed=appState.completed.includes(k);
+    if(typeof rememberStudy==='function')rememberStudy('module',k,l.title);
+    const moduleQs=qs.reduce((a,q,i)=>{if(q[4]===k)a.push(i);return a},[]);
+    const audioCode=en?'en-US':'es-US';
+    appState.audio=appState.audio||{lang:audioCode,rate:1};appState.audio.lang=audioCode;
+    document.getElementById('topicGrid').innerHTML=`<div class="card">
+      <div class="actions"><button class="secondary" onclick="renderTopics()">← ${en?'All modules':'Todos los módulos'}</button>
+      <button class="${completed?'secondary':'goodbtn'}" onclick="toggleComplete('${k}')">${completed?(en?'✅ Completed — mark pending':'✅ Completado — marcar pendiente'):(en?'✓ Mark module completed':'✓ Marcar módulo completado')}</button>
+      ${moduleQs.length?`<button class="warnbtn" onclick="startModuleQuiz('${k}')">📝 ${en?'Module quiz':'Quiz del módulo'} (${moduleQs.length})</button>`:''}</div>
+      <h2>${_esc(l.title)}</h2>
+      <div class="audio-tools"><b>🔊 ${en?'Read aloud':'Lectura en voz alta'}</b><div class="actions">
+      <select id="audioLang-${k}" onchange="saveAudioSettings('${k}')"><option value="es-US" ${!en?'selected':''}>Español</option><option value="en-US" ${en?'selected':''}>English</option></select>
+      <select id="audioRate-${k}" onchange="saveAudioSettings('${k}')"><option value="0.75" ${Number(appState.audio.rate)===0.75?'selected':''}>${en?'Slow':'Lenta'}</option><option value="1" ${Number(appState.audio.rate)===1?'selected':''}>${en?'Normal':'Normal'}</option><option value="1.25" ${Number(appState.audio.rate)===1.25?'selected':''}>${en?'Fast':'Rápida'}</option></select>
+      <button class="primary" onclick="readModuleAloud('${k}')">▶ ${en?'Read module':'Leer módulo'}</button><button class="secondary" onclick="pauseSpeech()">⏸ ${en?'Pause':'Pausar'}</button><button class="secondary" onclick="resumeSpeech()">${en?'Continue':'Continuar'}</button><button class="secondary" onclick="stopSpeech()">⏹ ${en?'Stop':'Detener'}</button></div></div>
+      <div class="card" style="background:#fffdf3"><h3>🗒️ ${en?'My notes':'Mis notas'}</h3>
+      <textarea class="note-area" maxlength="1500" placeholder="${en?'Write your notes, reminders, or important concepts here…':'Escribe aquí tus apuntes, recordatorios o conceptos importantes…'}" oninput="saveModuleNote('${k}',this.value)">${_esc(appState.notes[k]||'')}</textarea>
+      <div class="actions"><span id="noteStatus-${k}" class="note-saved">${en?'Auto-saved':'Guardado automático'}</span><button class="secondary" onclick="readModuleNoteAloud('${k}')">🔊 ${en?'Read note':'Leer nota'}</button><button class="secondary" onclick="deleteModuleNote('${k}')">${en?'Delete note':'Eliminar nota'}</button></div></div>
+      ${l.items.map((x,idx)=>{const originalTitle=sourceLesson?.items?.[idx]?.[0]||x[0],visual=localizedVisuals(k,originalTitle,x[0]);return `<div class="lesson ${visual?'lesson-with-visual':''}"><div><h3>${_esc(x[0])}</h3><p>${_esc(x[1])}</p></div>${visual}</div>`}).join('')}
+      </div>`;
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+
+  window.allFlashcards=function(){
+    const cards=[];CORE_MODULES.forEach(([key],moduleIndex)=>{const l=lessonForLang(key);(l?.items||[]).forEach((item,itemIndex)=>cards.push({id:`${key}:${itemIndex}`,key,moduleIndex,moduleTitle:l.title.replace(/^(Clase|Class) \d+ — /,''),front:item[0],back:item[1]}))});return cards;
+  };
+  window.renderFlashcards=function(){
+    const box=document.getElementById('flashcardsBox');if(!box)return;if(flashDeck.length){renderFlashcardStudy();return}const en=isEn(),s=flashcardStats();
+    box.innerHTML=`<div class="card"><span class="pill">${en?'SPACED REPETITION':'REPETICIÓN ESPACIADA'}</span><h2>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h2><p>${en?'Tap each card to reveal the answer. Difficult cards will return more often.':'Toca cada tarjeta para revelar la respuesta. Las difíciles regresarán con mayor frecuencia.'}</p><div class="final-stats"><div class="stat flash-stat"><b>${s.total}</b>${en?'Total':'Total'}</div><div class="stat flash-stat"><b>${s.seen}</b>${en?'Studied':'Estudiadas'}</div><div class="stat flash-stat"><b>${s.mastered}</b>${en?'Mastered':'Dominadas'}</div><div class="stat flash-stat"><b>${s.due}</b>${en?'Due':'Para repasar'}</div></div><div class="flash-config"><label><b>${en?'Module':'Módulo'}</b><select id="flashModule" class="flash-select"><option value="all">${en?'All modules mixed':'Todos los módulos mezclados'}</option>${CORE_MODULES.map(([key],i)=>{const l=lessonForLang(key);return `<option value="${key}">${i+1}. ${_esc((l?.title||key).replace(/^(Clase|Class) \d+ — /,''))}</option>`}).join('')}</select></label><label><b>${en?'Cards':'Cantidad'}</b><select id="flashCount" class="flash-select"><option>10</option><option selected>20</option><option>30</option></select></label></div><button class="primary" onclick="startFlashcards()">${en?'Start flashcards':'Comenzar tarjetas'}</button></div>`;
+  };
+  window.renderFlashcardStudy=function(){
+    const box=document.getElementById('flashcardsBox');if(!box)return;if(flashPos>=flashDeck.length){finishFlashcards();return}const en=isEn(),c=flashDeck[flashPos],p=appState.flashcards[c.id]||{};
+    box.innerHTML=`<div class="flashcard-stage"><div class="exam-meta"><b>${en?'Card':'Tarjeta'} ${flashPos+1}/${flashDeck.length}</b><span>${flashKnown} ${en?'know':'sé'} · ${flashReview} ${en?'review':'repasar'}</span></div><div class="flashcard" onclick="flipFlashcard()"><span class="pill">${en?'MODULE':'MÓDULO'} ${c.moduleIndex+1} · ${_esc(c.moduleTitle)}</span><h2>${_esc(c.front)}</h2><p id="flashPrompt" class="muted ${flashFlipped?'flash-hidden':''}">${en?'Tap to show the answer':'Toca para mostrar la respuesta'}</p><div id="flashAnswer" class="flash-answer ${flashFlipped?'':'flash-hidden'}"><p>${_esc(c.back)}</p>${p.interval?`<small class="muted">${en?'Current interval':'Intervalo actual'}: ${p.interval} ${en?(p.interval===1?'day':'days'):(p.interval===1?'día':'días')}</small>`:''}</div></div><div class="flash-controls ${flashFlipped?'':'flash-hidden'}"><button class="warnbtn" onclick="rateFlashcard(false)">${en?'I need to review it':'Necesito repasarlo'}</button><button class="goodbtn" onclick="rateFlashcard(true)">${en?'I know it':'Lo sé'}</button><button class="secondary" onclick="readTextAloud(flashDeck[flashPos].back)">🔊 ${en?'Listen':'Escuchar'}</button></div></div>`;
+  };
+  window.finishFlashcards=function(){
+    appState.lifetime.flashcardSessions=Math.max(0,Number(appState.lifetime.flashcardSessions||0)+1);saveState();const en=isEn(),box=document.getElementById('flashcardsBox'),total=flashDeck.length;flashDeck=[];box.innerHTML=`<div class="card"><h2>✅ ${en?'Flashcard session completed':'Sesión de tarjetas completada'}</h2><p>${en?'You finished':'Terminaste'} ${total} ${en?'cards':'tarjetas'}: <b>${flashKnown}</b> ${en?'marked “I know it”':'marcadas “Lo sé”'} ${en?'and':'y'} <b>${flashReview}</b> ${en?'to review':'para repasar'}.</p><div class="actions"><button class="primary" onclick="renderFlashcards()">${en?'Choose another session':'Elegir otra sesión'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to home':'Volver al inicio'}</button></div></div>`;
+  };
+
+  window.renderSearch=function(query){
+    const box=document.getElementById('searchResults');if(!box)return;const en=isEn(),term=normalizeSearchText(query);
+    if(term.length<2){box.innerHTML=`<div class="card empty">${en?'Type at least two letters to search the 20 modules.':'Escribe al menos dos letras para buscar en los 20 módulos.'}</div>`;return}
+    const terms=searchTermsFor(term),matches=text=>{const normalized=normalizeSearchText(text);return terms.some(t=>normalized.includes(t))},results=[];
+    CORE_MODULES.forEach(([key],moduleIndex)=>{const l=lessonForLang(key);if(!l)return;const clean=l.title.replace(/^(Clase|Class) \d+ — /,'');if(matches(clean))results.push({key,moduleIndex,title:clean,text:en?`Module ${moduleIndex+1}`:`Módulo ${moduleIndex+1}`});l.items.forEach(item=>{if(matches((item[0]||'')+' '+(item[1]||'')))results.push({key,moduleIndex,title:item[0]||'',text:item[1]||''})});const note=appState.notes[key]||'';if(note&&matches(note))results.push({key,moduleIndex,title:en?'🗒️ My notes':'🗒️ Mis notas',text:note})});
+    const shown=results.slice(0,50);if(!shown.length){box.innerHTML=`<div class="card empty">${en?'No results found for':'No encontramos resultados para'} <b>${_esc(query)}</b>. ${en?'Try another word.':'Prueba otra palabra.'}</div>`;return}
+    box.innerHTML=`<p class="muted"><b>${results.length}</b> ${en?(results.length===1?'result':'results'):(results.length===1?'resultado':'resultados')}${results.length>50?(en?' · showing the first 50':' · mostrando los primeros 50'):''}</p>`+shown.map(r=>`<div class="card search-result"><div class="module-num">${en?'MODULE':'MÓDULO'} ${r.moduleIndex+1}</div><h3>${_esc(r.title)}</h3><p>${_esc(r.text.length>240?r.text.slice(0,240)+'…':r.text)}</p><button class="primary" onclick="openLesson('${r.key}')">${en?'Open module':'Abrir módulo'}</button></div>`).join('');
+  };
+
+  const UI_EXACT={
+    'Simulacro NCLEX':'NCLEX Simulation','Práctica personalizada':'Custom practice','Sin límite de tiempo':'No time limit','Correctas en esta sesión:':'Correct this session:','Práctica general':'General practice','Siguiente':'Next','Escuchar explicación':'Listen to explanation','Incorrecto':'Incorrect','Correcto':'Correct','Buscar contenido':'Search content','Todos los módulos':'All modules','Marcar módulo completado':'Mark module completed','Quiz del módulo':'Module quiz','Lectura en voz alta':'Read aloud','Leer módulo':'Read module','Pausar':'Pause','Continuar':'Continue','Detener':'Stop','Mis notas':'My notes','Guardado automático':'Auto-saved','Leer nota':'Read note','Eliminar nota':'Delete note','Preguntas':'Questions','Medicamentos':'Medications','Mi progreso':'My progress','Cuenta':'Account','Logros':'Achievements','Estadísticas':'Statistics','Favoritos':'Favorites','Errores':'Errors','Abrir módulo':'Open module'
+  };
+  function applyUniversalText(){
+    const en=isEn();if(!en)return;
+    document.querySelectorAll('button,h1,h2,h3,h4,label,summary,.pill,.module-num,.score,.muted').forEach(el=>{
+      if(el.children.length>0 && !['BUTTON','LABEL','SUMMARY'].includes(el.tagName))return;
+      const raw=(el.textContent||'').trim();
+      if(UI_EXACT[raw])el.textContent=UI_EXACT[raw];
+      else {
+        let v=raw;
+        for(const [es,enText] of Object.entries(UI_EXACT))v=v.replace(new RegExp('^'+es.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+'(?=\\s|$)'),enText);
+        if(v!==raw)el.textContent=v;
+      }
+    });
+    document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+      const p=el.getAttribute('placeholder')||'';
+      if(/Escribe aquí tus apuntes/i.test(p))el.setAttribute('placeholder','Write your notes, reminders, or important concepts here…');
+      if(/Buscar:|Ejemplo:/i.test(p))el.setAttribute('placeholder','Search nursing content…');
+    });
+  }
+  window.mnApplyUniversalText=applyUniversalText;
+
+  const oldSet=window.setGlobalLanguage;
+  window.setGlobalLanguage=function(lang){
+    if(typeof oldSet==='function')oldSet(lang);else appState.planLang=lang==='en'?'en':'es';
+    const active=document.querySelector('section.active')?.id||'inicio';
+    try{
+      if(typeof renderTopics==='function'&&active==='temas'){
+        const last=appState.lastStudy;if(last?.type==='module'&&last.key&&lessons[last.key])openLesson(last.key);else renderTopics();
+      }
+      if(typeof renderFlashcards==='function'&&(active==='tarjetas'||document.getElementById('flashcardsBox')))renderFlashcards();
+      if(typeof renderSearch==='function'){const ss=document.getElementById('smartSearch');if(ss)renderSearch(ss.value)}
+      if(typeof renderMedCalc==='function'&&active==='medcalc')renderMedCalc();
+      if(typeof renderAchievements==='function'&&active==='logros')renderAchievements();
+      if(active==='quiz'&&typeof renderPractice==='function'&&practiceOrder?.length)renderPractice();
+      if(active==='exam'){
+        if(typeof customOrder!=='undefined'&&customOrder?.length&&typeof renderCustomExam==='function')renderCustomExam();
+        else if(typeof examOrder!=='undefined'&&examOrder?.length&&typeof renderExam==='function')renderExam();
+        else if(typeof renderExamLanding==='function')renderExamLanding();
+      }
+      if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
+      setTimeout(applyUniversalText,0);
+    }catch(e){console.warn('V28 bilingual refresh',e)}
+  };
+
+  // Keep legacy module-reader helpers aligned with the same source.
+  if(typeof readModuleAloud==='function'){
+    window.mnModuleSpeechText=function(k){const l=lessonForLang(k);return l?[l.title,...l.items.flat()].join('. '):''};
+    const oldRead=window.readModuleAloud;
+    window.readModuleAloud=function(k){
+      const l=lessonForLang(k);if(!l)return oldRead(k);const text=[l.title,...l.items.flat()].join('. ');if(typeof startSpeech==='function')return startSpeech(text);if(typeof readTextAloud==='function')return readTextAloud(text);return oldRead(k);
+    };
+  }
+
+  // Initial consistency pass after the app has loaded.
+  setTimeout(()=>{try{if(typeof renderTopics==='function')renderTopics();if(typeof buildGroupedUI==='function')buildGroupedUI();applyUniversalText()}catch(e){}},0);
+})();
+</script>
+
 </body>
 </html>
 
