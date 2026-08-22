@@ -2145,8 +2145,8 @@ function getStudyRecommendation(){
 }
 function renderStudyRecommendation(){
  const r=getStudyRecommendation();if(!r)return '';
- const en=appState.planLang==='en';
- return `<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'TODAY’S RECOMMENDATION':'RECOMENDACIÓN DE HOY'}</span><h2>🧠 ${en?'Module':'Módulo'} ${r.index+1}: ${esc(r.title)}</h2><p>${esc(r.reason)}</p><div class="actions"><button class="warnbtn" onclick="openLesson('${r.key}')">${en?'Study today’s recommendation':'Estudiar recomendación de hoy'}</button><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Go straight to the quiz':'Ir directamente al quiz'}</button></div></div>`;
+ const en=appState.planLang==='en',coach=dailyCoachPreview();
+ return `<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'TODAY’S RECOMMENDATION':'RECOMENDACIÓN DE HOY'}</span><h2>🧠 ${en?'Module':'Módulo'} ${r.index+1}: ${esc(r.title)}</h2><p>${esc(r.reason)}</p><div class="card" style="margin:12px 0;background:rgba(255,255,255,.72)"><b>${en?'🎯 Today’s focus':'🎯 Enfoque de hoy'}</b><p class="muted" style="margin-bottom:0">${esc(coach)}</p></div><div class="actions"><button class="warnbtn" onclick="openLesson('${r.key}')">${en?'Study today’s recommendation':'Estudiar recomendación de hoy'}</button><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Go straight to the quiz':'Ir directamente al quiz'}</button></div></div>`;
 }
 function rememberStudy(type,key='',label=''){
  const next={type,key,label,updatedAt:Date.now()};
@@ -2496,6 +2496,23 @@ function startMistakePractice(){
  rememberStudy('mistakes','',practiceLabel);
  show('quiz');
 }
+
+function dailyCoachPreview(){
+ const en=appState.planLang==='en';
+ const mistakes=(appState.mistakes||[]).length;
+ const weak=typeof weakModules==='function'?weakModules():[];
+ const names=weak.slice(0,2).map(w=>{
+   const key=Array.isArray(w)?w[0]:(w.key||w.module||w);
+   if(typeof mnModuleTitle==='function')return mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+   return lessons[key]?.title?.replace(/^Clase\s+\d+\s+—\s+/,'')||key;
+ }).filter(Boolean);
+ const parts=[];
+ if(mistakes)parts.push(en?`${Math.min(5,mistakes)} pending-error questions`:`${Math.min(5,mistakes)} preguntas de errores pendientes`);
+ if(names.length)parts.push(en?`focused review: ${names.join(' + ')}`:`repaso enfocado: ${names.join(' + ')}`);
+ if(!parts.length)parts.push(en?'mixed review to maintain your progress':'repaso mixto para mantener tu progreso');
+ return parts.join(' · ');
+}
+
 function startDailyPractice(){
  const selected=[],used=new Set();
  const add=list=>list.forEach(idx=>{if(selected.length<10&&qs[idx]&&!used.has(idx)){used.add(idx);selected.push(idx)}});
