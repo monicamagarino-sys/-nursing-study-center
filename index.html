@@ -3762,6 +3762,19 @@ function setGlobalLanguage(lang){
  if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
  if(typeof markGroup==='function')markGroup(active);
 }
+// V27 — bilingual achievements refresh
+const MN_ACHIEVEMENT_I18N={
+ first_question:['Primer paso','Responder la primera pregunta','First step','Answer your first question'],
+ first_practice:['Primera práctica','Completar una sesión de práctica','First practice','Complete a practice session'],
+ first_flash:['Primera tarjeta','Estudiar una tarjeta inteligente','First flashcard','Study a smart flashcard'],
+ flash50:['50 tarjetas dominadas','Alcanzar un intervalo de 14 días en 50 tarjetas','50 flashcards mastered','Reach a 14-day interval on 50 flashcards'],
+ q100:['100 preguntas','Responder 100 preguntas','100 questions','Answer 100 questions'],q500:['500 preguntas','Responder 500 preguntas','500 questions','Answer 500 questions'],q1000:['1,000 preguntas','Responder 1,000 preguntas','1,000 questions','Answer 1,000 questions'],
+ module_done:['Primer módulo','Completar un módulo','First module','Complete one module'],master1:['Primer dominio','Lograr 80% o más en un quiz','First mastery','Score 80% or higher on a quiz'],master5:['5 módulos dominados','Dominar cinco quizzes','5 modules mastered','Master five module quizzes'],master10:['10 módulos dominados','Dominar diez quizzes','10 modules mastered','Master ten module quizzes'],master20:['Maestría completa','Dominar los 20 módulos','Complete mastery','Master all 20 modules'],week_goal:['Semana perfecta','Completar las tres metas semanales','Perfect week','Complete all three weekly goals'],streak3:['Racha de 3 días','Estudiar tres días seguidos','3-day streak','Study three days in a row'],streak7:['Racha de 7 días','Estudiar siete días seguidos','7-day streak','Study seven days in a row'],streak14:['Racha de 14 días','Estudiar catorce días seguidos','14-day streak','Study fourteen days in a row'],streak30:['Racha de 30 días','Estudiar treinta días seguidos','30-day streak','Study thirty days in a row'],exam_first:['Primer examen','Completar un examen','First exam','Complete an exam'],nclex_pass:['Meta NCLEX','Lograr 76 respuestas correctas en el simulacro','NCLEX goal','Get 76 correct answers on the simulation'],ngn_first:['Primer caso NGN','Completar un caso clínico NGN','First NGN case','Complete an NGN clinical case'],ngn_perfect:['Juicio clínico perfecto','Lograr 100% en un caso NGN','Perfect clinical judgment','Score 100% on an NGN case']
+};
+renderAchievements=function(){
+ updateAchievements();const box=document.getElementById('achievementsBox');if(!box)return;const en=appState.planLang==='en',earned=ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length;
+ box.innerHTML=`<div class="card"><h2>🏆 ${en?'My achievements':'Mis logros'}</h2><p><b>${earned}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned. Every step counts.':'medallas conseguidas. Cada avance cuenta.'}</p><div class="progressbar"><span style="width:${pct(earned,ACHIEVEMENT_DEFS.length)}%"></span></div></div><div class="achievement-grid">${ACHIEVEMENT_DEFS.map(a=>{const date=appState.achievements[a.id],t=MN_ACHIEVEMENT_I18N[a.id],title=t?(en?t[2]:t[0]):a.title,desc=t?(en?t[3]:t[1]):a.desc;return `<div class="card achievement ${date?'earned':'locked'}"><span class="medal">${date?a.icon:'🔒'}</span><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="status">${date?`${en?'EARNED':'CONSEGUIDO'} · ${esc(new Date(date).toLocaleDateString(en?'en-US':'es-US'))}`:(en?'LOCKED':'BLOQUEADO')}</span></div>`}).join('')}</div>`;
+}
 function restoreGlobalLanguage(){
  const lang=localStorage.getItem('mnsc_user_lang_choice')
    ||localStorage.getItem('mnsc_global_lang')
