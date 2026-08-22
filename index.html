@@ -2513,15 +2513,25 @@ function dailyCoachPreview(){
  return parts.join(' · ');
 }
 
+
+let dailyCoachSession=null;
+function dailyCoachModuleName(key,en){
+ if(typeof mnModuleTitle==='function')return mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+ const source=en&&typeof lessonsEn!=='undefined'&&lessonsEn[key]?lessonsEn[key]:lessons[key];
+ return String(source?.title||key).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+}
+
 function startDailyPractice(){
  const selected=[],used=new Set();
  const add=list=>list.forEach(idx=>{if(selected.length<10&&qs[idx]&&!used.has(idx)){used.add(idx);selected.push(idx)}});
+ const beforeMistakes=(appState.mistakes||[]).length;
  add(shuffled(appState.mistakes).slice(0,5));
- const weakKeys=new Set(getWeakModuleKeys().map(x=>x.key));
+ const weakList=getWeakModuleKeys(),weakKeys=new Set(weakList.map(x=>x.key));
  const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.has(q[4]))a.push(i);return a},[]);
  add(shuffled(weakPool));
  add(shuffled([...Array(qs.length).keys()]));
- practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;practiceSessionAnswered=0;
+ dailyCoachSession={beforeMistakes,focusKeys:weakList.slice(0,2).map(x=>x.key),byModule:{},startedAt:Date.now()};
+ practiceModule='';practiceLabel=appState.planLang==='en'?'Daily study plan':'Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;practiceSessionAnswered=0;
  practiceOrder=shuffled(selected);practicePos=0;rememberStudy('daily','',practiceLabel);show('quiz');
 }
 
@@ -2646,20 +2656,24 @@ function renderPractice(){
  document.getElementById('next').style.display='none';
 }
 function answerPractice(idx,n){
- if(answeredFinal)return; answeredFinal=true; const x=qs[idx],ops=document.querySelectorAll('#quizBox .option');
- ops[x[2]].classList.add('correct'); if(n!==x[2])ops[n].classList.add('wrong');
- appState.practice.attempts++;
- practiceSessionAnswered++;
- addWeekly('questions');
- if(n===x[2]){
-   appState.practice.correct++;
-   practiceSessionCorrect++;
-   if(dailyPractice)dailyCorrect++;
+ if(answeredFinal)return;
+ answeredFinal=true;
+ const en=appState.planLang==='en',x=questionForLang(idx),raw=qs[idx],ops=document.querySelectorAll('#quizBox .option');
+ ops[x[2]].classList.add('correct');if(n!==x[2])ops[n].classList.add('wrong');
+ appState.practice.attempts++;practiceSessionAnswered++;addWeekly('questions');
+ const isCorrect=n===x[2];
+ if(isCorrect){
+   appState.practice.correct++;practiceSessionCorrect++;if(dailyPractice)dailyCorrect++;
    if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx);
  }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
+ if(dailyPractice&&dailyCoachSession){
+   const key=raw?.[4]||'other',row=dailyCoachSession.byModule[key]||{correct:0,total:0};
+   row.total++;if(isCorrect)row.correct++;
+   dailyCoachSession.byModule[key]=row;
+ }
  saveState();
  document.getElementById('score').textContent=practiceSessionCorrect;
- document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
+ document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${isCorrect?(en?'✅ Correct':'✅ Correcto'):(en?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${en?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
  document.getElementById('next').style.display='inline-block';
 }
 nextQ=function(){
@@ -2673,16 +2687,32 @@ nextQ=function(){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function finishPractice(){
- const total=practiceOrder.length;
- const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
+ const en=appState.planLang==='en',total=practiceOrder.length;
+ const label=practiceLabel||(practiceModule?(typeof mnModuleTitle==='function'?mnModuleTitle(practiceModule,en):(lessons[practiceModule]?.title||'')):(en?'General practice':'Práctica general'));
  appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);
- if(practiceModule){const score=pct(practiceSessionCorrect,total),old=appState.moduleProgress[practiceModule]||{attempts:0,last:0,best:0};appState.moduleProgress[practiceModule]={attempts:old.attempts+1,last:score,best:Math.max(old.best||0,score),lastCorrect:practiceSessionCorrect,total,lastDate:new Date().toISOString()};saveState()}
+ if(practiceModule){
+   const score=pct(practiceSessionCorrect,total),old=appState.moduleProgress[practiceModule]||{attempts:0,last:0,best:0};
+   appState.moduleProgress[practiceModule]={attempts:old.attempts+1,last:score,best:Math.max(old.best||0,score),lastCorrect:practiceSessionCorrect,total,lastDate:new Date().toISOString()};saveState();
+ }
  if(dailyPractice)completeDailyPlan(total);
  if(!practiceModule&&!dailyPractice)saveState();
  const repeat=dailyPractice?'startDailyPractice()':mistakePractice?'startMistakePractice()':practiceLabel?'startWeakPractice()':practiceModule?`startModuleQuiz('${practiceModule}')`:'startPractice(true)';
- const dailyResult=dailyPractice?`<p><b>${dailyCorrect}/${total}</b> correctas (${pct(dailyCorrect,total)}%). Racha actual: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.</p>`:'';
- document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ ${dailyPractice?'Plan diario completado':'Práctica completada'}</h2><p>Terminaste las ${total} preguntas de <b>${esc(label)}</b>.</p>${dailyResult}<div class="actions"><button class="primary" onclick="${repeat}">Repetir práctica</button><button class="secondary" onclick="show('inicio')">Volver al inicio</button></div></div>`;
+ let sessionSummary='';
+ if(dailyPractice){
+   const score=pct(dailyCorrect,total),incorrect=Math.max(0,total-dailyCorrect),afterMistakes=(appState.mistakes||[]).length;
+   const resolved=Math.max(0,(dailyCoachSession?.beforeMistakes||afterMistakes)-afterMistakes);
+   const rows=Object.entries(dailyCoachSession?.byModule||{}).filter(([,r])=>r.total>0)
+     .sort((a,b)=>b[1].total-a[1].total||b[1].correct-a[1].correct)
+     .slice(0,4)
+     .map(([key,r])=>{
+       const p=pct(r.correct,r.total),focus=(dailyCoachSession?.focusKeys||[]).includes(key);
+       return `<div class="module-report-row"><strong>${focus?'🎯 ':''}${esc(dailyCoachModuleName(key,en))}</strong><span>${r.correct}/${r.total}<br>${p}%</span><small class="${p>=80?'level-good':p>=65?'level-mid':'level-low'}">${p>=80?(en?'Strong':'Fuerte'):p>=65?(en?'Improving':'Mejorando'):(en?'Review':'Repasar')}</small></div>`;
+     }).join('');
+   sessionSummary=`<div class="card" style="margin-top:14px"><span class="pill">${en?'SESSION SUMMARY':'RESUMEN DE LA SESIÓN'}</span><h3>📊 ${en?'How you did today':'Cómo te fue hoy'}</h3><div class="final-stats"><div class="stat"><b>${dailyCorrect}/${total}</b>${en?'Correct':'Correctas'}</div><div class="stat"><b>${incorrect}</b>${en?'Incorrect':'Incorrectas'}</div><div class="stat"><b>${score}%</b>${en?'Accuracy':'Precisión'}</div><div class="stat"><b>${resolved}</b>${en?'Pending errors resolved':'Errores pendientes resueltos'}</div></div>${rows?`<h3>🎯 ${en?'Performance in today’s topics':'Rendimiento en los temas de hoy'}</h3><div class="module-report">${rows}</div>`:''}<p class="muted">${score>=80?(en?'Great session. Keep reinforcing these topics to make the improvement stick.':'Muy buena sesión. Sigue reforzando estos temas para consolidar la mejora.'):score>=65?(en?'You are making progress. Another focused review can strengthen these areas.':'Vas mejorando. Otro repaso enfocado puede fortalecer estas áreas.'):(en?'These topics still need review. The next daily plan will continue prioritizing your needs.':'Estos temas todavía necesitan repaso. El próximo plan diario seguirá priorizando tus necesidades.')}</p></div>`;
+ }
+ document.getElementById('quizBox').innerHTML=`<div class="feedback"><h2>✅ ${dailyPractice?(en?'Daily plan completed':'Plan diario completado'):(en?'Practice completed':'Práctica completada')}</h2><p>${en?'You finished':'Terminaste'} ${total} ${en?'questions from':'preguntas de'} <b>${esc(label)}</b>.</p><div class="actions"><button class="primary" onclick="${repeat}">${en?'Repeat practice':'Repetir práctica'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to Home':'Volver al inicio'}</button></div></div>${sessionSummary}`;
  document.getElementById('next').style.display='none';
+ if(dailyPractice)dailyCoachSession=null;
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function completeDailyPlan(total){
