@@ -765,8 +765,14 @@ let qi=0,correct=0,answered=false;
 function show(id){document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));if(id==="quiz")renderQ()}
 function openLesson(k){show("temas");document.getElementById("topicGrid").innerHTML=lessonHTML(k)}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>show(b.dataset.tab));
-function lessonHTML(k){let l=lessons[k];return `<div class="card"><span class="pill">${l.title}</span>${l.items.map(x=>`<div class="lesson"><h3>${x[0]}</h3><p>${x[1]}</p></div>`).join("")}</div>`}
-function renderTopics(){document.getElementById("topicGrid").innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${lessons[k].title}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("")}
+function lessonHTML(k){
+ let l=lessons[k],en=appState?.planLang==='en';
+ return `<div class="card"><span class="pill">${mnModuleTitle(k,en)}</span>${l.items.map(x=>`<div class="lesson"><h3>${x[0]}</h3><p>${x[1]}</p></div>`).join("")}</div>`
+}
+function renderTopics(){
+ const en=appState?.planLang==='en';
+ document.getElementById("topicGrid").innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${mnModuleTitle(k,en)}</h3><small>${lessons[k].items.length} ${en?'review blocks':'bloques de repaso'}</small></div>`).join("")
+}
 function filterTopics(){let q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".topic").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"block":"none")}
 function renderQ(){answered=false;let x=qs[qi];document.getElementById("quizBox").innerHTML=`<p class="question">${qi+1}. ${x[0]}</p>`+x[1].map((o,n)=>`<button class="option" onclick="answer(${n})">${String.fromCharCode(65+n)}. ${o}</button>`).join("")+`<div id="feedback"></div>`;document.getElementById("next").style.display="none"}
 function answer(n){if(answered)return;answered=true;let x=qs[qi],ops=document.querySelectorAll(".option");ops[x[2]].classList.add("correct");if(n!==x[2])ops[n].classList.add("wrong");if(n===x[2])correct++;document.getElementById("score").textContent=correct;document.getElementById("scoreTop").textContent=`${correct}/${qi+1}`;document.getElementById("feedback").innerHTML=`<div class="feedback"><b>${n===x[2]?"✅ Correcto":"❌ Incorrecto"}</b><br>${x[3]}</div>`;document.getElementById("next").style.display="inline-block"}
@@ -2116,7 +2122,8 @@ qs.push(
 const oldRenderTopics=renderTopics;
 renderTopics=function(){
   const grid=document.getElementById("topicGrid");
-  grid.innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${lessons[k].title}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("");
+  const en=appState?.planLang==='en';
+  grid.innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${mnModuleTitle(k,en)}</h3><small>${lessons[k].items.length} ${en?'review blocks':'bloques de repaso'}</small></div>`).join("");
 }
 renderTopics();
 
@@ -2740,7 +2747,10 @@ function updateDashboard(){
   <div class="stat"><b>${appState.ngn.best||0}%</b>Mejor caso NGN<br><small>${appState.ngn.taken||0} completados</small></div>
  </div>`;
  const hm=document.getElementById('homeModules');
- if(hm) hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t.replace(/^Clase \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} bloques de estudio${String(appState.notes[k]||'').trim()?' · 🗒️ Nota guardada':''}${moduleMasteryLabel(k)}</small></div>`).join('');
+ if(hm){
+ const en=appState.planLang==='en';
+ hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">${en?'MODULE':'MÓDULO'} ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(mnModuleTitle(k,en).replace(/^(Clase|Class) \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} ${en?'study blocks':'bloques de estudio'}${String(appState.notes[k]||'').trim()?(en?' · 🗒️ Saved note':' · 🗒️ Nota guardada'):''}${moduleMasteryLabel(k)}</small></div>`).join('');
+ }
  const top=document.getElementById('scoreTop');
  if(top) top.textContent=`${pct(appState.practice.correct,appState.practice.attempts)}%`;
  const weakBtn=document.getElementById('weakPracticeBtn');
@@ -2752,7 +2762,7 @@ renderTopics=function(){
  const grid=document.getElementById('topicGrid');
  grid.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')">
  <div class="module-num">MÓDULO ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(t)}</h3>
- <small>${lessons[k]?.items?.length||0} bloques de repaso${moduleMasteryLabel(k)}</small></div>`).join('');
+ <small>${lessons[k]?.items?.length||0} ${appState.planLang==='en'?'review blocks':'bloques de repaso'}${moduleMasteryLabel(k)}</small></div>`).join('');
 }
 
 function normalizeSearchText(value){
@@ -3779,6 +3789,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   buildGroupedUI();
   if(typeof updateDashboard==='function')updateDashboard();
   if(typeof renderProgress==='function')renderProgress();
+  if(typeof renderTopics==='function')renderTopics();
   const active=document.querySelector('section.active')?.id||'inicio';
   markGroup(active);
  };
