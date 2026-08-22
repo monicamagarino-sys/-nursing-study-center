@@ -4316,3 +4316,81 @@ answerAdaptiveExam=function(n){
 
 </body>
 </html>
+
+<script>
+/* MNSC bilingual consistency patch — 2026-08-22 */
+(function(){
+  const isEn=()=>appState?.planLang==='en';
+
+  // Flashcards must be built from the active-language lesson set.
+  window.allFlashcards=function(){
+    const en=isEn(), cards=[];
+    CORE_MODULES.forEach(([key,title],moduleIndex)=>{
+      const lesson=(en&&lessonsEn[key])?lessonsEn[key]:lessons[key];
+      const moduleTitle=(lesson?.title||title).replace(/^(Clase|Class) \d+ — /,'');
+      (lesson?.items||[]).forEach((item,itemIndex)=>cards.push({id:`${key}:${itemIndex}`,key,moduleIndex,moduleTitle,front:item[0],back:item[1]}));
+    });
+    return cards;
+  };
+  window.renderFlashcards=function(){
+    const box=document.getElementById('flashcardsBox');if(!box)return;if(flashDeck.length){renderFlashcardStudy();return}
+    const en=isEn(),s=flashcardStats();
+    box.innerHTML=`<div class="card"><span class="pill">${en?'SPACED REPETITION':'REPETICIÓN ESPACIADA'}</span><h2>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h2><p>${en?'Tap each card to reveal the answer. Difficult cards will return more often.':'Toca cada tarjeta para revelar la respuesta. Las difíciles regresarán con mayor frecuencia.'}</p><div class="final-stats"><div class="stat flash-stat"><b>${s.total}</b>${en?'Total':'Total'}</div><div class="stat flash-stat"><b>${s.seen}</b>${en?'Studied':'Estudiadas'}</div><div class="stat flash-stat"><b>${s.mastered}</b>${en?'Mastered':'Dominadas'}</div><div class="stat flash-stat"><b>${s.due}</b>${en?'To review':'Para repasar'}</div></div><div class="flash-config"><label><b>${en?'Module':'Módulo'}</b><select id="flashModule" class="flash-select"><option value="all">${en?'All modules mixed':'Todos los módulos mezclados'}</option>${CORE_MODULES.map(([key,title],i)=>{const l=(en&&lessonsEn[key])?lessonsEn[key]:lessons[key];return `<option value="${key}">${i+1}. ${esc((l?.title||title).replace(/^(Clase|Class) \d+ — /,''))}</option>`}).join('')}</select></label><label><b>${en?'Amount':'Cantidad'}</b><select id="flashCount" class="flash-select"><option>10</option><option selected>20</option><option>30</option></select></label></div><button class="primary" onclick="startFlashcards()">${en?'Start flashcards':'Comenzar tarjetas'}</button></div>`;
+  };
+  window.startFlashcards=function(){
+    const en=isEn(),module=document.getElementById('flashModule')?.value||'all',count=Number(document.getElementById('flashCount')?.value||20),today=dailyDateKey();
+    let pool=allFlashcards().filter(c=>module==='all'||c.key===module);pool.sort((a,b)=>{const pa=appState.flashcards[a.id]||{},pb=appState.flashcards[b.id]||{},ad=!pa.due||pa.due<=today?0:1,bd=!pb.due||pb.due<=today?0:1;return ad-bd||(pa.interval||0)-(pb.interval||0)||Math.random()-.5});
+    flashDeck=pool.slice(0,Math.min(count,pool.length));flashPos=0;flashKnown=0;flashReview=0;flashFlipped=false;rememberStudy('flashcards','',module==='all'?(en?'Flashcards from all modules':'Tarjetas de todos los módulos'):(en?'Flashcards: ':'Tarjetas: ')+(flashDeck[0]?.moduleTitle||''));show('tarjetas');
+  };
+  window.renderFlashcardStudy=function(){
+    const box=document.getElementById('flashcardsBox');if(!box)return;if(flashPos>=flashDeck.length){finishFlashcards();return}const en=isEn(),c=flashDeck[flashPos],p=appState.flashcards[c.id]||{};
+    box.innerHTML=`<div class="flashcard-stage"><div class="exam-meta"><b>${en?'Card':'Tarjeta'} ${flashPos+1}/${flashDeck.length}</b><span>${flashKnown} ${en?'know':'sé'} · ${flashReview} ${en?'review':'repasar'}</span></div><div class="flashcard" onclick="flipFlashcard()"><span class="pill">${en?'MODULE':'MÓDULO'} ${c.moduleIndex+1} · ${esc(c.moduleTitle)}</span><h2>${esc(c.front)}</h2><p id="flashPrompt" class="muted ${flashFlipped?'flash-hidden':''}">${en?'Tap to show the answer':'Toca para mostrar la respuesta'}</p><div id="flashAnswer" class="flash-answer ${flashFlipped?'':'flash-hidden'}"><p>${esc(c.back)}</p>${p.interval?`<small class="muted">${en?'Current interval':'Intervalo actual'}: ${p.interval} ${en?(p.interval===1?'day':'days'):(p.interval===1?'día':'días')}</small>`:''}</div></div><div class="flash-controls ${flashFlipped?'':'flash-hidden'}"><button class="warnbtn" onclick="rateFlashcard(false)">${en?'I need to review it':'Necesito repasarlo'}</button><button class="goodbtn" onclick="rateFlashcard(true)">${en?'I know it':'Lo sé'}</button><button class="secondary" onclick="readTextAloud(flashDeck[flashPos].back)">🔊 ${en?'Listen':'Escuchar'}</button></div></div>`;
+  };
+  window.finishFlashcards=function(){
+    appState.lifetime.flashcardSessions=Math.max(0,Number(appState.lifetime.flashcardSessions||0)+1);saveState();const en=isEn(),box=document.getElementById('flashcardsBox'),total=flashDeck.length;flashDeck=[];box.innerHTML=`<div class="card"><h2>✅ ${en?'Flashcard session completed':'Sesión de tarjetas completada'}</h2><p>${en?'You completed':'Terminaste'} ${total} ${en?'cards':'tarjetas'}: <b>${flashKnown}</b> ${en?'marked “I know it” and':'marcadas “Lo sé” y'} <b>${flashReview}</b> ${en?'to review':'para repasar'}.</p><div class="actions"><button class="primary" onclick="renderFlashcards()">${en?'Choose another session':'Elegir otra sesión'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to home':'Volver al inicio'}</button></div></div>`;
+  };
+
+  // Practice questions: always render the language-specific record.
+  window.renderPractice=function(){
+    answeredFinal=false;const en=isEn(),idx=practiceOrder[practicePos]??0,x=questionForLang(idx);document.getElementById('score').textContent=practiceSessionCorrect;const total=practiceOrder.length;
+    const baseLabel=practiceLabel||(practiceModule?((en&&lessonsEn[practiceModule])?lessonsEn[practiceModule].title:lessons[practiceModule]?.title):(en?'General practice':'Práctica general'));
+    document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(baseLabel)}</b><br>${en?'Question':'Pregunta'} ${practicePos+1} ${en?'of':'de'} ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} ${en?'this session':'en esta sesión'}</span></div><button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="${en?'Favorite':'Favorito'}">${appState.favorites.includes(idx)?'★':'☆'}</button><p class="question">${esc(x[0])}</p>`+x[1].map((o,n)=>`<button class="option" onclick="answerPractice(${idx},${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')+`<div id="feedback"></div>`;document.getElementById('next').style.display='none';
+  };
+  window.answerPractice=function(idx,n){
+    if(answeredFinal)return;answeredFinal=true;const en=isEn(),x=questionForLang(idx),ops=document.querySelectorAll('#quizBox .option');ops[x[2]].classList.add('correct');if(n!==x[2])ops[n].classList.add('wrong');appState.practice.attempts++;practiceSessionAnswered++;addWeekly('questions');if(n===x[2]){appState.practice.correct++;practiceSessionCorrect++;if(dailyPractice)dailyCorrect++;if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx)}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);saveState();document.getElementById('score').textContent=practiceSessionCorrect;document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?(en?'✅ Correct':'✅ Correcto'):(en?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${en?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;document.getElementById('next').style.display='inline-block';
+  };
+
+  // NCLEX simulation: language-specific question text/options.
+  window.renderExam=function(){
+    const box=document.getElementById('examBox');if(!box)return;if(examPos>=examOrder.length){finishExam(false);return}examAnswered=false;const en=isEn(),idx=examOrder[examPos],x=questionForLang(idx);box.innerHTML=`<div class="exam-meta"><b>${en?'Question':'Pregunta'} ${examPos+1}/${NCLEX_EXAM_SIZE}</b><span id="examTimer" class="exam-timer">⏱ ${formatExamTime(examSecondsLeft())}</span></div><p class="question">${esc(x[0])}</p>${x[1].map((o,n)=>`<button class="option" onclick="answerExam(${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')}<p class="muted">${en?'Select one answer to continue. You cannot go back.':'Selecciona una respuesta para continuar. No podrás regresar.'}</p>`;
+  };
+
+  // Adaptive questions also use the active-language record.
+  const oldRenderAdaptive=window.renderAdaptiveExam;
+  if(typeof oldRenderAdaptive==='function'){
+    window.renderAdaptiveExam=function(){
+      const box=document.getElementById('examBox');if(!box)return;if(adaptivePos>=ADAPTIVE_SIZE){finishAdaptiveExam();return}adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=questionForLang(adaptiveCurrent);box.innerHTML=`<div class="exam-meta"><b>${adaptiveText('Simulacro adaptativo','Adaptive exam')} · ${adaptiveText('Pregunta','Question')} ${adaptivePos+1}/${ADAPTIVE_SIZE}</b><span class="pill">${adaptiveText('Nivel','Level')}: ${adaptiveLevelLabel(adaptiveLevel)}</span></div><div class="progressbar"><span style="width:${Math.round(adaptivePos/ADAPTIVE_SIZE*100)}%"></span></div><p class="question">${esc(x[0])}</p>${x[1].map((o,n)=>`<button class="option" onclick="answerAdaptiveExam(${n})">${String.fromCharCode(65+n)}. ${esc(o)}</button>`).join('')}<p class="muted">${adaptiveText('La siguiente pregunta se ajustará según esta respuesta. No podrás regresar.','The next question will adjust to this answer. You cannot go back.')}</p>`;
+    };
+  }
+
+  // When language changes, rebuild any open dynamic view immediately.
+  const previousSetGlobalLanguage=window.setGlobalLanguage;
+  if(typeof previousSetGlobalLanguage==='function'){
+    window.setGlobalLanguage=function(lang){
+      previousSetGlobalLanguage(lang);
+      const active=document.querySelector('section.active')?.id;
+      if(active==='tarjetas'){flashDeck=[];renderFlashcards()}
+      else if(active==='quiz'&&practiceOrder.length)renderPractice();
+      else if(active==='exam'){
+        if(customOrder?.length&&typeof renderCustomExam==='function')renderCustomExam();
+        else if(examOrder?.length)renderExam();
+        else if(adaptiveActive&&typeof renderAdaptiveExam==='function')renderAdaptiveExam();
+        else if(typeof renderExamLanding==='function')renderExamLanding();
+      }
+      else if(active==='medcalc'&&typeof renderMedCalc==='function')renderMedCalc();
+      else if(active==='buscar'){const q=document.getElementById('smartSearch')?.value||'';renderSearch(q)}
+      else if(active==='temas'&&typeof renderTopics==='function')renderTopics();
+    };
+  }
+})();
+</script>
