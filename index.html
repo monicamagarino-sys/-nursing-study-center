@@ -2294,7 +2294,7 @@ function saveAudioSettings(k){
  const lang=document.getElementById(`audioLang-${k}`),rate=document.getElementById(`audioRate-${k}`);if(lang)appState.audio.lang=lang.value;if(rate)appState.audio.rate=Number(rate.value);saveState();
 }
 function readModuleAloud(k){
- saveAudioSettings(k);const lesson=lessons[k];const text=[lesson.title,...lesson.items.flatMap(item=>[item[0],item[1]])].join('. ');readTextAloud(text);
+ const en=appState.planLang==='en';const lesson=(en&&typeof lessonsEn!=='undefined'&&lessonsEn[k])?lessonsEn[k]:lessons[k];if(!lesson)return;appState.audio.lang=en?'en-US':'es-US';const sel=document.getElementById(`audioLang-${k}`);if(sel)sel.value=appState.audio.lang;saveState();const text=[lesson.title,...lesson.items.flatMap(item=>[item[0],item[1]])].join('. ');readTextAloud(text);
 }
 function readModuleNoteAloud(k){
  saveAudioSettings(k);const note=String(appState.notes[k]||'').trim();
@@ -2783,21 +2783,22 @@ let customOrder=[],customPos=0,customCorrect=0,customAnswered=false,customBreakd
 let customConfig={size:10,timeSeconds:0,mode:'practice',modules:[]};
 function renderExamLanding(){
  const box=document.getElementById('examBox');if(!box)return;
- const en=appState.planLang==='en';box.innerHTML=`<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'ADAPTIVE PRACTICE':'PRÁCTICA ADAPTATIVA'}</span><h2>🧠 ${en?'Adaptive NCLEX-style exam':'Simulacro adaptativo tipo NCLEX'}</h2><p>${en?'30 questions that move between fundamental, intermediate, and advanced difficulty according to your answers.':'30 preguntas que cambian entre dificultad fundamental, intermedia y avanzada según tus respuestas.'}</p><div class="final-stats"><div class="stat"><b>${appState.adaptive?.last||0}%</b>${en?'Last':'Último'}</div><div class="stat"><b>${appState.adaptive?.best||0}%</b>${en?'Best':'Mejor'}</div><div class="stat"><b>${appState.adaptive?.taken||0}</b>${en?'Completed':'Completados'}</div></div><button class="primary" onclick="startAdaptiveExam()">${en?'Start adaptive exam':'Comenzar simulacro adaptativo'}</button><p class="muted">${en?'Educational simulation; it is not the official NCLEX CAT algorithm.':'Simulación educativa; no es el algoritmo CAT oficial del NCLEX.'}</p></div><div class="feedback"><h3>🎯 Simulacro NCLEX</h3><p>85 preguntas · 5 horas · sin explicaciones durante el examen.</p><button class="goodbtn" onclick="startExam()">Comenzar simulacro NCLEX</button></div>
- <div class="card"><h2>⚙️ Examen personalizado</h2><p class="muted">Selecciona los módulos y configura tu sesión.</p>
- <div class="exam-config"><label>Preguntas<select id="customCount"><option>10</option><option>25</option><option>50</option><option>85</option></select></label><label>Tiempo<select id="customTime"><option value="0">Sin límite</option><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="120">120 minutos</option></select></label><label>Modo<select id="customMode"><option value="practice">Práctica con explicaciones</option><option value="exam">Examen sin explicaciones</option></select></label></div>
- <div class="actions"><button class="secondary" onclick="setAllCustomModules(true)">Seleccionar todos</button><button class="secondary" onclick="setAllCustomModules(false)">Quitar todos</button></div>
- <div class="module-checks">${CORE_MODULES.map(([key,title],i)=>`<label><input class="custom-module" type="checkbox" value="${key}" checked><span>${i+1}. ${esc(title.replace(/^Clase \d+ — /,''))}</span></label>`).join('')}</div>
- <button class="primary" onclick="startCustomExam()">Comenzar examen personalizado</button></div>`;
+ const en=appState.planLang==='en';box.innerHTML=`<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'ADAPTIVE PRACTICE':'PRÁCTICA ADAPTATIVA'}</span><h2>🧠 ${en?'Adaptive NCLEX-style exam':'Simulacro adaptativo tipo NCLEX'}</h2><p>${en?'30 questions that move between fundamental, intermediate, and advanced difficulty according to your answers.':'30 preguntas que cambian entre dificultad fundamental, intermedia y avanzada según tus respuestas.'}</p><div class="final-stats"><div class="stat"><b>${appState.adaptive?.last||0}%</b>${en?'Last':'Último'}</div><div class="stat"><b>${appState.adaptive?.best||0}%</b>${en?'Best':'Mejor'}</div><div class="stat"><b>${appState.adaptive?.taken||0}</b>${en?'Completed':'Completados'}</div></div><button class="primary" onclick="startAdaptiveExam()">${en?'Start adaptive exam':'Comenzar simulacro adaptativo'}</button><p class="muted">${en?'Educational simulation; it is not the official NCLEX CAT algorithm.':'Simulación educativa; no es el algoritmo CAT oficial del NCLEX.'}</p></div><div class="feedback"><h3>🎯 ${en?'NCLEX Simulation':'Simulacro NCLEX'}</h3><p>${en?'85 questions · 5 hours · no explanations during the exam.':'85 preguntas · 5 horas · sin explicaciones durante el examen.'}</p><button class="goodbtn" onclick="startExam()">${en?'Start NCLEX simulation':'Comenzar simulacro NCLEX'}</button></div>
+ <div class="card"><h2>⚙️ ${en?'Custom exam':'Examen personalizado'}</h2><p class="muted">${en?'Select the modules and configure your session.':'Selecciona los módulos y configura tu sesión.'}</p>
+ <div class="exam-config"><label>${en?'Questions':'Preguntas'}<select id="customCount"><option>10</option><option>25</option><option>50</option><option>85</option></select></label><label>${en?'Time':'Tiempo'}<select id="customTime"><option value="0">${en?'No limit':'Sin límite'}</option><option value="15">15 ${en?'minutes':'minutos'}</option><option value="30">30 ${en?'minutes':'minutos'}</option><option value="60">60 ${en?'minutes':'minutos'}</option><option value="120">120 ${en?'minutes':'minutos'}</option></select></label><label>${en?'Mode':'Modo'}<select id="customMode"><option value="practice">${en?'Practice with explanations':'Práctica con explicaciones'}</option><option value="exam">${en?'Exam without explanations':'Examen sin explicaciones'}</option></select></label></div>
+ <div class="actions"><button class="secondary" onclick="setAllCustomModules(true)">${en?'Select all':'Seleccionar todos'}</button><button class="secondary" onclick="setAllCustomModules(false)">${en?'Deselect all':'Quitar todos'}</button></div>
+ <div class="module-checks">${CORE_MODULES.map(([key],i)=>`<label><input class="custom-module" type="checkbox" value="${key}" checked><span>${i+1}. ${esc(mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,''))}</span></label>`).join('')}</div>
+ <button class="primary" onclick="startCustomExam()">${en?'Start custom exam':'Comenzar examen personalizado'}</button></div>`;
 }
 function setAllCustomModules(checked){document.querySelectorAll('.custom-module').forEach(x=>x.checked=checked)}
 function startCustomExam(){
+ const en=appState.planLang==='en';
  const modules=[...document.querySelectorAll('.custom-module:checked')].map(x=>x.value);
- if(!modules.length){alert('Selecciona al menos un módulo.');return}
+ if(!modules.length){alert(en?'Select at least one module.':'Selecciona al menos un módulo.');return}
  const requested=Number(document.getElementById('customCount').value),minutes=Number(document.getElementById('customTime').value),mode=document.getElementById('customMode').value;
  const pool=qs.reduce((a,q,i)=>{if(modules.includes(q[4]))a.push(i);return a},[]);
  customOrder=shuffled(pool).slice(0,Math.min(requested,pool.length));
- if(!customOrder.length){alert('No hay preguntas disponibles para esa selección.');return}
+ if(!customOrder.length){alert(en?'No questions available for that selection.':'No hay preguntas disponibles para esa selección.');return}
  if(examTimerId)clearInterval(examTimerId);examTimerId=null;examOrder=[];
  customConfig={size:customOrder.length,timeSeconds:minutes*60,mode,modules};customPos=0;customCorrect=0;customAnswered=false;customStartedAt=Date.now();customBreakdown={};
  modules.forEach(key=>customBreakdown[key]={correct:0,total:0});
@@ -2806,7 +2807,7 @@ function startCustomExam(){
 }
 function customSecondsLeft(){return customConfig.timeSeconds?Math.max(0,customConfig.timeSeconds-Math.floor((Date.now()-customStartedAt)/1000)):0}
 function updateCustomTimer(){
- const timer=document.getElementById('customTimer');if(timer)timer.textContent=customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):'Sin límite de tiempo';
+ const en=appState.planLang==='en',timer=document.getElementById('customTimer');if(timer)timer.textContent=customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):(en?'No time limit':'Sin límite de tiempo');
  if(customConfig.timeSeconds&&customSecondsLeft()<=0&&customOrder.length)finishCustomExam(true);
 }
 function renderCustomExam(){
@@ -2831,14 +2832,15 @@ function answerCustomExam(n){
 function nextCustomQuestion(){customPos++;renderCustomExam();window.scrollTo({top:0,behavior:'smooth'})}
 function finishCustomExam(timedOut=false){
  if(customTimerId)clearInterval(customTimerId);customTimerId=null;
+ const en=appState.planLang==='en';
  const score=pct(customCorrect,customConfig.size),box=document.getElementById('examBox');
  appState.customExam.last=score;appState.customExam.best=Math.max(appState.customExam.best,score);appState.customExam.taken++;
  addWeekly('exams');
- const moduleNames=CORE_MODULES.filter(([key])=>customConfig.modules.includes(key)).map(([,title])=>title.replace(/^Clase \d+ — /,''));
- recordExamHistory({type:customConfig.mode==='practice'?'Personalizado · Práctica':'Personalizado · Examen',score,correct:customCorrect,total:customConfig.size,modules:moduleNames});saveState();
- const rows=CORE_MODULES.map(([key,title])=>{const s=customBreakdown[key];if(!s?.total)return null;const percent=pct(s.correct,s.total),level=percent>=80?['Fortaleza','level-good']:percent>=65?['En progreso','level-mid']:['Repasar','level-low'];return{key,title:title.replace(/^Clase \d+ — /,''),correct:s.correct,total:s.total,percent,level}}).filter(Boolean).sort((a,b)=>a.percent-b.percent);
- const report=rows.map(r=>`<div class="module-report-row"><strong>${esc(r.title)}<br><small class="${r.level[1]}">${r.level[0]}</small></strong><span>${r.correct}/${r.total}<br>${r.percent}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Practicar</button></div>`).join('');
- box.innerHTML=`<div class="feedback"><h2>📊 Examen personalizado completado</h2><p><b>${customCorrect}/${customConfig.size}</b> correctas (${score}%).</p>${timedOut?'<p>El tiempo terminó.</p>':''}</div><div class="card"><h3>Rendimiento por módulo</h3><div class="module-report">${report}</div><button class="primary" onclick="customOrder=[];renderExamLanding()">Crear otro examen</button></div>`;
+ const moduleNames=CORE_MODULES.filter(([key])=>customConfig.modules.includes(key)).map(([key])=>mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,''));
+ recordExamHistory({type:customConfig.mode==='practice'?(en?'Custom · Practice':'Personalizado · Práctica'):(en?'Custom · Exam':'Personalizado · Examen'),score,correct:customCorrect,total:customConfig.size,modules:moduleNames});saveState();
+ const rows=CORE_MODULES.map(([key])=>{const s=customBreakdown[key];if(!s?.total)return null;const percent=pct(s.correct,s.total),level=percent>=80?[en?'Strength':'Fortaleza','level-good']:percent>=65?[en?'In progress':'En progreso','level-mid']:[en?'Review':'Repasar','level-low'];return{key,title:mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,''),correct:s.correct,total:s.total,percent,level}}).filter(Boolean).sort((a,b)=>a.percent-b.percent);
+ const report=rows.map(r=>`<div class="module-report-row"><strong>${esc(r.title)}<br><small class="${r.level[1]}">${r.level[0]}</small></strong><span>${r.correct}/${r.total}<br>${r.percent}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Practice':'Practicar'}</button></div>`).join('');
+ box.innerHTML=`<div class="feedback"><h2>📊 ${en?'Custom exam completed':'Examen personalizado completado'}</h2><p><b>${customCorrect}/${customConfig.size}</b> ${en?'correct':'correctas'} (${score}%).</p>${timedOut?`<p>${en?'Time ran out.':'El tiempo terminó.'}</p>`:''}</div><div class="card"><h3>${en?'Performance by module':'Rendimiento por módulo'}</h3><div class="module-report">${report}</div><button class="primary" onclick="customOrder=[];renderExamLanding()">${en?'Create another exam':'Crear otro examen'}</button></div>`;
  customOrder=[];
 }
 
