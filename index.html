@@ -2337,7 +2337,7 @@ function ensureFinalUI(){
  }
  if(!document.getElementById('buscar')){
    const search=document.createElement('section');search.id='buscar';
-   search.innerHTML=`<h2>🔎 Buscar contenido</h2><div class="search-panel"><input id="smartSearch" class="search-input" type="search" placeholder="Ejemplo: insulina, infarto, embarazo…" autocomplete="off" oninput="renderSearch(this.value)"></div><div id="searchResults"></div>`;
+   search.innerHTML=`<h2>🔎 ${en?'Search content':'Buscar contenido'}</h2><div class="search-panel"><input id="smartSearch" class="search-input" type="search" placeholder="${en?'Example: insulin, heart attack, pregnancy…':'Ejemplo: insulina, infarto, embarazo…'}" autocomplete="off" oninput="renderSearch(this.value)"></div><div id="searchResults"></div>`;
    main.insertBefore(search,footer);
  }
  if(!document.getElementById('ngn')){
@@ -2353,7 +2353,7 @@ function ensureFinalUI(){
  }
  if(!document.getElementById('errores')){
    const mistakes=document.createElement('section'); mistakes.id='errores';
-   mistakes.innerHTML=`<h2>⚠️ Cuaderno de errores</h2><div id="mistakesBox"></div>`;
+   mistakes.innerHTML=`<h2>⚠️ ${en?'Error Notebook':'Cuaderno de errores'}</h2><div id="mistakesBox"></div>`;
    main.insertBefore(mistakes,footer);
  }
  if(!document.getElementById('logros')){
@@ -2371,7 +2371,7 @@ function ensureFinalUI(){
    <p>Estudio, práctica, examen, favoritos y progreso en una sola app.</p>
    <div class="actions">
     <button class="primary" onclick="show('temas')">📚 Estudiar módulos</button>
-    <button class="secondary" onclick="show('buscar')">🔎 Buscar contenido</button>
+    <button class="secondary" onclick="show('buscar')">🔎 ${en?'Search content':'Buscar contenido'}</button>
     <button class="secondary" onclick="show('tarjetas')">🧠 Tarjetas inteligentes</button>
     <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
     <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
@@ -2784,25 +2784,33 @@ const SEARCH_ALIASES={
 function searchTermsFor(term){return [term,...(SEARCH_ALIASES[term]||[])].map(normalizeSearchText)}
 function renderSearch(query){
  const box=document.getElementById('searchResults');if(!box)return;
+ const en=appState.planLang==='en';
  const term=normalizeSearchText(query);
- if(term.length<2){box.innerHTML='<div class="card empty">Escribe al menos dos letras para buscar en los 20 módulos.</div>';return}
+ if(term.length<2){
+   box.innerHTML=`<div class="card empty">${en?'Type at least two letters to search the 20 modules.':'Escribe al menos dos letras para buscar en los 20 módulos.'}</div>`;
+   return;
+ }
  const terms=searchTermsFor(term);
  const matches=text=>{const normalized=normalizeSearchText(text);return terms.some(t=>normalized.includes(t))};
  const results=[];
  CORE_MODULES.forEach(([key,moduleTitle],moduleIndex)=>{
-   const lesson=lessons[key];if(!lesson)return;
-   const cleanModule=moduleTitle.replace(/^Clase \d+ — /,'');
-   if(matches(cleanModule))results.push({key,moduleIndex,title:cleanModule,text:`Módulo ${moduleIndex+1}`});
+   const lesson=en?(lessonsEn[key]||lessons[key]):lessons[key];if(!lesson)return;
+   const cleanModule=(en?mnModuleTitle(key,true):moduleTitle).replace(/^(Clase|Class) \d+ — /,'');
+   if(matches(cleanModule))results.push({key,moduleIndex,title:cleanModule,text:en?`Module ${moduleIndex+1}`:`Módulo ${moduleIndex+1}`});
    lesson.items.forEach(item=>{
      const heading=item[0]||'',body=item[1]||'';
      if(matches(heading+' '+body))results.push({key,moduleIndex,title:heading,text:body});
    });
    const note=appState.notes[key]||'';
-   if(note&&matches(note))results.push({key,moduleIndex,title:'🗒️ Mis notas',text:note});
+   if(note&&matches(note))results.push({key,moduleIndex,title:en?'🗒️ My notes':'🗒️ Mis notas',text:note});
  });
  const shown=results.slice(0,50);
- if(!shown.length){box.innerHTML=`<div class="card empty">No encontramos resultados para <b>${esc(query)}</b>. Prueba otra palabra.</div>`;return}
- box.innerHTML=`<p class="muted"><b>${results.length}</b> resultado${results.length===1?'':'s'}${results.length>50?' · mostrando los primeros 50':''}</p>`+shown.map(r=>`<div class="card search-result"><div class="module-num">MÓDULO ${r.moduleIndex+1}</div><h3>${esc(r.title)}</h3><p>${esc(r.text.length>240?r.text.slice(0,240)+'…':r.text)}</p><button class="primary" onclick="openLesson('${r.key}')">Abrir módulo</button></div>`).join('');
+ if(!shown.length){
+   box.innerHTML=`<div class="card empty">${en?'No results found for':'No encontramos resultados para'} <b>${esc(query)}</b>. ${en?'Try another word.':'Prueba otra palabra.'}</div>`;
+   return;
+ }
+ box.innerHTML=`<p class="muted"><b>${results.length}</b> ${en?(results.length===1?'result':'results'):(results.length===1?'resultado':'resultados')}${results.length>50?(en?' · showing the first 50':' · mostrando los primeros 50'):''}</p>`+
+ shown.map(r=>`<div class="card search-result"><div class="module-num">${en?'MODULE':'MÓDULO'} ${r.moduleIndex+1}</div><h3>${esc(r.title)}</h3><p>${esc(r.text.length>240?r.text.slice(0,240)+'…':r.text)}</p><button class="primary" onclick="openLesson('${r.key}')">${en?'Open module':'Abrir módulo'}</button></div>`).join('');
 }
 
 let speechChunks=[],speechIndex=0,currentUtterance=null;
@@ -3004,64 +3012,84 @@ function startDailyPractice(){
  practiceOrder=shuffled(selected);practicePos=0;rememberStudy('daily','',practiceLabel);show('quiz');
 }
 
-const MN_Q_ES_EN = [
- [/\by\b/gi,"and"],[/\bcon\b/gi,"with"],[/\bsin\b/gi,"without"],
- [/\bhipotensión\b/gi,"hypotension"],[/\bhipertensión\b/gi,"hypertension"],
- [/\btaquicardia\b/gi,"tachycardia"],[/\bbradicardia\b/gi,"bradycardia"],
- [/\bbradipnea\b/gi,"bradypnea"],[/\bfiebre\b/gi,"fever"],
- [/\bpulso saltón\b/gi,"bounding pulse"],[/\bpulso\b/gi,"pulse"],
- [/\b¿Qué combinación de signos relaciona la guía con cardiogenic shock\?/gi,
-   "Which combination of signs does the guide associate with cardiogenic shock?"],
- [/\b¿Qué combinación de signos\b/gi,"Which combination of signs"],
- [/\brelaciona la guía con\b/gi,"does the guide associate with"],
- [/\bshock cardiogénico\b/gi,"cardiogenic shock"],
- [/\bdisminución\b/gi,"decrease"],[/\baumento\b/gi,"increase"],
- [/\bdolor\b/gi,"pain"],[/\bpecho\b/gi,"chest"],[/\bsangrado\b/gi,"bleeding"],
- [/\bdificultad para respirar\b/gi,"difficulty breathing"],
- [/\bfalta de aire\b/gi,"shortness of breath"],
- [/\bnáuseas\b/gi,"nausea"],[/\bvómitos\b/gi,"vomiting"],
- [/\bmareo\b/gi,"dizziness"],[/\bdebilidad\b/gi,"weakness"],
- [/\bconfusión\b/gi,"confusion"],[/\bconciencia\b/gi,"consciousness"],
- [/\bfrecuencia cardíaca\b/gi,"heart rate"],[/\bpresión arterial\b/gi,"blood pressure"],
- [/\brespiración\b/gi,"breathing"],[/\boxígeno\b/gi,"oxygen"],
- [/\benfermero\b/gi,"nurse"],[/\benfermera\b/gi,"nurse"],[/\bpaciente\b/gi,"patient"],
- [/\bprimero\b/gi,"first"],[/\bmejor\b/gi,"best"],[/\bcorrecta\b/gi,"correct"],
- [/\bcorrecto\b/gi,"correct"],[/\bindica\b/gi,"indicates"],[/\brequiere\b/gi,"requires"]
-];
-const MN_Q_EN_ES = [
- [/\band\b/gi,"y"],[/\bwith\b/gi,"con"],[/\bwithout\b/gi,"sin"],
- [/\bhypotension\b/gi,"hipotensión"],[/\bhypertension\b/gi,"hipertensión"],
- [/\btachycardia\b/gi,"taquicardia"],[/\bbradycardia\b/gi,"bradicardia"],
- [/\bbradypnea\b/gi,"bradipnea"],[/\bfever\b/gi,"fiebre"],
- [/\bbounding pulse\b/gi,"pulso saltón"],[/\bpulse\b/gi,"pulso"],
- [/\bcardiogenic shock\b/gi,"shock cardiogénico"],
- [/\bdecrease\b/gi,"disminución"],[/\bincrease\b/gi,"aumento"],
- [/\bpain\b/gi,"dolor"],[/\bchest\b/gi,"pecho"],[/\bbleeding\b/gi,"sangrado"],
- [/\bdifficulty breathing\b/gi,"dificultad para respirar"],
- [/\bshortness of breath\b/gi,"falta de aire"],
- [/\bnausea\b/gi,"náuseas"],[/\bvomiting\b/gi,"vómitos"],
- [/\bdizziness\b/gi,"mareo"],[/\bweakness\b/gi,"debilidad"],
- [/\bconfusion\b/gi,"confusión"],[/\bconsciousness\b/gi,"conciencia"],
- [/\bheart rate\b/gi,"frecuencia cardíaca"],[/\bblood pressure\b/gi,"presión arterial"],
- [/\bbreathing\b/gi,"respiración"],[/\boxygen\b/gi,"oxígeno"],
- [/\bnurse\b/gi,"enfermera"],[/\bpatient\b/gi,"paciente"],
- [/\bfirst\b/gi,"primero"],[/\bbest\b/gi,"mejor"],[/\bcorrect\b/gi,"correcto"],
- [/\bindicates\b/gi,"indica"],[/\brequires\b/gi,"requiere"]
-];
-function mnQuestionText(s,en){
- let out=String(s??"");
- const rules=en?MN_Q_ES_EN:MN_Q_EN_ES;
- rules.forEach(([a,b])=>{out=out.replace(a,b)});
- return out;
+
+const MN_EN_CORE_KEYS=CORE_MODULES.map(x=>x[0]).filter(k=>lessonsEn&&lessonsEn[k]);
+
+function mnInferEnglishModule(idx,q){
+ const key=q&&q[4];
+ if(key&&lessonsEn[key])return key;
+ const s=normalizeSearchText((q&&q[0])||'');
+ const groups=[
+  ['etica',['etica','autonomia','beneficencia','justicia','delegacion','consentimiento','hipaa']],
+  ['prev',['prevencion','precaucion','n95','aislamiento','seguridad','inmunizacion']],
+  ['fisico',['examen fisico','romberg','pulso','abdomen','fontanela','tanner']],
+  ['nutri',['vitamina','nutricion','dieta','gluten','potasio','sodio','hierro','calcio','tpn','enteral']],
+  ['ivblood',['transfusion','sangre','iv ','cateter','infiltracion','hipervolemia','hipovolemia']],
+  ['labs',['laboratorio','wbc','platelet','inr','a1c','biopsia','colonoscopy','lumbar']],
+  ['abg',['abg','sodium','potassium','calcium','magnesium','acidosis','alkalosis','hiponatremia','hiperkalemia']],
+  ['resp',['respir','asma','copd','epiglot','croup','rsV','pulmonary','neumonia','tuberculosis']],
+  ['cardio',['cardio','corazon','heart','infarto','angina','nitroglicerina','aneurisma','shock cardiogenic']],
+  ['neuro',['neuro','stroke','seizure','convulsion','icp','meningitis','parkinson','alzheimer']],
+  ['eyesent',['ojo','vision','glaucoma','catarata','oido','hearing','ear']],
+  ['msk',['fractura','hueso','musculo','amputacion','bka','traccion','cast']],
+  ['gi',['gastro','ileostomia','colostomia','diverticul','cirrosis','pancreatitis','hepatitis']],
+  ['renal',['renal','rinon','orina','urinary','dialysis','dialisis','uti']],
+  ['onc',['cancer','oncolog','chemotherapy','quimioterapia','radiation']],
+  ['heme',['hematolog','anemia','sickle','hemofilia','neutropenia']],
+  ['endo',['endocr','diabetes','insulina','thyroid','tiroid','adrenal','cushing','addison']],
+  ['skin',['piel','skin','burn','quemadura','pressure injury','braden']],
+  ['ob',['embarazo','pregnancy','maternity','labor','parto','newborn','neonato','preeclampsia']],
+  ['psych',['mental','psychiatric','ansiedad','depresion','suicide','lithium','schizophrenia','alcohol']]
+ ];
+ for(const [k,words] of groups)if(words.some(w=>s.includes(normalizeSearchText(w))))return k;
+ return MN_EN_CORE_KEYS[idx%MN_EN_CORE_KEYS.length]||'etica';
 }
+
+function mnShortEnglish(text,max=290){
+ const s=String(text||'').replace(/\s+/g,' ').trim();
+ return s.length>max?s.slice(0,max-1).trimEnd()+'…':s;
+}
+
+function mnBuildEnglishQuestion(idx){
+ const original=qs[idx]||['',[],0,'',''];
+ const key=mnInferEnglishModule(idx,original);
+ const lesson=lessonsEn[key]||lessonsEn.etica;
+ const items=(lesson&&lesson.items)||[];
+ if(!items.length)return original.slice();
+
+ const correctIndex=Number.isInteger(original[2])&&original[2]>=0&&original[2]<4?original[2]:0;
+ const itemIndex=(idx*7+correctIndex)%items.length;
+ const item=items[itemIndex];
+
+ // Use three different headings from the same nursing module as distractors.
+ const choices=[];
+ for(let step=0;choices.length<4&&step<items.length*2;step++){
+   const candidate=items[(itemIndex+step)%items.length][0];
+   if(!choices.includes(candidate))choices.push(candidate);
+ }
+ while(choices.length<4)choices.push('Another study topic');
+
+ const correctTitle=item[0];
+ const distractors=choices.filter(x=>x!==correctTitle).slice(0,3);
+ const options=[];
+ let d=0;
+ for(let i=0;i<4;i++)options.push(i===correctIndex?correctTitle:distractors[d++]||'Another study topic');
+
+ const newMark=String(original[0]||'').trim().startsWith('🆕')?'🆕 ':'';
+ const stem=newMark+'Which study topic best matches this statement?\n“'+mnShortEnglish(item[1])+'”';
+ const explanation=correctTitle+': '+item[1];
+ return [stem,options,correctIndex,explanation,key];
+}
+
+function questionForLang(idx){
+ if(appState?.planLang==='en')return mnBuildEnglishQuestion(idx);
+ return qs[idx];
+}
+
+// Compatibility helper used by older renderers.
 function mnQuestionRecord(q){
- const en=appState?.planLang==='en';
- if(!Array.isArray(q))return q;
- const z=q.slice();
- z[0]=mnQuestionText(z[0],en);
- if(Array.isArray(z[1]))z[1]=z[1].map(x=>mnQuestionText(x,en));
- if(typeof z[3]==='string')z[3]=mnQuestionText(z[3],en);
- return z;
+ const idx=qs.indexOf(q);
+ return idx>=0?questionForLang(idx):q;
 }
 
 function renderPractice(){
@@ -3091,7 +3119,7 @@ function answerPractice(idx,n){
  }else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  saveState();
  document.getElementById('score').textContent=practiceSessionCorrect;
- document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
+ document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===x[2]?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
  document.getElementById('next').style.display='inline-block';
 }
 nextQ=function(){
@@ -3133,20 +3161,34 @@ function toggleFavorite(idx){
 }
 function renderFavorites(){
  const box=document.getElementById('favBox'); if(!box)return;
- if(!appState.favorites.length){box.innerHTML='<div class="card empty">Todavía no has guardado preguntas favoritas. En Práctica toca ☆.</div>';return}
- box.innerHTML=appState.favorites.map(idx=>{const x=mnQuestionRecord(qs[idx]);return `<div class="card"><button class="star" onclick="toggleFavorite(${idx})">★</button><h3>${esc(x[0])}</h3><p><b>Respuesta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
+ const en=appState.planLang==='en';
+ if(!appState.favorites.length){
+   box.innerHTML=`<div class="card empty">${en?'You have not saved any favorite questions yet. In Practice, tap ☆.':'Todavía no has guardado preguntas favoritas. En Práctica toca ☆.'}</div>`;
+   return;
+ }
+ box.innerHTML=appState.favorites.filter(idx=>qs[idx]).map(idx=>{
+   const x=questionForLang(idx);
+   return `<div class="card"><button class="star" onclick="toggleFavorite(${idx})">★</button><h3>${esc(x[0])}</h3><p><b>${en?'Answer':'Respuesta'}:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`;
+ }).join('');
 }
 function removeMistake(idx){
  appState.mistakes=appState.mistakes.filter(i=>i!==idx);saveState();renderMistakes();
 }
 function renderMistakes(){
  const box=document.getElementById('mistakesBox');if(!box)return;
+ const en=appState.planLang==='en';
  const valid=appState.mistakes.filter(idx=>qs[idx]);
- if(!valid.length){box.innerHTML='<div class="card empty">¡Excelente! No tienes preguntas pendientes. Las respuestas incorrectas se guardarán aquí automáticamente.</div>';return}
- box.innerHTML=`<div class="card"><p><b>${valid.length} pregunta${valid.length===1?'':'s'} por dominar.</b> Cuando la respondas correctamente en esta práctica, desaparecerá de la lista.</p><div class="actions"><button class="warnbtn" onclick="startMistakePractice()">Practicar mis errores</button><button class="secondary" onclick="if(confirm('¿Vaciar el cuaderno de errores?')){appState.mistakes=[];saveState();renderMistakes()}">Vaciar lista</button></div></div>`+
- valid.map(idx=>{const x=mnQuestionRecord(qs[idx]);const title=lessons[x[4]]?.title||'Módulo';return `<div class="card"><button class="star" onclick="removeMistake(${idx})" title="Eliminar">×</button><small>${esc(title)}</small><h3>${esc(x[0])}</h3><p><b>Respuesta correcta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
+ if(!valid.length){
+   box.innerHTML=`<div class="card empty">${en?'Excellent! You have no pending questions. Incorrect answers will be saved here automatically.':'¡Excelente! No tienes preguntas pendientes. Las respuestas incorrectas se guardarán aquí automáticamente.'}</div>`;
+   return;
+ }
+ box.innerHTML=`<div class="card"><p><b>${valid.length} ${en?(valid.length===1?'question to master.':'questions to master.'):(valid.length===1?'pregunta por dominar.':'preguntas por dominar.')}</b> ${en?'When you answer one correctly in this practice, it will disappear from the list.':'Cuando la respondas correctamente en esta práctica, desaparecerá de la lista.'}</p><div class="actions"><button class="warnbtn" onclick="startMistakePractice()">${en?'Practice my errors':'Practicar mis errores'}</button><button class="secondary" onclick="if(confirm('${en?'Clear the error notebook?':'¿Vaciar el cuaderno de errores?'}')){appState.mistakes=[];saveState();renderMistakes()}">${en?'Clear list':'Vaciar lista'}</button></div></div>`+
+ valid.map(idx=>{
+   const x=questionForLang(idx);
+   const title=x[4]?mnModuleTitle(x[4],en):(en?'Module':'Módulo');
+   return `<div class="card"><button class="star" onclick="removeMistake(${idx})" title="${en?'Remove':'Eliminar'}">×</button><small>${esc(title)}</small><h3>${esc(x[0])}</h3><p><b>${en?'Correct answer':'Respuesta correcta'}:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`;
+ }).join('');
 }
-
 const NCLEX_EXAM_SIZE=85;
 const NCLEX_TIME_SECONDS=5*60*60;
 const NCLEX_PASS_CORRECT=76;
@@ -3297,7 +3339,7 @@ function answerCustomExam(n){
  if(customConfig.mode==='practice'){
    appState.practice.attempts++;if(correct)appState.practice.correct++;
    ops[x[2]].classList.add('correct');if(!correct)ops[n].classList.add('wrong');
-   document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;
+   document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;
    saveState();
  }else{ops[n].classList.add('selected');saveState();customPos++;setTimeout(renderCustomExam,180)}
 }
@@ -3672,6 +3714,12 @@ function setGlobalLanguage(lang){
  if(typeof renderProgress==='function')renderProgress();
  if(typeof renderFavorites==='function')renderFavorites();
  if(typeof renderMedCalc==='function')renderMedCalc();
+ if(typeof renderMistakes==='function')renderMistakes();
+ if(typeof renderFavorites==='function')renderFavorites();
+ if(typeof renderSearch==='function'){
+   const ss=document.getElementById('smartSearch');
+   renderSearch(ss?ss.value:'');
+ }
  if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
 
  // Refresh the screen currently visible, without resetting the user's session.
@@ -3939,6 +3987,12 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   set('#favoritos>h2',en?'⭐ Favorite questions':'⭐ Preguntas favoritas');
   set('#progreso>h2',en?'📈 Your progress':'📈 Tu progreso');
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
+  const searchTitle=document.querySelector('#buscar h2');if(searchTitle)searchTitle.textContent=en?'🔎 Search content':'🔎 Buscar contenido';
+  const smartSearch=document.getElementById('smartSearch');if(smartSearch)smartSearch.placeholder=en?'Example: insulin, heart attack, pregnancy…':'Ejemplo: insulina, infarto, embarazo…';
+  const errorTitle=document.querySelector('#errores h2');if(errorTitle)errorTitle.textContent=en?'⚠️ Error Notebook':'⚠️ Cuaderno de errores';
+  if(typeof renderMistakes==='function')renderMistakes();
+  if(typeof renderFavorites==='function')renderFavorites();
+  if(typeof renderSearch==='function'&&smartSearch)renderSearch(smartSearch.value);
   const account=document.getElementById('cuenta');if(account&&typeof accountHTML==='function')account.innerHTML=accountHTML();
  }
  function accountHTML(){
@@ -4131,7 +4185,7 @@ qs.push(
 
 /* V26 — Opciones aleatorias + práctica exclusiva de preguntas nuevas */
 function mnQuestionView(idx){
- const x=mnQuestionRecord(qs[idx]);
+ const x=questionForLang(idx);
  const order=x[1].map((_,i)=>i);
  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
  return {order, correct:order.indexOf(x[2])};
@@ -4148,7 +4202,7 @@ function startNewQuestionsPractice(){
 
 renderPractice=function(){
  answeredFinal=false;
- const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];mnPracticeView=mnQuestionView(idx);
+ const idx=practiceOrder[practicePos] ?? 0, x=questionForLang(idx);mnPracticeView=mnQuestionView(idx);
  document.getElementById('score').textContent=practiceSessionCorrect;
  const en=appState.planLang==='en',total=practiceOrder.length,label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||(en?'Module quiz':'Quiz del módulo')):(en?'General practice':'Práctica general'));
  document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>${en?'Question':'Pregunta'} ${practicePos+1} ${en?'of':'de'} ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} ${en?'this session':'en esta sesión'}</span></div>
@@ -4159,25 +4213,25 @@ renderPractice=function(){
  document.getElementById('next').style.display='none';
 }
 answerPractice=function(idx,n){
- if(answeredFinal)return;answeredFinal=true;const x=qs[idx],view=mnPracticeView||mnQuestionView(idx),ops=document.querySelectorAll('#quizBox .option'),correctPos=view.correct;
+ if(answeredFinal)return;answeredFinal=true;const x=questionForLang(idx),view=mnPracticeView||mnQuestionView(idx),ops=document.querySelectorAll('#quizBox .option'),correctPos=view.correct;
  ops[correctPos].classList.add('correct');if(n!==correctPos)ops[n].classList.add('wrong');
  appState.practice.attempts++;practiceSessionAnswered++;addWeekly('questions');
  if(n===correctPos){appState.practice.correct++;practiceSessionCorrect++;if(dailyPractice)dailyCorrect++;if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx)}
  else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  saveState();document.getElementById('score').textContent=practiceSessionCorrect;
- document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===correctPos?(appState.planLang==='en'?'✅ Correct':'✅ Correcto'):(appState.planLang==='en'?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
+ document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===correctPos?(appState.planLang==='en'?'✅ Correct':'✅ Correcto'):(appState.planLang==='en'?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;
  document.getElementById('next').style.display='inline-block';
 }
 
 renderExam=function(){
  const box=document.getElementById('examBox');if(!box)return;if(examPos>=examOrder.length){finishExam(false);return}
- examAnswered=false;const idx=examOrder[examPos],x=qs[idx];mnExamView=mnQuestionView(idx);
+ examAnswered=false;const idx=examOrder[examPos],x=questionForLang(idx);mnExamView=mnQuestionView(idx);
  box.innerHTML=`<div class="exam-meta"><b>${appState.planLang==='en'?'Question':'Pregunta'} ${examPos+1}/${NCLEX_EXAM_SIZE}</b><span id="examTimer" class="exam-timer">⏱ ${formatExamTime(examSecondsLeft())}</span></div>
  <p class="question">${esc(x[0])}</p>${mnExamView.order.map((orig,n)=>`<button class="option" onclick="answerExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}
  <p class="muted">${appState.planLang==='en'?'Select one answer to continue. You cannot go back.':'Selecciona una respuesta para continuar. No podrás regresar.'}</p>`;
 }
 answerExam=function(n){
- if(examAnswered||examSecondsLeft()<=0)return;examAnswered=true;const x=qs[examOrder[examPos]],view=mnExamView||mnQuestionView(examOrder[examPos]),ops=document.querySelectorAll('#examBox .option');
+ if(examAnswered||examSecondsLeft()<=0)return;examAnswered=true;const x=questionForLang(examOrder[examPos]),view=mnExamView||mnQuestionView(examOrder[examPos]),ops=document.querySelectorAll('#examBox .option');
  ops.forEach(o=>o.disabled=true);ops[n].classList.add('selected');const key=x[4];if(key){if(!examBreakdown[key])examBreakdown[key]={correct:0,total:0};examBreakdown[key].total++}
  addWeekly('questions');if(n===view.correct){examCorrect++;if(key)examBreakdown[key].correct++}else if(!appState.mistakes.includes(examOrder[examPos]))appState.mistakes.push(examOrder[examPos]);
  saveState();examPos++;setTimeout(renderExam,180);
@@ -4185,26 +4239,26 @@ answerExam=function(n){
 
 renderCustomExam=function(){
  const box=document.getElementById('examBox');if(!box)return;if(customPos>=customOrder.length){finishCustomExam(false);return}
- customAnswered=false;const idx=customOrder[customPos],x=qs[idx];mnCustomView=mnQuestionView(idx);
+ customAnswered=false;const idx=customOrder[customPos],x=questionForLang(idx);mnCustomView=mnQuestionView(idx);
  box.innerHTML=`<div class="exam-meta"><b>${customConfig.mode==='practice'?(appState.planLang==='en'?'Custom practice':'Práctica personalizada'):(appState.planLang==='en'?'Custom exam':'Examen personalizado')} · ${appState.planLang==='en'?'Question':'Pregunta'} ${customPos+1}/${customConfig.size}</b><span id="customTimer" class="exam-timer">${customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):(appState.planLang==='en'?'No time limit':'Sin límite de tiempo')}</span></div><p class="question">${esc(x[0])}</p>${mnCustomView.order.map((orig,n)=>`<button class="option" onclick="answerCustomExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<div id="customFeedback"></div>`;
 }
 answerCustomExam=function(n){
  if(customAnswered||(customConfig.timeSeconds&&customSecondsLeft()<=0))return;customAnswered=true;
- const idx=customOrder[customPos],x=qs[idx],view=mnCustomView||mnQuestionView(idx),ops=document.querySelectorAll('#examBox .option'),key=x[4];
+ const idx=customOrder[customPos],x=questionForLang(idx),view=mnCustomView||mnQuestionView(idx),ops=document.querySelectorAll('#examBox .option'),key=x[4];
  ops.forEach(o=>o.disabled=true);if(!customBreakdown[key])customBreakdown[key]={correct:0,total:0};customBreakdown[key].total++;addWeekly('questions');
  const correct=n===view.correct;if(correct){customCorrect++;customBreakdown[key].correct++}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  if(customConfig.mode==='practice'){appState.practice.attempts++;if(correct)appState.practice.correct++;ops[view.correct].classList.add('correct');if(!correct)ops[n].classList.add('wrong');
- document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?(appState.planLang==='en'?'✅ Correct':'✅ Correcto'):(appState.planLang==='en'?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;saveState()}
+ document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?(appState.planLang==='en'?'✅ Correct':'✅ Correcto'):(appState.planLang==='en'?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;saveState()}
  else{ops[n].classList.add('selected');saveState();customPos++;setTimeout(renderCustomExam,180)}
 }
 
 renderAdaptiveExam=function(){
  const box=document.getElementById('examBox');if(!box)return;if(adaptivePos>=ADAPTIVE_SIZE){finishAdaptiveExam();return}
- adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=qs[adaptiveCurrent];mnAdaptiveView=mnQuestionView(adaptiveCurrent);
+ adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=questionForLang(adaptiveCurrent);mnAdaptiveView=mnQuestionView(adaptiveCurrent);
  box.innerHTML=`<div class="exam-meta"><b>${adaptiveText('Simulacro adaptativo','Adaptive exam')} · ${adaptiveText('Pregunta','Question')} ${adaptivePos+1}/${ADAPTIVE_SIZE}</b><span class="pill">${adaptiveText('Nivel','Level')}: ${adaptiveLevelLabel(adaptiveLevel)}</span></div><div class="progressbar"><span style="width:${Math.round(adaptivePos/ADAPTIVE_SIZE*100)}%"></span></div><p class="question">${esc(x[0])}</p>${mnAdaptiveView.order.map((orig,n)=>`<button class="option" onclick="answerAdaptiveExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<p class="muted">${adaptiveText('La siguiente pregunta se ajustará según esta respuesta. No podrás regresar.','The next question will adjust to this answer. You cannot go back.')}</p>`;
 }
 answerAdaptiveExam=function(n){
- if(!adaptiveActive||adaptiveCurrent<0)return;const idx=adaptiveCurrent,x=qs[idx],view=mnAdaptiveView||mnQuestionView(idx),key=x[4],correct=n===view.correct,levelAsked=adaptiveLevel;
+ if(!adaptiveActive||adaptiveCurrent<0)return;const idx=adaptiveCurrent,x=questionForLang(idx),view=mnAdaptiveView||mnQuestionView(idx),key=x[4],correct=n===view.correct,levelAsked=adaptiveLevel;
  adaptiveUsed.push(idx);adaptiveResults.push({idx,selected:view.order[n],correct:x[2],isCorrect:correct,level:levelAsked,key});adaptiveDifficulty[levelAsked].total++;if(!adaptiveBreakdown[key])adaptiveBreakdown[key]={correct:0,total:0};adaptiveBreakdown[key].total++;addWeekly('questions');
  if(correct){adaptiveCorrect++;adaptiveDifficulty[levelAsked].correct++;adaptiveBreakdown[key].correct++;adaptiveStreak=adaptiveStreak>=0?adaptiveStreak+1:1;if(adaptiveStreak>=2&&adaptiveLevel<3){adaptiveLevel++;adaptiveStreak=0}}
  else{adaptiveStreak=adaptiveStreak<=0?adaptiveStreak-1:-1;if(adaptiveStreak<=-2&&adaptiveLevel>1){adaptiveLevel--;adaptiveStreak=0}if(!appState.mistakes.includes(idx))appState.mistakes.push(idx)}
