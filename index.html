@@ -3598,7 +3598,13 @@ function setGlobalLanguage(lang){
    el.classList.toggle('active',el.getAttribute('data-lang-option')===lang);
  });
 
- // Re-render all major areas
+ // Remember exactly where the user is before rebuilding the interface.
+ const active=document.querySelector('section.active')?.id||'inicio';
+ const openModule=document.querySelector('#topicGrid .card h2');
+ const openModuleKey=(active==='temas' && openModule && typeof lastStudy!=='undefined' && lastStudy?.key)?lastStudy.key:null;
+
+ // Rebuild every stable screen immediately — the same language refresh that
+ // previously happened only after a browser reload, but without leaving the app.
  if(typeof buildGroupedUI==='function')buildGroupedUI();
  if(typeof updateDashboard==='function')updateDashboard();
  if(typeof renderTopics==='function')renderTopics();
@@ -3607,13 +3613,27 @@ function setGlobalLanguage(lang){
  if(typeof renderMedCalc==='function')renderMedCalc();
  if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
 
- // If a module is currently open, reopen it in the new language
- const active=document.querySelector('section.active')?.id||'inicio';
- const openModule=document.querySelector('#topicGrid .card h2');
- if(active==='temas' && openModule && typeof lastStudy!=='undefined' && lastStudy?.key && typeof openLesson==='function'){
-   try{openLesson(lastStudy.key)}catch(e){}
- }
+ // Refresh the screen currently visible, without resetting the user's session.
+ try{
+   if(openModuleKey && typeof openLesson==='function'){
+     openLesson(openModuleKey);
+   }else if(active==='quiz' && typeof renderPractice==='function' && typeof practiceOrder!=='undefined' && practiceOrder?.length){
+     renderPractice();
+   }else if(active==='favoritos' && typeof renderFavorites==='function'){
+     renderFavorites();
+   }else if(active==='progreso' && typeof renderProgress==='function'){
+     renderProgress();
+   }else if(active==='medcalc' && typeof renderMedCalc==='function'){
+     renderMedCalc();
+   }else if(active==='ngn' && typeof renderNGN==='function' && !(typeof ngnCase!=='undefined' && ngnCase)){
+     renderNGN();
+   }else if(active==='inicio' && typeof updateDashboard==='function'){
+     updateDashboard();
+   }
+ }catch(e){console.warn('Language live refresh:',e)}
 
+ // Re-apply static labels after dynamic renderers have finished.
+ if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
  if(typeof markGroup==='function')markGroup(active);
 }
 function restoreGlobalLanguage(){
@@ -4113,7 +4133,7 @@ answerCustomExam=function(n){
  ops.forEach(o=>o.disabled=true);if(!customBreakdown[key])customBreakdown[key]={correct:0,total:0};customBreakdown[key].total++;addWeekly('questions');
  const correct=n===view.correct;if(correct){customCorrect++;customBreakdown[key].correct++}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);
  if(customConfig.mode==='practice'){appState.practice.attempts++;if(correct)appState.practice.correct++;ops[view.correct].classList.add('correct');if(!correct)ops[n].classList.add('wrong');
- document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?'✅ Correcto':'❌ Incorrecto'}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;saveState()}
+ document.getElementById('customFeedback').innerHTML=`<div class="feedback"><b>${correct?(appState.planLang==='en'?'✅ Correct':'✅ Correcto'):(appState.planLang==='en'?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(qs[${idx}][3])">🔊 ${appState.planLang==='en'?'Listen to explanation':'Escuchar explicación'}</button><button class="primary" onclick="nextCustomQuestion()">${appState.planLang==='en'?'Next':'Siguiente'}</button></div></div>`;saveState()}
  else{ops[n].classList.add('selected');saveState();customPos++;setTimeout(renderCustomExam,180)}
 }
 
