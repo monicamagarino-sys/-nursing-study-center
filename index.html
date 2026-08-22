@@ -1869,12 +1869,12 @@ function addDailyActivity(kind,amount=1){
 function addWeekly(kind,amount=1){const week=ensureWeekly();week[kind]=Math.max(0,Number(week[kind]||0)+amount);addDailyActivity(kind,amount)}
 function weeklyBar(value,goal){return Math.min(100,Math.round((Number(value)||0)/Math.max(1,Number(goal)||1)*100))}
 function renderWeeklyGoals(){
- const w=ensureWeekly(),g=w.goals,complete=w.questions>=g.questions&&w.modules>=g.modules&&w.exams>=g.exams;
- return `<div class="card"><span class="pill">META SEMANAL · LUNES A DOMINGO</span><h2>${complete?'🏆 ¡Semana completada!':'📆 Tu avance esta semana'}</h2>
- <p><b>${w.questions}/${g.questions}</b> preguntas</p><div class="progressbar"><span style="width:${weeklyBar(w.questions,g.questions)}%"></span></div>
- <p><b>${w.modules}/${g.modules}</b> módulos terminados</p><div class="progressbar"><span style="width:${weeklyBar(w.modules,g.modules)}%"></span></div>
- <p><b>${w.exams}/${g.exams}</b> exámenes realizados</p><div class="progressbar"><span style="width:${weeklyBar(w.exams,g.exams)}%"></span></div>
- <small class="muted">Se reinicia automáticamente cada lunes. Meta: 100 preguntas, 2 módulos y 1 examen.</small></div>`;
+ const en=appState.planLang==='en',w=ensureWeekly(),g=w.goals,complete=w.questions>=g.questions&&w.modules>=g.modules&&w.exams>=g.exams;
+ return `<div class="card"><span class="pill">${en?'WEEKLY GOAL · MONDAY TO SUNDAY':'META SEMANAL · LUNES A DOMINGO'}</span><h2>${complete?(en?'🏆 Week completed!':'🏆 ¡Semana completada!'):(en?'📆 Your progress this week':'📆 Tu avance esta semana')}</h2>
+ <p><b>${w.questions}/${g.questions}</b> ${en?'questions':'preguntas'}</p><div class="progressbar"><span style="width:${weeklyBar(w.questions,g.questions)}%"></span></div>
+ <p><b>${w.modules}/${g.modules}</b> ${en?'modules completed':'módulos terminados'}</p><div class="progressbar"><span style="width:${weeklyBar(w.modules,g.modules)}%"></span></div>
+ <p><b>${w.exams}/${g.exams}</b> ${en?'exams completed':'exámenes realizados'}</p><div class="progressbar"><span style="width:${weeklyBar(w.exams,g.exams)}%"></span></div>
+ <small class="muted">${en?'Resets automatically every Monday. Goal: 100 questions, 2 modules, and 1 exam.':'Se reinicia automáticamente cada lunes. Meta: 100 preguntas, 2 módulos y 1 examen.'}</small></div>`;
 }
 function setWeeklyPlanLang(lang){appState.planLang=lang==='en'?'en':'es';saveState();updateDashboard();renderProgress()}
 function smartWeeklyPlanItems(){
@@ -1927,9 +1927,9 @@ function renderStudyReminder(){
  return `<div id="studyReminderCard" class="card" style="${due?'border:3px solid #16a36a;background:#f0fff8':''}"><span class="pill">${en?'STUDY REMINDERS':'RECORDATORIOS DE ESTUDIO'}</span><h2>${due?'🔔 '+(en?'It is time to study':'Es hora de estudiar'):'⏰ '+(en?'Choose your schedule':'Elige tu horario')}</h2><p>${en?'Settings synchronize between devices. Add the schedule to your calendar for reliable alerts even when the app is closed.':'La configuración se sincroniza entre dispositivos. Añade el horario al calendario para recibir avisos aunque la app esté cerrada.'}</p><label style="display:flex;gap:10px;align-items:center"><input id="reminderEnabled" type="checkbox" ${r.enabled?'checked':''}> <b>${en?'Enable reminder':'Activar recordatorio'}</b></label><div class="actions" style="margin:14px 0;flex-wrap:wrap">${dayNames.map((name,i)=>`<label class="pill"><input name="reminderDay" type="checkbox" value="${i}" ${(r.days||[]).includes(i)?'checked':''}> ${name}</label>`).join('')}</div><div class="flash-config"><label><b>${en?'Time':'Hora'}</b><input id="reminderTime" class="flash-select" type="time" value="${esc(r.time)}"></label><label><b>${en?'Activity':'Actividad'}</b><select id="reminderActivity" class="flash-select">${Object.keys(REMINDER_ACTIVITIES).map(key=>`<option value="${key}" ${r.activity===key?'selected':''}>${esc(reminderActivityLabel(key))}</option>`).join('')}</select></label></div><div class="actions"><button class="primary" onclick="saveStudyReminder()">${en?'Save reminder':'Guardar recordatorio'}</button><button class="secondary" onclick="requestStudyNotification()">${permission==='granted'?'✅ ':''}${en?'Browser notification':'Notificación del navegador'}</button><button class="goodbtn" onclick="downloadStudyCalendar()">📅 ${en?'Add to calendar':'Añadir al calendario'}</button>${due?`<button class="warnbtn" onclick="startReminderActivity()">${en?'Study now':'Estudiar ahora'}</button>`:''}</div><small class="muted">${en?'Calendar alerts are the most reliable option on iPhone, Android, Mac, and Windows.':'Los avisos del calendario son la opción más fiable en iPhone, Android, Mac y Windows.'}</small></div>`;
 }
 function renderActivityCalendar(){
- const days=[];for(let offset=27;offset>=0;offset--){const date=new Date();date.setHours(0,0,0,0);date.setDate(date.getDate()-offset);const key=dailyDateKey(date),row=appState.activityLog?.[key]||{questions:0,modules:0,exams:0},total=Number(row.questions||0)+Number(row.modules||0)*5+Number(row.exams||0)*10,level=total===0?0:total<5?1:total<15?2:3;days.push({date,key,row,total,level})}
- const active=days.filter(d=>d.total>0).length,questions=days.reduce((sum,d)=>sum+Number(d.row.questions||0),0),modules=days.reduce((sum,d)=>sum+Number(d.row.modules||0),0),exams=days.reduce((sum,d)=>sum+Number(d.row.exams||0),0);
- return `<div class="card"><h2>🗓️ Actividad de los últimos 28 días</h2><p><b>${active}</b> días activos · <b>${questions}</b> preguntas · <b>${modules}</b> módulos · <b>${exams}</b> exámenes</p><div class="activity-calendar">${days.map(d=>`<div class="activity-day activity-${d.level}" title="${esc(d.date.toLocaleDateString('es-US'))}: ${d.row.questions||0} preguntas, ${d.row.modules||0} módulos, ${d.row.exams||0} exámenes"><b>${d.date.getDate()}</b><small>${d.total?`${d.row.questions||0} preg.`:'—'}</small></div>`).join('')}</div><div class="activity-legend"><span>Menos</span><i class="activity-dot" style="background:#edf0f6"></i><i class="activity-dot" style="background:#dff6ec"></i><i class="activity-dot" style="background:#aee7cf"></i><i class="activity-dot" style="background:#38aa79"></i><span>Más actividad</span></div></div>`;
+ const en=appState.planLang==='en',days=[];for(let offset=27;offset>=0;offset--){const date=new Date();date.setHours(0,0,0,0);date.setDate(date.getDate()-offset);const key=dailyDateKey(date),row=appState.activityLog?.[key]||{questions:0,modules:0,exams:0},total=Number(row.questions||0)+Number(row.modules||0)*5+Number(row.exams||0)*10,level=total===0?0:total<5?1:total<15?2:3;days.push({date,key,row,total,level})}
+ const active=days.filter(d=>d.total>0).length,questions=days.reduce((sum,d)=>sum+Number(d.row.questions||0),0),modules=days.reduce((sum,d)=>sum+Number(d.row.modules||0),0),exams=days.reduce((sum,d)=>sum+Number(d.row.exams||0),0),locale=en?'en-US':'es-US';
+ return `<div class="card"><h2>🗓️ ${en?'Activity during the last 28 days':'Actividad de los últimos 28 días'}</h2><p><b>${active}</b> ${en?'active days':'días activos'} · <b>${questions}</b> ${en?'questions':'preguntas'} · <b>${modules}</b> ${en?'modules':'módulos'} · <b>${exams}</b> ${en?'exams':'exámenes'}</p><div class="activity-calendar">${days.map(d=>`<div class="activity-day activity-${d.level}" title="${esc(d.date.toLocaleDateString(locale))}: ${d.row.questions||0} ${en?'questions':'preguntas'}, ${d.row.modules||0} ${en?'modules':'módulos'}, ${d.row.exams||0} ${en?'exams':'exámenes'}"><b>${d.date.getDate()}</b><small>${d.total?`${d.row.questions||0} ${en?'q.':'preg.'}`:'—'}</small></div>`).join('')}</div><div class="activity-legend"><span>${en?'Less':'Menos'}</span><i class="activity-dot" style="background:#edf0f6"></i><i class="activity-dot" style="background:#dff6ec"></i><i class="activity-dot" style="background:#aee7cf"></i><i class="activity-dot" style="background:#38aa79"></i><span>${en?'More activity':'Más actividad'}</span></div></div>`;
 }
 function parseLocalDate(value){const parts=String(value||'').split('-').map(Number);return parts.length===3&&parts.every(Number.isFinite)?new Date(parts[0],parts[1]-1,parts[2]):null}
 function saveExamTargetDate(value){
@@ -2091,15 +2091,15 @@ function renderAchievements(){
  box.innerHTML=`<div class="card"><h2>🏆 Mis logros</h2><p><b>${earned}/${ACHIEVEMENT_DEFS.length}</b> medallas conseguidas. Cada avance cuenta.</p><div class="progressbar"><span style="width:${pct(earned,ACHIEVEMENT_DEFS.length)}%"></span></div></div><div class="achievement-grid">${ACHIEVEMENT_DEFS.map(a=>{const date=appState.achievements[a.id];return `<div class="card achievement ${date?'earned':'locked'}"><span class="medal">${date?a.icon:'🔒'}</span><h3>${esc(a.title)}</h3><p>${esc(a.desc)}</p><span class="status">${date?`CONSEGUIDO · ${esc(new Date(date).toLocaleDateString('es-US'))}`:'BLOQUEADO'}</span></div>`}).join('')}</div>`;
 }
 function moduleMastery(key){
- const p=appState.moduleProgress?.[key];if(!p?.attempts)return null;
- const level=p.best>=80?'Dominado':p.best>=65?'En progreso':'Repasar';
+ const p=appState.moduleProgress?.[key];if(!p?.attempts)return null;const en=appState.planLang==='en';
+ const level=p.best>=80?(en?'Mastered':'Dominado'):p.best>=65?(en?'In progress':'En progreso'):(en?'Review':'Repasar');
  const cls=p.best>=80?'level-good':p.best>=65?'level-mid':'level-low';return {...p,level,cls};
 }
-function moduleMasteryLabel(key){const p=moduleMastery(key);return p?` · <span class="${p.cls}"><b>${p.level}</b> · mejor ${p.best}%</span>`:' · Quiz pendiente'}
+function moduleMasteryLabel(key){const en=appState.planLang==='en',p=moduleMastery(key);return p?` · <span class="${p.cls}"><b>${p.level}</b> · ${en?'best':'mejor'} ${p.best}%</span>`:` · ${en?'Quiz pending':'Quiz pendiente'}`}
 function renderModuleMasteryOverview(){
- const rows=CORE_MODULES.map(([key,title],i)=>{const p=moduleMastery(key);return p?{key,title:title.replace(/^Clase \d+ — /,''),number:i+1,...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best);
- if(!rows.length)return '<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Completa el quiz de un módulo para comenzar este seguimiento.</p></div>';
- return `<div class="card"><h3>📘 Dominio por módulo</h3><p class="muted">Los módulos que necesitan más repaso aparecen primero.</p><div class="module-report">${rows.map(r=>`<div class="module-report-row"><strong>${r.number}. ${esc(r.title)}<br><small class="${r.cls}">${r.level} · ${r.attempts} intento${r.attempts===1?'':'s'}${r.lastDate?` · ${esc(new Date(r.lastDate).toLocaleDateString('es-US'))}`:''}</small></strong><span>Último ${r.last}%<br>Mejor ${r.best}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">Repetir quiz</button></div>`).join('')}</div></div>`;
+ const en=appState.planLang==='en',rows=CORE_MODULES.map(([key],i)=>{const p=moduleMastery(key);return p?{key,title:mnModuleTitle(key,en).replace(/^(Clase|Class) \d+ — /,''),number:i+1,...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best),locale=en?'en-US':'es-US';
+ if(!rows.length)return `<div class="card"><h3>📘 ${en?'Mastery by module':'Dominio por módulo'}</h3><p class="muted">${en?'Complete a module quiz to begin this tracking.':'Completa el quiz de un módulo para comenzar este seguimiento.'}</p></div>`;
+ return `<div class="card"><h3>📘 ${en?'Mastery by module':'Dominio por módulo'}</h3><p class="muted">${en?'Modules that need the most review appear first.':'Los módulos que necesitan más repaso aparecen primero.'}</p><div class="module-report">${rows.map(r=>`<div class="module-report-row"><strong>${r.number}. ${esc(r.title)}<br><small class="${r.cls}">${r.level} · ${r.attempts} ${en?(r.attempts===1?'attempt':'attempts'):(r.attempts===1?'intento':'intentos')}${r.lastDate?` · ${esc(new Date(r.lastDate).toLocaleDateString(locale))}`:''}</small></strong><span>${en?'Last':'Último'} ${r.last}%<br>${en?'Best':'Mejor'} ${r.best}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Repeat quiz':'Repetir quiz'}</button></div>`).join('')}</div></div>`;
 }
 function getStudyRecommendation(){
  const mistakesByModule={};(appState.mistakes||[]).forEach(idx=>{const key=qs[idx]?.[4];if(key)mistakesByModule[key]=(mistakesByModule[key]||0)+1});
@@ -3195,7 +3195,7 @@ function setGlobalLanguage(lang){
 
  // Rebuild every stable screen immediately — the same language refresh that
  // previously happened only after a browser reload, but without leaving the app.
- if(typeof buildGroupedUI==='function')buildGroupedUI();
+ if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();
  if(typeof updateDashboard==='function')updateDashboard();
  if(typeof renderTopics==='function')renderTopics();
  if(typeof renderProgress==='function')renderProgress();
@@ -3207,7 +3207,7 @@ function setGlobalLanguage(lang){
    const ss=document.getElementById('smartSearch');
    renderSearch(ss?ss.value:'');
  }
- if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
+ if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
 
  // Refresh the screen currently visible, without resetting the user's session.
  try{
@@ -3223,14 +3223,21 @@ function setGlobalLanguage(lang){
      renderMedCalc();
    }else if(active==='ngn' && typeof renderNGN==='function' && !(typeof ngnCase!=='undefined' && ngnCase)){
      renderNGN();
+   }else if(active==='logros' && typeof renderAchievements==='function'){
+     renderAchievements();
    }else if(active==='inicio' && typeof updateDashboard==='function'){
      updateDashboard();
    }
  }catch(e){console.warn('Language live refresh:',e)}
 
+
+ // Final live-refresh pass for grouped navigation and currently visible hub.
+ if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();
+ if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
+ if(typeof window.mnMarkGroup==='function')window.mnMarkGroup(active);
  // Re-apply static labels after dynamic renderers have finished.
- if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
- if(typeof markGroup==='function')markGroup(active);
+ if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
+ if(typeof window.mnMarkGroup==='function')window.mnMarkGroup(active);
 }
 // V27 — bilingual achievements refresh
 const MN_ACHIEVEMENT_I18N={
@@ -3495,6 +3502,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(typeof renderSearch==='function'&&smartSearch)renderSearch(smartSearch.value);
   const account=document.getElementById('cuenta');if(account&&typeof accountHTML==='function')account.innerHTML=accountHTML();
  }
+ window.mnBuildGroupedUI=buildGroupedUI;
+ window.mnApplyGlobalLanguageUI=applyGlobalLanguageUI;
  function accountHTML(){
   const en=appState.planLang==='en';
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
@@ -3553,6 +3562,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const group=groupFor[id]||id;
   document.querySelectorAll('.mn-group-nav .tab').forEach(b=>b.classList.toggle('active',b.dataset.group===group));
  }
+ window.mnMarkGroup=markGroup;
  function addBackButton(id){
   const group=groupFor[id];
   if(!group||id===group||id==='inicio')return;
@@ -3935,7 +3945,7 @@ answerAdaptiveExam=function(n){
         else if(typeof examOrder!=='undefined'&&examOrder?.length&&typeof renderExam==='function')renderExam();
         else if(typeof renderExamLanding==='function')renderExamLanding();
       }
-      if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
+      if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
       setTimeout(applyUniversalText,0);
     }catch(e){console.warn('V28 bilingual refresh',e)}
   };
@@ -3950,7 +3960,7 @@ answerAdaptiveExam=function(n){
   }
 
   // Initial consistency pass after the app has loaded.
-  setTimeout(()=>{try{if(typeof renderTopics==='function')renderTopics();if(typeof buildGroupedUI==='function')buildGroupedUI();applyUniversalText()}catch(e){}},0);
+  setTimeout(()=>{try{if(typeof renderTopics==='function')renderTopics();if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();applyUniversalText()}catch(e){}},0);
 })();
 </script>
 
