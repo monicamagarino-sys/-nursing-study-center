@@ -3003,6 +3003,67 @@ function startDailyPractice(){
  practiceModule='';practiceLabel='Plan diario de estudio';practiceFinite=true;mistakePractice=false;dailyPractice=true;dailyCorrect=0;practiceSessionCorrect=0;practiceSessionAnswered=0;
  practiceOrder=shuffled(selected);practicePos=0;rememberStudy('daily','',practiceLabel);show('quiz');
 }
+
+const MN_Q_ES_EN = [
+ [/\by\b/gi,"and"],[/\bcon\b/gi,"with"],[/\bsin\b/gi,"without"],
+ [/\bhipotensión\b/gi,"hypotension"],[/\bhipertensión\b/gi,"hypertension"],
+ [/\btaquicardia\b/gi,"tachycardia"],[/\bbradicardia\b/gi,"bradycardia"],
+ [/\bbradipnea\b/gi,"bradypnea"],[/\bfiebre\b/gi,"fever"],
+ [/\bpulso saltón\b/gi,"bounding pulse"],[/\bpulso\b/gi,"pulse"],
+ [/\b¿Qué combinación de signos relaciona la guía con cardiogenic shock\?/gi,
+   "Which combination of signs does the guide associate with cardiogenic shock?"],
+ [/\b¿Qué combinación de signos\b/gi,"Which combination of signs"],
+ [/\brelaciona la guía con\b/gi,"does the guide associate with"],
+ [/\bshock cardiogénico\b/gi,"cardiogenic shock"],
+ [/\bdisminución\b/gi,"decrease"],[/\baumento\b/gi,"increase"],
+ [/\bdolor\b/gi,"pain"],[/\bpecho\b/gi,"chest"],[/\bsangrado\b/gi,"bleeding"],
+ [/\bdificultad para respirar\b/gi,"difficulty breathing"],
+ [/\bfalta de aire\b/gi,"shortness of breath"],
+ [/\bnáuseas\b/gi,"nausea"],[/\bvómitos\b/gi,"vomiting"],
+ [/\bmareo\b/gi,"dizziness"],[/\bdebilidad\b/gi,"weakness"],
+ [/\bconfusión\b/gi,"confusion"],[/\bconciencia\b/gi,"consciousness"],
+ [/\bfrecuencia cardíaca\b/gi,"heart rate"],[/\bpresión arterial\b/gi,"blood pressure"],
+ [/\brespiración\b/gi,"breathing"],[/\boxígeno\b/gi,"oxygen"],
+ [/\benfermero\b/gi,"nurse"],[/\benfermera\b/gi,"nurse"],[/\bpaciente\b/gi,"patient"],
+ [/\bprimero\b/gi,"first"],[/\bmejor\b/gi,"best"],[/\bcorrecta\b/gi,"correct"],
+ [/\bcorrecto\b/gi,"correct"],[/\bindica\b/gi,"indicates"],[/\brequiere\b/gi,"requires"]
+];
+const MN_Q_EN_ES = [
+ [/\band\b/gi,"y"],[/\bwith\b/gi,"con"],[/\bwithout\b/gi,"sin"],
+ [/\bhypotension\b/gi,"hipotensión"],[/\bhypertension\b/gi,"hipertensión"],
+ [/\btachycardia\b/gi,"taquicardia"],[/\bbradycardia\b/gi,"bradicardia"],
+ [/\bbradypnea\b/gi,"bradipnea"],[/\bfever\b/gi,"fiebre"],
+ [/\bbounding pulse\b/gi,"pulso saltón"],[/\bpulse\b/gi,"pulso"],
+ [/\bcardiogenic shock\b/gi,"shock cardiogénico"],
+ [/\bdecrease\b/gi,"disminución"],[/\bincrease\b/gi,"aumento"],
+ [/\bpain\b/gi,"dolor"],[/\bchest\b/gi,"pecho"],[/\bbleeding\b/gi,"sangrado"],
+ [/\bdifficulty breathing\b/gi,"dificultad para respirar"],
+ [/\bshortness of breath\b/gi,"falta de aire"],
+ [/\bnausea\b/gi,"náuseas"],[/\bvomiting\b/gi,"vómitos"],
+ [/\bdizziness\b/gi,"mareo"],[/\bweakness\b/gi,"debilidad"],
+ [/\bconfusion\b/gi,"confusión"],[/\bconsciousness\b/gi,"conciencia"],
+ [/\bheart rate\b/gi,"frecuencia cardíaca"],[/\bblood pressure\b/gi,"presión arterial"],
+ [/\bbreathing\b/gi,"respiración"],[/\boxygen\b/gi,"oxígeno"],
+ [/\bnurse\b/gi,"enfermera"],[/\bpatient\b/gi,"paciente"],
+ [/\bfirst\b/gi,"primero"],[/\bbest\b/gi,"mejor"],[/\bcorrect\b/gi,"correcto"],
+ [/\bindicates\b/gi,"indica"],[/\brequires\b/gi,"requiere"]
+];
+function mnQuestionText(s,en){
+ let out=String(s??"");
+ const rules=en?MN_Q_ES_EN:MN_Q_EN_ES;
+ rules.forEach(([a,b])=>{out=out.replace(a,b)});
+ return out;
+}
+function mnQuestionRecord(q){
+ const en=appState?.planLang==='en';
+ if(!Array.isArray(q))return q;
+ const z=q.slice();
+ z[0]=mnQuestionText(z[0],en);
+ if(Array.isArray(z[1]))z[1]=z[1].map(x=>mnQuestionText(x,en));
+ if(typeof z[3]==='string')z[3]=mnQuestionText(z[3],en);
+ return z;
+}
+
 function renderPractice(){
  answeredFinal=false;
  const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];
@@ -3073,7 +3134,7 @@ function toggleFavorite(idx){
 function renderFavorites(){
  const box=document.getElementById('favBox'); if(!box)return;
  if(!appState.favorites.length){box.innerHTML='<div class="card empty">Todavía no has guardado preguntas favoritas. En Práctica toca ☆.</div>';return}
- box.innerHTML=appState.favorites.map(idx=>{const x=qs[idx];return `<div class="card"><button class="star" onclick="toggleFavorite(${idx})">★</button><h3>${esc(x[0])}</h3><p><b>Respuesta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
+ box.innerHTML=appState.favorites.map(idx=>{const x=mnQuestionRecord(qs[idx]);return `<div class="card"><button class="star" onclick="toggleFavorite(${idx})">★</button><h3>${esc(x[0])}</h3><p><b>Respuesta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
 }
 function removeMistake(idx){
  appState.mistakes=appState.mistakes.filter(i=>i!==idx);saveState();renderMistakes();
@@ -3083,7 +3144,7 @@ function renderMistakes(){
  const valid=appState.mistakes.filter(idx=>qs[idx]);
  if(!valid.length){box.innerHTML='<div class="card empty">¡Excelente! No tienes preguntas pendientes. Las respuestas incorrectas se guardarán aquí automáticamente.</div>';return}
  box.innerHTML=`<div class="card"><p><b>${valid.length} pregunta${valid.length===1?'':'s'} por dominar.</b> Cuando la respondas correctamente en esta práctica, desaparecerá de la lista.</p><div class="actions"><button class="warnbtn" onclick="startMistakePractice()">Practicar mis errores</button><button class="secondary" onclick="if(confirm('¿Vaciar el cuaderno de errores?')){appState.mistakes=[];saveState();renderMistakes()}">Vaciar lista</button></div></div>`+
- valid.map(idx=>{const x=qs[idx];const title=lessons[x[4]]?.title||'Módulo';return `<div class="card"><button class="star" onclick="removeMistake(${idx})" title="Eliminar">×</button><small>${esc(title)}</small><h3>${esc(x[0])}</h3><p><b>Respuesta correcta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
+ valid.map(idx=>{const x=mnQuestionRecord(qs[idx]);const title=lessons[x[4]]?.title||'Módulo';return `<div class="card"><button class="star" onclick="removeMistake(${idx})" title="Eliminar">×</button><small>${esc(title)}</small><h3>${esc(x[0])}</h3><p><b>Respuesta correcta:</b> ${esc(x[1][x[2]])}</p><p class="muted">${esc(x[3])}</p></div>`}).join('');
 }
 
 const NCLEX_EXAM_SIZE=85;
@@ -4070,7 +4131,7 @@ qs.push(
 
 /* V26 — Opciones aleatorias + práctica exclusiva de preguntas nuevas */
 function mnQuestionView(idx){
- const x=qs[idx];
+ const x=mnQuestionRecord(qs[idx]);
  const order=x[1].map((_,i)=>i);
  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
  return {order, correct:order.indexOf(x[2])};
