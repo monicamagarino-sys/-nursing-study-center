@@ -766,7 +766,7 @@ function show(id){document.querySelectorAll('section').forEach(x=>x.classList.re
 function openLesson(k){show("temas");document.getElementById("topicGrid").innerHTML=lessonHTML(k)}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>show(b.dataset.tab));
 function lessonHTML(k){let l=lessons[k];return `<div class="card"><span class="pill">${l.title}</span>${l.items.map(x=>`<div class="lesson"><h3>${x[0]}</h3><p>${x[1]}</p></div>`).join("")}</div>`}
-function renderTopics(){document.getElementById("topicGrid").innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${mnModuleTitle(k)}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("")}
+function renderTopics(){document.getElementById("topicGrid").innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${lessons[k].title}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("")}
 function filterTopics(){let q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".topic").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"block":"none")}
 function renderQ(){answered=false;let x=qs[qi];document.getElementById("quizBox").innerHTML=`<p class="question">${qi+1}. ${x[0]}</p>`+x[1].map((o,n)=>`<button class="option" onclick="answer(${n})">${String.fromCharCode(65+n)}. ${o}</button>`).join("")+`<div id="feedback"></div>`;document.getElementById("next").style.display="none"}
 function answer(n){if(answered)return;answered=true;let x=qs[qi],ops=document.querySelectorAll(".option");ops[x[2]].classList.add("correct");if(n!==x[2])ops[n].classList.add("wrong");if(n===x[2])correct++;document.getElementById("score").textContent=correct;document.getElementById("scoreTop").textContent=`${correct}/${qi+1}`;document.getElementById("feedback").innerHTML=`<div class="feedback"><b>${n===x[2]?"✅ Correcto":"❌ Incorrecto"}</b><br>${x[3]}</div>`;document.getElementById("next").style.display="inline-block"}
@@ -2116,7 +2116,7 @@ qs.push(
 const oldRenderTopics=renderTopics;
 renderTopics=function(){
   const grid=document.getElementById("topicGrid");
-  grid.innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${mnModuleTitle(k)}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("");
+  grid.innerHTML=Object.keys(lessons).map(k=>`<div class="card topic" data-key="${k}" onclick="openLesson('${k}')"><h3>${lessons[k].title}</h3><small>${lessons[k].items.length} bloques de repaso</small></div>`).join("");
 }
 renderTopics();
 
@@ -2666,26 +2666,53 @@ function resumeLastStudy(){
  else startPractice(true);
 }
 
+const MN_MODULE_TITLES = {
+  "etica": {es:"Clase 1 — Ética, legal y gestión", en:"Class 1 — Ethics, Legal & Management"},
+  "prev": {es:"Clase 2 — Prevención y seguridad", en:"Class 2 — Prevention & Safety"},
+  "fisico": {es:"Clase 3 — Examen físico", en:"Class 3 — Physical Assessment"},
+  "nutri": {es:"Clase 4 — Nutrición", en:"Class 4 — Nutrition"},
+  "ivblood": {es:"Clase 5 — IV and Blood", en:"Class 5 — IV & Blood"},
+  "labs": {es:"Clase 6 — Labs and Procedures", en:"Class 6 — Labs & Procedures"},
+  "abg": {es:"Clase 7 — ABG & Electrolytes", en:"Class 7 — ABGs & Electrolytes"},
+  "resp": {es:"Clase 8 — Respiratory Disorders", en:"Class 8 — Respiratory Disorders"},
+  "cardio": {es:"Clase 9 — Cardiovascular", en:"Class 9 — Cardiovascular"},
+  "neuro": {es:"Clase 10 — Neurologic Disorders", en:"Class 10 — Neurologic Disorders"},
+  "eyesent": {es:"Clase 11 — Eyes and ENT", en:"Class 11 — Eyes & ENT"},
+  "msk": {es:"Clase 12 — Musculoskeletal Disorders", en:"Class 12 — Musculoskeletal Disorders"},
+  "gi": {es:"Clase 13 — Gastrointestinal System", en:"Class 13 — Gastrointestinal System"},
+  "renal": {es:"Clase 14 — Renal and Urinary Disorders", en:"Class 14 — Renal & Urinary Disorders"},
+  "onc": {es:"Clase 15 — Oncology", en:"Class 15 — Oncology"},
+  "heme": {es:"Clase 16 — Hematological Disorders", en:"Class 16 — Hematological Disorders"},
+  "endo": {es:"Clase 17 — Endocrine", en:"Class 17 — Endocrine"},
+  "skin": {es:"Clase 18 — Integumentary", en:"Class 18 — Integumentary"},
+  "ob": {es:"Clase 19 — Women’s Health, Maternity and Neonate", en:"Class 19 — Women’s Health, Maternity & Neonate"},
+  "psych": {es:"Clase 20 — Psychiatric", en:"Class 20 — Psychiatric"},
+  "respiratorio": {es:"Clase 8 — Trastornos respiratorios", en:"Class 8 — Respiratory Disorders"},
+};
+function mnModuleTitle(key,en){
+  const rec=MN_MODULE_TITLES[key];
+  if(rec)return rec[en?'en':'es'];
+  const raw=(lessons[key]&&lessons[key].title)?lessons[key].title:key;
+  return en?raw.replace(/^Clase\s+/,'Class '):raw;
+}
 function mnContinueLabel(last,en){
-  if(!last) return en ? "Continue practice" : "Continuar práctica";
-  if((last.type==="module" || last.type==="moduleQuiz") && last.key && lessons[last.key]){
-    const title = MN_MODULE_TITLES[last.key]
-      ? MN_MODULE_TITLES[last.key][en ? "en" : "es"]
-      : (en ? lessons[last.key].title.replace(/^Clase\s+/,"Class ") : lessons[last.key].title);
-    return (last.type==="moduleQuiz" ? (en ? "Quiz: " : "Quiz: ") : (en ? "Module: " : "Módulo: ")) + title;
+  if(!last)return en?'Continue practice':'Continuar práctica';
+  if((last.type==='module'||last.type==='moduleQuiz')&&last.key&&lessons[last.key]){
+    return (last.type==='moduleQuiz'?'Quiz: ':(en?'Module: ':'Módulo: '))+mnModuleTitle(last.key,en);
   }
   const labels={
-    weak:{es:"Práctica de áreas débiles",en:"Weak-area practice"},
-    mistakes:{es:"Repaso de errores",en:"Mistake review"},
-    daily:{es:"Práctica diaria",en:"Daily practice"},
-    flashcards:{es:"Tarjetas de estudio",en:"Flashcards"},
-    adaptive:{es:"Examen adaptativo",en:"Adaptive exam"},
-    medcalc:{es:"Cálculos de medicamentos",en:"Medication calculations"},
-    medpharm:{es:"Práctica de farmacología",en:"Pharmacology practice"},
-    ngn:{es:"Práctica NGN",en:"NGN practice"}
+    weak:{es:'Práctica de áreas débiles',en:'Weak-area practice'},
+    mistakes:{es:'Repaso de errores',en:'Mistake review'},
+    daily:{es:'Práctica diaria',en:'Daily practice'},
+    flashcards:{es:'Tarjetas de estudio',en:'Flashcards'},
+    adaptive:{es:'Examen adaptativo',en:'Adaptive exam'},
+    medcalc:{es:'Cálculos de medicamentos',en:'Medication calculations'},
+    medpharm:{es:'Práctica de farmacología',en:'Pharmacology practice'},
+    ngn:{es:'Práctica NGN',en:'NGN practice'},
+    practice:{es:'Práctica',en:'Practice'}
   };
-  if(labels[last.type]) return labels[last.type][en ? "en" : "es"];
-  return last.label || (en ? "Continue practice" : "Continuar práctica");
+  if(labels[last.type])return labels[last.type][en?'en':'es'];
+  return last.label||(en?'Continue practice':'Continuar práctica');
 }
 
 function renderContinueCard(){
@@ -3512,7 +3539,8 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
 }
 
 function setProLang(lang){
- currentLang=lang;
+ lang=lang==='en'?'en':'es';
+ if(typeof appState!=='undefined'&&appState)appState.planLang=lang;
  lang=lang==='en'?'en':'es';
  document.querySelectorAll('[data-es][data-en]').forEach(el=>{
    el.textContent=(lang==='en'?el.getAttribute('data-en'):el.getAttribute('data-es'));
@@ -3525,8 +3553,6 @@ function setProLang(lang){
  localStorage.setItem('mnsc_interface_lang',lang);
  if(typeof appState!=='undefined'&&appState){appState.planLang=lang}
  if(typeof ngnLang!=='undefined'){ngnLang=lang;localStorage.setItem('mnsc_ngn_lang',lang);if(typeof renderNGN==='function')renderNGN()}
-
-  setTimeout(mnTranslateDynamicModuleTitles,0);
 }
 function authMsg(text, ok=false){
  const el=document.getElementById('authMessage');
@@ -3741,9 +3767,20 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
  window.setInterfaceLanguage=function(lang){
-  const next=lang==='en'?'en':'es';localStorage.setItem('mnsc_interface_lang',next);localStorage.setItem('mnsc_lang',next);appState.planLang=next;
+  const next=lang==='en'?'en':'es';
+  localStorage.setItem('mnsc_interface_lang',next);
+  localStorage.setItem('mnsc_lang',next);
+  appState.planLang=next;
   if(typeof ngnLang!=='undefined'){ngnLang=next;localStorage.setItem('mnsc_ngn_lang',next)}
-  appState.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');location.reload();
+  appState.updatedAt=Date.now();
+  localStorage.setItem(STORE_KEY,JSON.stringify(appState));
+  localStorage.setItem('mnsc_sync_pending','1');
+  if(typeof setProLang==='function')setProLang(next);
+  buildGroupedUI();
+  if(typeof updateDashboard==='function')updateDashboard();
+  if(typeof renderProgress==='function')renderProgress();
+  const active=document.querySelector('section.active')?.id||'inicio';
+  markGroup(active);
  };
  function buildGroupedUI(){
   const en=appState.planLang==='en';
@@ -4018,51 +4055,6 @@ answerAdaptiveExam=function(n){
    }
  }
 })();
-
-
-const MN_MODULE_TITLES = {
-  "etica": {es:"Clase 1 — Ética, legal y gestión", en:"Class 1 — Ethics, Legal & Management"},
-  "prev": {es:"Clase 2 — Prevención y seguridad", en:"Class 2 — Prevention & Safety"},
-  "fisico": {es:"Clase 3 — Examen físico", en:"Class 3 — Physical Assessment"},
-  "nutri": {es:"Clase 4 — Nutrición", en:"Class 4 — Nutrition"},
-  "ivblood": {es:"Clase 5 — IV and Blood", en:"Class 5 — IV & Blood"},
-  "labs": {es:"Clase 6 — Labs and Procedures", en:"Class 6 — Labs & Procedures"},
-  "abg": {es:"Clase 7 — ABG & Electrolytes", en:"Class 7 — ABGs & Electrolytes"},
-  "respiratorio": {es:"Clase 8 — Trastornos respiratorios", en:"Class 8 — Respiratory Disorders"},
-  "cardio": {es:"Clase 9 — Cardiovascular", en:"Class 9 — Cardiovascular"},
-  "neuro": {es:"Clase 10 — Neurologic Disorders", en:"Class 10 — Neurological"},
-  "eyesent": {es:"Clase 11 — Eyes and ENT", en:"Class 11 — Endocrine"},
-  "msk": {es:"Clase 12 — Musculoskeletal Disorders", en:"Class 12 — Gastrointestinal"},
-  "gi": {es:"Clase 13 — Gastrointestinal System", en:"Class 13 — Renal / Urinary"},
-  "renal": {es:"Clase 14 — Renal and Urinary Disorders", en:"Class 14 — Musculoskeletal"},
-  "onc": {es:"Clase 15 — Oncology", en:"Class 15 — Integumentary"},
-  "heme": {es:"Clase 16 — Hematological Disorders", en:"Class 16 — Hematology / Oncology"},
-  "endo": {es:"Clase 17 — Endocrine", en:"Class 17 — Maternity"},
-  "skin": {es:"Clase 18 — Integumentary", en:"Class 18 — Pediatrics"},
-  "ob": {es:"Clase 19 — Women’s Health, Maternity and Neonate", en:"Class 19 — Mental Health"},
-  "psych": {es:"Clase 20 — Psychiatric", en:"Class 20 — Pharmacology"},
-};
-
-function mnModuleTitle(key){
-  const rec = MN_MODULE_TITLES[key];
-  if(rec) return rec[currentLang === "en" ? "en" : "es"];
-  const raw = (lessons[key] && lessons[key].title) ? lessons[key].title : key;
-  return currentLang === "en" ? raw.replace(/^Clase\s+/,"Class ") : raw;
-}
-function mnTranslateDynamicModuleTitles(){
-  // Replace any currently-rendered lesson title (including Continue Studying)
-  // without changing saved progress keys or the underlying question bank.
-  document.querySelectorAll("h1,h2,h3,h4,strong,b,span,p,button,option,label").forEach(el=>{
-    if(el.children.length) return;
-    let s = (el.textContent || "").trim();
-    Object.keys(MN_MODULE_TITLES).forEach(key=>{
-      const r = MN_MODULE_TITLES[key];
-      if(currentLang === "en" && s.includes(r.es)) s = s.split(r.es).join(r.en);
-      if(currentLang === "es" && s.includes(r.en)) s = s.split(r.en).join(r.es);
-    });
-    if((el.textContent || "").trim() !== s) el.textContent = s;
-  });
-}
 
 </script>
 
