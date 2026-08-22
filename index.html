@@ -2365,25 +2365,13 @@ function ensureFinalUI(){
    main.insertBefore(pr,footer);
  }
  document.querySelector('#inicio').innerHTML=`
-  <div class="card">
-   <span class="pill">FINAL • 20 MÓDULOS • PRÁCTICA CORREGIDA</span>
+  <div class="card mn-home-summary">
+   <span class="pill">${en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA'}</span>
    <h2>Monica Nursing Study Center</h2>
-   <p>Estudio, práctica, examen, favoritos y progreso en una sola app.</p>
-   <div class="actions">
-    <button class="primary" onclick="show('temas')">📚 Estudiar módulos</button>
-    <button class="secondary" onclick="show('buscar')">🔎 ${en?'Search content':'Buscar contenido'}</button>
-    <button class="secondary" onclick="show('tarjetas')">🧠 Tarjetas inteligentes</button>
-    <button class="warnbtn" onclick="startPractice(true)">📝 Práctica aleatoria</button>
-    <button id="weakPracticeBtn" class="warnbtn" onclick="startWeakPractice()">🎯 Reforzar temas débiles</button>
-    <button class="goodbtn" onclick="startExam()">🎯 Simulacro NCLEX</button>
-    <button class="primary" onclick="show('medcalc')">💊 Medicamentos y cálculos</button>
-    <button class="goodbtn" onclick="show('ngn')">🧩 Casos clínicos NGN</button>
-   </div>
-   <div class="install-note"><b>📱 Instalación:</b> este paquete está preparado como PWA. Cuando se abra desde un servidor/hosting, puede añadirse a la pantalla de inicio del teléfono y, en navegadores compatibles, instalarse en la computadora.</div>
+   <p>${en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.'}</p>
   </div>
   <div id="dailyPlan"></div>
-  <div id="homeStats"></div>
-  <h2>20 módulos</h2><div id="homeModules" class="grid"></div>`;
+  <div id="homeStats"></div>`;
  document.querySelector('#repaso').style.display='none';
  updateDashboard();
  renderTopics();
@@ -2737,24 +2725,26 @@ function updateDashboard(){
  const done=appState.completed.length;
  const today=dailyDateKey(),dailyDone=appState.daily.completedDate===today;
  const daily=document.getElementById('dailyPlan');
- if(daily)daily.innerHTML=renderContinueCard()+renderNclexReadiness()+renderSmartWeeklyPlan()+renderStudyReminder()+renderExamPlan()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">PLAN DIARIO</span><h2>${dailyDone?'✅ Meta de hoy completada':'📅 Estudio de hoy'}</h2><p>${dailyDone?`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`:'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.'}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?'Repetir plan de hoy':'Comenzar estudio de hoy'}</button></div>`;
- const hp=document.getElementById('homeStats');
- if(hp) hp.innerHTML=`<div class="final-stats">
-  <div class="stat"><b>${done}/20</b>Módulos completados<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
-  <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>Práctica<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
-  <div class="stat"><b>${appState.exam.best}%</b>Mejor examen<br><small>${appState.exam.taken} realizados</small></div>
-  <div class="stat"><b>${appState.favorites.length}</b>Favoritos guardados</div>
-  <div class="stat"><b>${appState.mistakes.length}</b>Preguntas por dominar</div>
-  <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>Módulos con notas</div>
-  <div class="stat"><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b>Medallas logradas</div>
-  <div class="stat"><b>${flashcardStats().mastered}</b>Tarjetas dominadas</div>
-  <div class="stat"><b>${appState.ngn.best||0}%</b>Mejor caso NGN<br><small>${appState.ngn.taken||0} completados</small></div>
- </div>`;
- const hm=document.getElementById('homeModules');
- if(hm){
- const en=appState.planLang==='en';
- hm.innerHTML=CORE_MODULES.map(([k,t],i)=>`<div class="card topic" onclick="openLesson('${k}')"><div class="module-num">${en?'MODULE':'MÓDULO'} ${i+1}</div><h3>${appState.completed.includes(k)?'✅':'📘'} ${esc(mnModuleTitle(k,en).replace(/^(Clase|Class) \d+ — /,''))}</h3><small>${lessons[k]?.items?.length||0} ${en?'study blocks':'bloques de estudio'}${String(appState.notes[k]||'').trim()?(en?' · 🗒️ Saved note':' · 🗒️ Nota guardada'):''}${moduleMasteryLabel(k)}</small></div>`).join('');
+ if(daily){
+  const en=appState.planLang==='en';
+  daily.innerHTML=renderContinueCard()+renderNclexReadiness()+renderSmartWeeklyPlan()+renderStudyReminder()+renderExamPlan()+renderStudyRecommendation()+renderWeeklyGoals()+renderActivityCalendar()+`<div class="card"><span class="pill">${en?'DAILY PLAN':'PLAN DIARIO'}</span><h2>${dailyDone?(en?'✅ Today\'s goal completed':'✅ Meta de hoy completada'):(en?'📅 Today\'s study':'📅 Estudio de hoy')}</h2><p>${dailyDone?(en?`Result: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Streak: <b>${appState.daily.streak} day${appState.daily.streak===1?'':'s'}</b>.`:`Resultado: <b>${appState.daily.correct}/${appState.daily.total}</b> (${pct(appState.daily.correct,appState.daily.total)}%). Racha: <b>${appState.daily.streak} día${appState.daily.streak===1?'':'s'}</b>.`):(en?'10 questions selected from your errors, weak modules, and general bank.':'10 preguntas seleccionadas de tus errores, módulos débiles y banco general.')}</p><button class="${dailyDone?'secondary':'goodbtn'}" onclick="startDailyPractice()">${dailyDone?(en?'Repeat today\'s plan':'Repetir plan de hoy'):(en?'Start today\'s study':'Comenzar estudio de hoy')}</button></div>`;
  }
+ const hp=document.getElementById('homeStats');
+ if(hp){
+ const en=appState.planLang==='en';
+ hp.innerHTML=`<div class="final-stats">
+  <div class="stat"><b>${done}/20</b>${en?'Modules completed':'Módulos completados'}<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
+  <div class="stat"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>${en?'Practice':'Práctica'}<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
+  <div class="stat"><b>${appState.exam.best}%</b>${en?'Best exam':'Mejor examen'}<br><small>${appState.exam.taken} ${en?'completed':'realizados'}</small></div>
+  <div class="stat"><b>${appState.favorites.length}</b>${en?'Saved favorites':'Favoritos guardados'}</div>
+  <div class="stat"><b>${appState.mistakes.length}</b>${en?'Questions to master':'Preguntas por dominar'}</div>
+  <div class="stat"><b>${Object.values(appState.notes).filter(n=>String(n).trim()).length}</b>${en?'Modules with notes':'Módulos con notas'}</div>
+  <div class="stat"><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b>${en?'Medals earned':'Medallas logradas'}</div>
+  <div class="stat"><b>${flashcardStats().mastered}</b>${en?'Flashcards mastered':'Tarjetas dominadas'}</div>
+  <div class="stat"><b>${appState.ngn.best||0}%</b>${en?'Best NGN case':'Mejor caso NGN'}<br><small>${appState.ngn.taken||0} ${en?'completed':'completados'}</small></div>
+ </div>`;
+ }
+
  const top=document.getElementById('scoreTop');
  if(top) top.textContent=`${pct(appState.practice.correct,appState.practice.attempts)}%`;
  const weakBtn=document.getElementById('weakPracticeBtn');
@@ -4014,7 +4004,9 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(homeCard){
    let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
    language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">EN</button></div>';
-   const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');if(pill)pill.textContent=en?'FINAL · 20 MODULES · CORRECTED PRACTICE':'FINAL · 20 MÓDULOS · PRÁCTICA CORREGIDA';if(paragraph)paragraph.textContent=en?'Study, practice, exams, favorites, and progress in one app.':'Estudio, práctica, examen, favoritos y progreso en una sola app.'
+   const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');
+   if(pill)pill.textContent=en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA';
+   if(paragraph)paragraph.textContent=en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
   }
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
