@@ -4002,8 +4002,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(headerTags[1])headerTags[1].textContent=en?'correct answers':'preguntas correctas';
   const homeCard=document.querySelector('#inicio>.card');
   if(homeCard){
-   let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
-   language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">EN</button></div>';
+   const oldLanguage=homeCard.querySelector('.mn-home-lang');if(oldLanguage)oldLanguage.remove();
    const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');
    if(pill)pill.textContent=en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA';
    if(paragraph)paragraph.textContent=en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
@@ -4196,7 +4195,8 @@ renderPractice=function(){
  answeredFinal=false;
  const idx=practiceOrder[practicePos] ?? 0, x=questionForLang(idx);mnPracticeView=mnQuestionView(idx);
  document.getElementById('score').textContent=practiceSessionCorrect;
- const en=appState.planLang==='en',total=practiceOrder.length,label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||(en?'Module quiz':'Quiz del módulo')):(en?'General practice':'Práctica general'));
+ const en=appState.planLang==='en',total=practiceOrder.length;
+ const label=practiceModule?((en&&typeof lessonsEn!=='undefined'&&lessonsEn[practiceModule])?lessonsEn[practiceModule].title:(lessons[practiceModule]?.title||(en?'Module quiz':'Quiz del módulo'))):((practiceLabel&&/new questions|preguntas nuevas/i.test(practiceLabel))?(en?'🆕 New questions':'🆕 Preguntas nuevas'):(en?'General practice':'Práctica general'));
  document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>${en?'Question':'Pregunta'} ${practicePos+1} ${en?'of':'de'} ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} ${en?'this session':'en esta sesión'}</span></div>
  <button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="${en?'Favorite':'Favorito'}">${appState.favorites.includes(idx)?'★':'☆'}</button>
  <p class="question">${esc(x[0])}</p>`+
@@ -4274,5 +4274,34 @@ answerAdaptiveExam=function(n){
 
 </script>
 
+
+<script>
+/* V27 — Live bilingual UI stabilization */
+(function(){
+ const previousSetGlobalLanguage=window.setGlobalLanguage;
+ if(typeof previousSetGlobalLanguage!=='function')return;
+ window.setGlobalLanguage=function(lang){
+   lang=lang==='en'?'en':'es';
+   previousSetGlobalLanguage(lang);
+   // Repaint once more after all synchronous renderers finish. This avoids
+   // stale labels that previously changed only after a browser refresh.
+   setTimeout(function(){
+     try{
+       if(typeof buildGroupedUI==='function')buildGroupedUI();
+       if(typeof updateDashboard==='function')updateDashboard();
+       if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
+       const active=document.querySelector('section.active')?.id||'inicio';
+       if(active==='quiz'&&typeof renderPractice==='function'&&typeof practiceOrder!=='undefined'&&practiceOrder.length)renderPractice();
+       if(active==='temas'&&typeof renderTopics==='function')renderTopics();
+       if(active==='favoritos'&&typeof renderFavorites==='function')renderFavorites();
+       if(active==='progreso'&&typeof renderProgress==='function')renderProgress();
+       if(active==='medcalc'&&typeof renderMedCalc==='function')renderMedCalc();
+       if(typeof markGroup==='function')markGroup(active);
+     }catch(e){console.warn('V27 language repaint',e)}
+   },0);
+ };
+ // Inline onclick handlers resolve window.setGlobalLanguage at click time.
+})();
+</script>
 </body>
 </html>
