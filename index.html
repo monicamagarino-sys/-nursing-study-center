@@ -2313,6 +2313,7 @@ function pct(a,b){return b?Math.round(a*100/b):0}
 function dailyDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
 
 function ensureFinalUI(){
+ const en=appState.planLang==='en';
  const nav=document.querySelector('nav');
  nav.innerHTML=`
   <button class="tab active" data-tab="inicio">Inicio</button>
@@ -3071,9 +3072,35 @@ function mnBuildEnglishQuestion(idx){
  return [stem,options,correctIndex,explanation,key];
 }
 
+function mnSpanishClinicalText(text){
+ let s=String(text??'');
+ const pairs=[
+  [/Distal port/gi,'puerto distal'],[/Proximal port/gi,'puerto proximal'],[/Swan-Ganz catheter/gi,'catéter de Swan-Ganz'],
+  [/Prone position/gi,'posición prona'],[/Supine position/gi,'posición supina'],[/side-lying/gi,'decúbito lateral'],[/lower-extremity/gi,'extremidad inferior'],
+  [/residual limb/gi,'miembro residual'],[/stump/gi,'muñón'],[/flexion contracture/gi,'contractura en flexión'],[/foot of bed/gi,'pie de la cama'],[/head of bed/gi,'cabecera de la cama'],[/HOB/gi,'cabecera de la cama'],
+  [/blood pressure/gi,'presión arterial'],[/heart rate/gi,'frecuencia cardíaca'],[/heart failure/gi,'insuficiencia cardíaca'],[/renal failure/gi,'insuficiencia renal'],[/respiratory failure/gi,'insuficiencia respiratoria'],
+  [/airway/gi,'vía aérea'],[/breathing/gi,'respiración'],[/circulation/gi,'circulación'],[/blood return/gi,'retorno sanguíneo'],[/blood flow/gi,'flujo sanguíneo'],[/blood glucose/gi,'glucosa en sangre'],
+  [/clear liquid/gi,'líquidos claros'],[/full liquid/gi,'líquidos completos'],[/low sodium/gi,'bajo en sodio'],[/high potassium/gi,'alto en potasio'],[/low potassium/gi,'bajo en potasio'],
+  [/deep breathing/gi,'respiración profunda'],[/incentive spirometer/gi,'espirómetro incentivo'],[/bowel sounds/gi,'ruidos intestinales'],[/urine output/gi,'diuresis'],[/weight gain/gi,'aumento de peso'],
+  [/seizure precautions/gi,'precauciones para convulsiones'],[/cardiac monitoring/gi,'monitorización cardíaca'],[/cardiac monitor/gi,'monitor cardíaco'],[/pain management/gi,'manejo del dolor'],
+  [/pressure injury/gi,'lesión por presión'],[/wound care/gi,'cuidado de heridas'],[/range of motion/gi,'rango de movimiento'],[/early ambulation/gi,'deambulación temprana'],
+  [/newborn/gi,'recién nacido'],[/pregnancy/gi,'embarazo'],[/labor/gi,'trabajo de parto'],[/breast milk/gi,'leche materna'],[/formula/gi,'fórmula infantil'],
+  [/screening/gi,'detección'],[/healing/gi,'cicatrización'],[/bleeding/gi,'sangrado'],[/dressing/gi,'apósito'],[/suctioning/gi,'aspiración de secreciones'],[/suction/gi,'aspiración'],
+  [/wheezing/gi,'sibilancias'],[/crackles/gi,'crepitantes'],[/shortness of breath/gi,'dificultad respiratoria'],[/dyspnea/gi,'disnea'],[/edema/gi,'edema'],
+  [/bed rest/gi,'reposo en cama'],[/left lateral/gi,'decúbito lateral izquierdo'],[/right side/gi,'lado derecho'],[/left side/gi,'lado izquierdo'],
+  [/distal pulses/gi,'pulsos distales'],[/baseline/gi,'valor basal'],[/follow-up/gi,'seguimiento'],[/follow up/gi,'seguimiento'],[/hold feeding/gi,'suspender la alimentación'],
+  [/feeding/gi,'alimentación'],[/flush/gi,'lavado'],[/catheter/gi,'catéter'],[/port/gi,'puerto'],[/kidney/gi,'riñón'],[/liver/gi,'hígado'],[/heart/gi,'corazón'],[/lung/gi,'pulmón']
+ ];
+ for(const [a,b] of pairs)s=s.replace(a,b);
+ return s;
+}
+function mnBuildSpanishQuestion(idx){
+ const q=qs[idx]||['',[],0,'',''];
+ return [mnSpanishClinicalText(q[0]),(q[1]||[]).map(mnSpanishClinicalText),q[2],mnSpanishClinicalText(q[3]),q[4]];
+}
 function questionForLang(idx){
  if(appState?.planLang==='en')return mnBuildEnglishQuestion(idx);
- return qs[idx];
+ return mnBuildSpanishQuestion(idx);
 }
 
 // Compatibility helper used by older renderers.
@@ -4002,7 +4029,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(headerTags[1])headerTags[1].textContent=en?'correct answers':'preguntas correctas';
   const homeCard=document.querySelector('#inicio>.card');
   if(homeCard){
-   const oldLanguage=homeCard.querySelector('.mn-home-lang');if(oldLanguage)oldLanguage.remove();
+   let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
+   language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">EN</button></div>';
    const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');
    if(pill)pill.textContent=en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA';
    if(paragraph)paragraph.textContent=en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
@@ -4195,8 +4223,7 @@ renderPractice=function(){
  answeredFinal=false;
  const idx=practiceOrder[practicePos] ?? 0, x=questionForLang(idx);mnPracticeView=mnQuestionView(idx);
  document.getElementById('score').textContent=practiceSessionCorrect;
- const en=appState.planLang==='en',total=practiceOrder.length;
- const label=practiceModule?((en&&typeof lessonsEn!=='undefined'&&lessonsEn[practiceModule])?lessonsEn[practiceModule].title:(lessons[practiceModule]?.title||(en?'Module quiz':'Quiz del módulo'))):((practiceLabel&&/new questions|preguntas nuevas/i.test(practiceLabel))?(en?'🆕 New questions':'🆕 Preguntas nuevas'):(en?'General practice':'Práctica general'));
+ const en=appState.planLang==='en',total=practiceOrder.length,label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||(en?'Module quiz':'Quiz del módulo')):(en?'General practice':'Práctica general'));
  document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(label)}</b><br>${en?'Question':'Pregunta'} ${practicePos+1} ${en?'of':'de'} ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} ${en?'this session':'en esta sesión'}</span></div>
  <button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="${en?'Favorite':'Favorito'}">${appState.favorites.includes(idx)?'★':'☆'}</button>
  <p class="question">${esc(x[0])}</p>`+
@@ -4274,34 +4301,5 @@ answerAdaptiveExam=function(n){
 
 </script>
 
-
-<script>
-/* V27 — Live bilingual UI stabilization */
-(function(){
- const previousSetGlobalLanguage=window.setGlobalLanguage;
- if(typeof previousSetGlobalLanguage!=='function')return;
- window.setGlobalLanguage=function(lang){
-   lang=lang==='en'?'en':'es';
-   previousSetGlobalLanguage(lang);
-   // Repaint once more after all synchronous renderers finish. This avoids
-   // stale labels that previously changed only after a browser refresh.
-   setTimeout(function(){
-     try{
-       if(typeof buildGroupedUI==='function')buildGroupedUI();
-       if(typeof updateDashboard==='function')updateDashboard();
-       if(typeof applyGlobalLanguageUI==='function')applyGlobalLanguageUI();
-       const active=document.querySelector('section.active')?.id||'inicio';
-       if(active==='quiz'&&typeof renderPractice==='function'&&typeof practiceOrder!=='undefined'&&practiceOrder.length)renderPractice();
-       if(active==='temas'&&typeof renderTopics==='function')renderTopics();
-       if(active==='favoritos'&&typeof renderFavorites==='function')renderFavorites();
-       if(active==='progreso'&&typeof renderProgress==='function')renderProgress();
-       if(active==='medcalc'&&typeof renderMedCalc==='function')renderMedCalc();
-       if(typeof markGroup==='function')markGroup(active);
-     }catch(e){console.warn('V27 language repaint',e)}
-   },0);
- };
- // Inline onclick handlers resolve window.setGlobalLanguage at click time.
-})();
-</script>
 </body>
 </html>
