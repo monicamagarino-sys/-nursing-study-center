@@ -2665,11 +2665,34 @@ function resumeLastStudy(){
  else if(last.type==='medpharm')startPharmQuiz(last.key||'all','practice');
  else startPractice(true);
 }
+
+function mnContinueLabel(last,en){
+  if(!last) return en ? "Continue practice" : "Continuar práctica";
+  if((last.type==="module" || last.type==="moduleQuiz") && last.key && lessons[last.key]){
+    const title = MN_MODULE_TITLES[last.key]
+      ? MN_MODULE_TITLES[last.key][en ? "en" : "es"]
+      : (en ? lessons[last.key].title.replace(/^Clase\s+/,"Class ") : lessons[last.key].title);
+    return (last.type==="moduleQuiz" ? (en ? "Quiz: " : "Quiz: ") : (en ? "Module: " : "Módulo: ")) + title;
+  }
+  const labels={
+    weak:{es:"Práctica de áreas débiles",en:"Weak-area practice"},
+    mistakes:{es:"Repaso de errores",en:"Mistake review"},
+    daily:{es:"Práctica diaria",en:"Daily practice"},
+    flashcards:{es:"Tarjetas de estudio",en:"Flashcards"},
+    adaptive:{es:"Examen adaptativo",en:"Adaptive exam"},
+    medcalc:{es:"Cálculos de medicamentos",en:"Medication calculations"},
+    medpharm:{es:"Práctica de farmacología",en:"Pharmacology practice"},
+    ngn:{es:"Práctica NGN",en:"NGN practice"}
+  };
+  if(labels[last.type]) return labels[last.type][en ? "en" : "es"];
+  return last.label || (en ? "Continue practice" : "Continuar práctica");
+}
+
 function renderContinueCard(){
  const last=appState.lastStudy,en=appState.planLang==='en';
  if(!last)return `<div class="card continue-card"><span class="pill">${en?'CONTINUE STUDYING':'CONTINUAR ESTUDIANDO'}</span><h2>📚 ${en?'Start your next module':'Comienza tu próximo módulo'}</h2><p class="continue-meta">${en?'The app will automatically remember where you studied.':'La app recordará automáticamente dónde estudiaste.'}</p><button class="primary" onclick="show('temas')">${en?'Choose a module':'Elegir un módulo'}</button></div>`;
  const date=last.updatedAt?new Date(last.updatedAt).toLocaleString(en?'en-US':'es-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
- return `<div class="card continue-card"><span class="pill">${en?'CONTINUE STUDYING':'CONTINUAR ESTUDIANDO'}</span><h2>▶ ${esc(last.label||(en?'Continue practice':'Continuar práctica'))}</h2><p class="continue-meta">${en?'Last activity':'Última actividad'}${date?` · ${esc(date)}`:''}</p><button class="primary" onclick="resumeLastStudy()">${en?'Continue now':'Continuar ahora'}</button></div>`;
+ return `<div class="card continue-card"><span class="pill">${en?'CONTINUE STUDYING':'CONTINUAR ESTUDIANDO'}</span><h2>▶ ${esc(mnContinueLabel(last,en))}</h2><p class="continue-meta">${en?'Last activity':'Última actividad'}${date?` · ${esc(date)}`:''}</p><button class="primary" onclick="resumeLastStudy()">${en?'Continue now':'Continuar ahora'}</button></div>`;
 }
 function updateDashboard(){
  updateAchievements();
@@ -3489,6 +3512,7 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
 }
 
 function setProLang(lang){
+ currentLang=lang;
  lang=lang==='en'?'en':'es';
  document.querySelectorAll('[data-es][data-en]').forEach(el=>{
    el.textContent=(lang==='en'?el.getAttribute('data-en'):el.getAttribute('data-es'));
@@ -4022,7 +4046,7 @@ const MN_MODULE_TITLES = {
 function mnModuleTitle(key){
   const rec = MN_MODULE_TITLES[key];
   if(rec) return rec[currentLang === "en" ? "en" : "es"];
-  const raw = (lessons[key] && mnModuleTitle(key)) ? mnModuleTitle(key) : key;
+  const raw = (lessons[key] && lessons[key].title) ? lessons[key].title : key;
   return currentLang === "en" ? raw.replace(/^Clase\s+/,"Class ") : raw;
 }
 function mnTranslateDynamicModuleTitles(){
