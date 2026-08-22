@@ -117,7 +117,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <div class="pro-wrap">
 <div class="pro-top">
 <div class="pro-brand"><div class="pro-logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/><path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/></svg></div><div><h1>Monica Nursing Study Center</h1><p>LEARN • PRACTICE • PASS</p></div></div>
-<div><div style="font-size:12px;font-weight:900;color:#63708a;text-align:center;margin-bottom:5px">IDIOMA / LANGUAGE</div><div class="pro-lang"><button id="btnES" class="active" onclick="setGlobalLanguage('es')">ES</button><button id="btnEN" onclick="setGlobalLanguage('en')">EN</button></div></div>
+<div><div style="font-size:12px;font-weight:900;color:#63708a;text-align:center;margin-bottom:5px">IDIOMA / LANGUAGE</div><div class="pro-lang"><button id="btnES" class="active" data-lang-option="es" onclick="setGlobalLanguage('es')">ES</button><button id="btnEN" data-lang-option="en" onclick="setGlobalLanguage('en')">EN</button></div></div>
 </div>
 <div class="pro-grid">
 <div class="pro-hero">
@@ -3570,8 +3570,6 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
 
 function setProLang(lang){
  lang=lang==='en'?'en':'es';
- if(typeof appState!=='undefined'&&appState)appState.planLang=lang;
- lang=lang==='en'?'en':'es';
  document.querySelectorAll('[data-es][data-en]').forEach(el=>{
    el.textContent=(lang==='en'?el.getAttribute('data-en'):el.getAttribute('data-es'));
  });
@@ -3579,7 +3577,6 @@ function setProLang(lang){
  if(esBtn)esBtn.classList.toggle('active',lang==='es');
  if(enBtn)enBtn.classList.toggle('active',lang==='en');
  // Keep login language and the main app interface synchronized.
- localStorage.setItem('mnsc_lang',lang);
  localStorage.setItem('mnsc_interface_lang',lang);
  if(typeof appState!=='undefined'&&appState){appState.planLang=lang}
  if(typeof ngnLang!=='undefined'){ngnLang=lang;localStorage.setItem('mnsc_ngn_lang',lang);if(typeof renderNGN==='function')renderNGN()}
@@ -3587,20 +3584,52 @@ function setProLang(lang){
 
 function setGlobalLanguage(lang){
  lang=lang==='en'?'en':'es';
- setProLang(lang);
+
+ // One source of truth
+ localStorage.setItem('mnsc_global_lang',lang);
+ localStorage.setItem('mnsc_user_lang_choice',lang);
  localStorage.setItem('mnsc_interface_lang',lang);
  localStorage.setItem('mnsc_lang',lang);
+
+ // Sync app state
  if(typeof appState!=='undefined'&&appState){
    appState.planLang=lang;
    try{localStorage.setItem(STORE_KEY,JSON.stringify(appState))}catch(e){}
  }
+
+ // Sync login screen buttons/text
+ if(typeof setProLang==='function')setProLang(lang);
+
+ // Sync in-app language controls if they exist
+ const sel=document.getElementById('planLang');
+ if(sel)sel.value=lang;
+ document.querySelectorAll('[data-lang-option]').forEach(el=>{
+   el.classList.toggle('active',el.getAttribute('data-lang-option')===lang);
+ });
+
+ // Re-render all major areas
  if(typeof buildGroupedUI==='function')buildGroupedUI();
  if(typeof updateDashboard==='function')updateDashboard();
  if(typeof renderTopics==='function')renderTopics();
  if(typeof renderProgress==='function')renderProgress();
+ if(typeof renderFavorites==='function')renderFavorites();
+ if(typeof renderMedCalc==='function')renderMedCalc();
+
+ // If a module is currently open, reopen it in the new language
+ const active=document.querySelector('section.active')?.id||'inicio';
+ const openModule=document.querySelector('#topicGrid .card h2');
+ if(active==='temas' && openModule && typeof lastStudy!=='undefined' && lastStudy?.key && typeof openLesson==='function'){
+   try{openLesson(lastStudy.key)}catch(e){}
+ }
+
+ if(typeof markGroup==='function')markGroup(active);
 }
 function restoreGlobalLanguage(){
- const lang=localStorage.getItem('mnsc_interface_lang')||localStorage.getItem('mnsc_lang')||'es';
+ const lang=localStorage.getItem('mnsc_user_lang_choice')
+   ||localStorage.getItem('mnsc_global_lang')
+   ||localStorage.getItem('mnsc_interface_lang')
+   ||localStorage.getItem('mnsc_lang')
+   ||'es';
  setGlobalLanguage(lang);
 }
 
@@ -3617,7 +3646,7 @@ function securityEnglish(){return (appState?.planLang||localStorage.getItem('mns
 function showMfaLogin(factorId){mfaLoginFactorId=factorId;document.getElementById('primaryLoginFields')?.classList.add('pro-hide');document.getElementById('mfaLoginBox')?.classList.remove('pro-hide');const code=document.getElementById('mfaLoginCode');if(code){code.value='';setTimeout(()=>code.focus(),50)}}
 function hideMfaLogin(){mfaLoginFactorId='';document.getElementById('primaryLoginFields')?.classList.remove('pro-hide');document.getElementById('mfaLoginBox')?.classList.add('pro-hide')}
 async function enforceMfaGate(){const {data,error}=await authTimeout(sb.auth.mfa.getAuthenticatorAssuranceLevel(),8000);if(error)throw error;if(data?.currentLevel==='aal1'&&data?.nextLevel==='aal2'){const factors=await authTimeout(sb.auth.mfa.listFactors(),8000);if(factors.error)throw factors.error;const factor=(factors.data?.totp||[]).find(x=>x.status==='verified')||(factors.data?.totp||[])[0];if(!factor)throw new Error('MFA_FACTOR_MISSING');localStorage.setItem('mnsc_mfa_enrolled','1');showMfaLogin(factor.id);authMsg(securityEnglish()?'Enter your authenticator code.':'Escribe el código de tu autenticador.',true);return false}if(data?.currentLevel==='aal2')localStorage.setItem('mnsc_mfa_enrolled','1');hideMfaLogin();return true}
-async function verifyMfaLogin(){const en=securityEnglish(),code=(document.getElementById('mfaLoginCode')?.value||'').replace(/\s/g,'');if(!mfaLoginFactorId){authMsg(en?'Security factor was not found. Sign in again.':'No se encontró el factor de seguridad. Inicia sesión de nuevo.');return}if(!/^\d{6}$/.test(code)){authMsg(en?'Enter the 6-digit code.':'Escribe el código de 6 dígitos.');return}authMsg(en?'Verifying…':'Verificando…',true);try{const challenge=await authTimeout(sb.auth.mfa.challenge({factorId:mfaLoginFactorId}),10000);if(challenge.error)throw challenge.error;const verify=await authTimeout(sb.auth.mfa.verify({factorId:mfaLoginFactorId,challengeId:challenge.data.id,code}),10000);if(verify.error)throw verify.error;localStorage.setItem('mnsc_mfa_enrolled','1');hideMfaLogin();document.getElementById('proLogin').classList.add('pro-hide');authMsg('');await syncCloudProgress();restoreGlobalLanguage()}catch(e){authMsg(en?'Incorrect or expired code. Try the current code.':'Código incorrecto o vencido. Prueba el código actual.')}}
+async function verifyMfaLogin(){const chosenLang=localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||'es';const en=chosenLang==='en',code=(document.getElementById('mfaLoginCode')?.value||'').replace(/\s/g,'');if(!mfaLoginFactorId){authMsg(en?'Security factor was not found. Sign in again.':'No se encontró el factor de seguridad. Inicia sesión de nuevo.');return}if(!/^\d{6}$/.test(code)){authMsg(en?'Enter the 6-digit code.':'Escribe el código de 6 dígitos.');return}authMsg(en?'Verifying…':'Verificando…',true);try{const challenge=await authTimeout(sb.auth.mfa.challenge({factorId:mfaLoginFactorId}),10000);if(challenge.error)throw challenge.error;const verify=await authTimeout(sb.auth.mfa.verify({factorId:mfaLoginFactorId,challengeId:challenge.data.id,code}),10000);if(verify.error)throw verify.error;localStorage.setItem('mnsc_mfa_enrolled','1');hideMfaLogin();document.getElementById('proLogin').classList.add('pro-hide');authMsg('');await syncCloudProgress();setGlobalLanguage(chosenLang)}catch(e){authMsg(en?'Incorrect or expired code. Try the current code.':'Código incorrecto o vencido. Prueba el código actual.')}}
 async function refreshMfaStatus(){const status=document.getElementById('mfaStatus'),enable=document.getElementById('mfaEnableBtn'),disable=document.getElementById('mfaDisableBtn');if(!status)return;const en=securityEnglish();if(localStorage.getItem('mnsc_offline_access')==='1'){status.className='security-status warn';status.textContent=en?'Sign in to manage two-step verification.':'Inicia sesión para administrar la verificación en dos pasos.';if(enable)enable.style.display='none';if(disable)disable.style.display='none';return}try{const user=await authTimeout(sb.auth.getUser(),8000);if(user.error||!user.data?.user)throw user.error||new Error('NO_USER');const factors=await authTimeout(sb.auth.mfa.listFactors(),8000);if(factors.error)throw factors.error;const verified=(factors.data?.totp||[]).filter(x=>x.status==='verified');const aal=await authTimeout(sb.auth.mfa.getAuthenticatorAssuranceLevel(),8000);if(aal.error)throw aal.error;if(verified.length){localStorage.setItem('mnsc_mfa_enrolled','1');status.className='security-status good';status.textContent=(en?'Active: authenticator verification · Session ':'Activa: verificación con autenticador · Sesión ')+(aal.data?.currentLevel==='aal2'?'AAL2 ✓':'AAL1');if(enable)enable.style.display='none';if(disable)disable.style.display='inline-block'}else{localStorage.removeItem('mnsc_mfa_enrolled');status.className='security-status warn';status.textContent=en?'Not enabled. Your account currently uses email and password only.':'No está activa. Tu cuenta utiliza solamente correo y contraseña.';if(enable)enable.style.display='inline-block';if(disable)disable.style.display='none'}}catch(e){status.className='security-status warn';status.textContent=en?'Could not check security status. Verify your connection and sign-in.':'No se pudo comprobar la seguridad. Revisa la conexión y el inicio de sesión.'}}
 async function beginMfaEnrollment(){const en=securityEnglish(),zone=document.getElementById('mfaEnrollment'),button=document.getElementById('mfaEnableBtn');if(!zone)return;if(button)button.disabled=true;zone.style.display='block';zone.innerHTML=`<div class="security-status">${en?'Preparing authenticator…':'Preparando el autenticador…'}</div>`;try{const {data,error}=await authTimeout(sb.auth.mfa.enroll({factorType:'totp',friendlyName:'Monica Nursing Study Center'}),10000);if(error)throw error;mfaEnrollFactorId=data.id;zone.innerHTML=`<h4>${en?'1. Scan this QR code':'1. Escanea este código QR'}</h4><div class="mfa-qr"><img id="mfaQrImage" alt="TOTP QR"><div><p>${en?'If you cannot scan it, enter this secret manually:':'Si no puedes escanearlo, escribe este secreto manualmente:'}</p><div id="mfaSecret" class="mfa-secret"></div></div></div><div class="security-field"><label>${en?'2. Enter the 6-digit code':'2. Escribe el código de 6 dígitos'}</label><input id="mfaEnrollCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456"></div><div class="actions"><button class="goodbtn" onclick="verifyMfaEnrollment()">${en?'Verify and enable':'Verificar y activar'}</button><button class="secondary" onclick="cancelMfaEnrollment()">${en?'Cancel':'Cancelar'}</button></div>`;document.getElementById('mfaQrImage').src=data.totp.qr_code;document.getElementById('mfaSecret').textContent=data.totp.secret}catch(e){zone.innerHTML=`<div class="security-status warn">${en?'Could not start verification. Check that MFA is enabled in Supabase Auth settings.':'No se pudo iniciar la verificación. Comprueba que MFA esté habilitado en Supabase Auth.'}</div>`;if(button)button.disabled=false}}
 async function verifyMfaEnrollment(){const en=securityEnglish(),code=(document.getElementById('mfaEnrollCode')?.value||'').replace(/\s/g,'');if(!mfaEnrollFactorId||!/^\d{6}$/.test(code)){alert(en?'Enter the 6-digit code.':'Escribe el código de 6 dígitos.');return}try{const challenge=await authTimeout(sb.auth.mfa.challenge({factorId:mfaEnrollFactorId}),10000);if(challenge.error)throw challenge.error;const verify=await authTimeout(sb.auth.mfa.verify({factorId:mfaEnrollFactorId,challengeId:challenge.data.id,code}),10000);if(verify.error)throw verify.error;localStorage.setItem('mnsc_mfa_enrolled','1');mfaEnrollFactorId='';document.getElementById('mfaEnrollment').style.display='none';await refreshMfaStatus();alert(en?'Two-step verification is now active. Other sessions were signed out.':'La verificación en dos pasos ya está activa. Las demás sesiones fueron cerradas.')}catch(e){alert(en?'The code could not be verified. Use the current code and try again.':'No se pudo verificar el código. Usa el código actual e inténtalo de nuevo.')}}
@@ -3627,12 +3656,15 @@ function showOfflineOption(){
  const b=document.getElementById('offlineAccessBtn'); if(b)b.style.display=localStorage.getItem('mnsc_mfa_enrolled')==='1'?'none':'block';
 }
 function enterOfflineProfessional(){
+ const chosenLang=localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||'es';
  localStorage.setItem('mnsc_offline_access','1');
  document.getElementById('proLogin').classList.add('pro-hide');
+ setGlobalLanguage(chosenLang);
  authMsg('');
  setSyncStatus('Modo sin conexión: progreso guardado en este dispositivo.');
 }
 async function signInProfessional(){
+ const chosenLang=localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||'es';
  const email=document.getElementById('previewUser').value.trim();
  const password=document.getElementById('previewPass').value;
  if(!email || !password){ authMsg('Escribe correo y contraseña / Enter email and password'); return; }
@@ -3645,7 +3677,7 @@ async function signInProfessional(){
    document.getElementById('proLogin').classList.add('pro-hide');
    authMsg('');
    await syncCloudProgress();
-   restoreGlobalLanguage();
+   setGlobalLanguage(chosenLang);
  }catch(e){
    authMsg('Supabase no respondió. Puedes entrar sin conexión y continuar estudiando.');
    showOfflineOption();
@@ -3688,7 +3720,12 @@ async function signUpProfessional(){
  const { data, error } = await sb.auth.signUp({ email, password });
  if(error){ authMsg(error.message); return; }
  if(data.session){
-   if(await enforceMfaGate()){document.getElementById('proLogin').classList.add('pro-hide');await syncCloudProgress()}
+   if(await enforceMfaGate()){
+     const chosenLang=localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||'es';
+     document.getElementById('proLogin').classList.add('pro-hide');
+     await syncCloudProgress();
+     setGlobalLanguage(chosenLang);
+   }
  } else {
    authMsg('Cuenta creada. Revisa tu correo para confirmar / Account created. Check your email to confirm.', true);
  }
@@ -3710,7 +3747,12 @@ document.addEventListener('DOMContentLoaded', async ()=>{
    if(localStorage.getItem('mnsc_mfa_enrolled')==='1')localStorage.removeItem('mnsc_offline_access');
    try{
      const { data:{ session } } = await authTimeout(sb.auth.getSession(),5000);
-     if(session&&await enforceMfaGate()){document.getElementById('proLogin').classList.add('pro-hide');await syncCloudProgress();restoreGlobalLanguage()}
+     if(session&&await enforceMfaGate()){
+       const chosenLang=localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||'es';
+       document.getElementById('proLogin').classList.add('pro-hide');
+       await syncCloudProgress();
+       setGlobalLanguage(chosenLang);
+     }
    }catch(e){ showOfflineOption(); }
  }
  const nav=document.querySelector('nav');
@@ -3813,15 +3855,11 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
-   '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setInterfaceLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setInterfaceLanguage(\'en\')">English</button></div></div>'+security+backup+
+   '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
    '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button></div></div>'+
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
- window.setInterfaceLanguage=function(lang){
-  setGlobalLanguage(lang);
-  const active=document.querySelector('section.active')?.id||'inicio';
-  if(typeof markGroup==='function')markGroup(active);
- };
+ window.setInterfaceLanguage=function(lang){ setGlobalLanguage(lang); };
  function buildGroupedUI(){
   const en=appState.planLang==='en';
   const headerTags=document.querySelectorAll('header .tag');
@@ -3830,7 +3868,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const homeCard=document.querySelector('#inicio>.card');
   if(homeCard){
    let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
-   language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setInterfaceLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setInterfaceLanguage(\'en\')">EN</button></div>';
+   language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">EN</button></div>';
    const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');if(pill)pill.textContent=en?'FINAL · 20 MODULES · CORRECTED PRACTICE':'FINAL · 20 MÓDULOS · PRÁCTICA CORREGIDA';if(paragraph)paragraph.textContent=en?'Study, practice, exams, favorites, and progress in one app.':'Estudio, práctica, examen, favoritos y progreso en una sola app.'
   }
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
@@ -3892,7 +3930,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   }
  };
  function start(){
-  const savedInterfaceLang=localStorage.getItem('mnsc_interface_lang')||'es';appState.planLang=savedInterfaceLang==='en'?'en':'es';localStorage.setItem('mnsc_lang',appState.planLang);
+  restoreGlobalLanguage();
   buildGroupedUI();
   const oldRender=window.renderProgress;
   if(typeof oldRender==='function')window.renderProgress=function(){oldRender();removeAccountDuplicates()};
