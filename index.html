@@ -1933,16 +1933,38 @@ function renderActivityCalendar(){
 }
 function parseLocalDate(value){const parts=String(value||'').split('-').map(Number);return parts.length===3&&parts.every(Number.isFinite)?new Date(parts[0],parts[1]-1,parts[2]):null}
 function saveExamTargetDate(value){
- const target=parseLocalDate(value),today=new Date();today.setHours(0,0,0,0);if(!target||target<today){alert('Selecciona una fecha de hoy en adelante.');return}appState.examPlan={targetDate:value};saveState();
+ const en=appState.planLang==='en';
+ const target=parseLocalDate(value),today=new Date();today.setHours(0,0,0,0);
+ if(!target||target<today){alert(en?'Select today or a future date.':'Selecciona una fecha de hoy en adelante.');return}
+ appState.examPlan={targetDate:value};saveState();
 }
-function clearExamTargetDate(){if(!confirm('¿Eliminar la fecha prevista del NCLEX?'))return;appState.examPlan={targetDate:''};saveState()}
+function clearExamTargetDate(){
+ const en=appState.planLang==='en';
+ if(!confirm(en?'Remove the planned NCLEX date?':'¿Eliminar la fecha prevista del NCLEX?'))return;
+ appState.examPlan={targetDate:''};saveState();
+}
 function getExamPlan(){
- const target=parseLocalDate(appState.examPlan?.targetDate);if(!target)return null;const today=new Date();today.setHours(0,0,0,0);const days=Math.ceil((target-today)/86400000),mastered=Object.values(appState.moduleProgress||{}).filter(p=>(p.best||0)>=80).length,pending=Math.max(0,20-mastered),errors=(appState.mistakes||[]).length,todayQuestions=Number(appState.activityLog?.[dailyDateKey()]?.questions||0);let dailyGoal=days<=14?85:days<=30?60:days<=60?40:25;if(pending>10)dailyGoal+=10;if(errors>10)dailyGoal+=10;dailyGoal=Math.min(100,dailyGoal);const status=todayQuestions>=dailyGoal?'✅ Meta de hoy completada':todayQuestions>=Math.ceil(dailyGoal/2)?'🟡 Vas a buen ritmo':'🔵 Continúa con el plan';return{target,days,mastered,pending,errors,todayQuestions,dailyGoal,status};
+ const en=appState.planLang==='en';
+ const target=parseLocalDate(appState.examPlan?.targetDate);if(!target)return null;
+ const today=new Date();today.setHours(0,0,0,0);
+ const days=Math.ceil((target-today)/86400000),
+ mastered=Object.values(appState.moduleProgress||{}).filter(p=>(p.best||0)>=80).length,
+ pending=Math.max(0,20-mastered),
+ errors=(appState.mistakes||[]).length,
+ todayQuestions=Number(appState.activityLog?.[dailyDateKey()]?.questions||0);
+ let dailyGoal=days<=14?85:days<=30?60:days<=60?40:25;
+ if(pending>10)dailyGoal+=10;if(errors>10)dailyGoal+=10;dailyGoal=Math.min(100,dailyGoal);
+ const status=todayQuestions>=dailyGoal?(en?'✅ Today’s goal completed':'✅ Meta de hoy completada')
+ :todayQuestions>=Math.ceil(dailyGoal/2)?(en?'🟡 You’re on track':'🟡 Vas a buen ritmo')
+ :(en?'🔵 Keep following the plan':'🔵 Continúa con el plan');
+ return{target,days,mastered,pending,errors,todayQuestions,dailyGoal,status};
 }
 function renderExamPlan(){
- const plan=getExamPlan(),today=dailyDateKey();if(!plan)return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>🎓 Define tu fecha de examen</h2><p>La app calculará automáticamente tu meta diaria según el tiempo disponible y tu progreso.</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Guardar fecha</button></div></div>`;
- if(plan.days<0)return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>📅 Actualiza tu fecha de examen</h2><p>La fecha guardada ya pasó.</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Guardar nueva fecha</button></div></div>`;
- return `<div class="card exam-plan-card"><span class="pill">PLAN NCLEX</span><h2>🎓 ${plan.days===0?'¡El examen es hoy!':`Faltan ${plan.days} día${plan.days===1?'':'s'}`}</h2><p>${esc(plan.target.toLocaleDateString('es-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}))}</p><div class="exam-plan-number">${plan.todayQuestions}/${plan.dailyGoal} preguntas hoy</div><div class="progressbar"><span style="width:${weeklyBar(plan.todayQuestions,plan.dailyGoal)}%"></span></div><p><b>${plan.status}</b></p><div class="exam-plan-details"><div><b>${plan.mastered}/20</b>Módulos dominados</div><div><b>${plan.pending}</b>Módulos por dominar</div><div><b>${plan.errors}</b>Errores pendientes</div></div><div class="actions"><button class="goodbtn" onclick="startDailyPractice()">Estudiar ahora</button><input class="exam-plan-date" type="date" min="${today}" value="${esc(appState.examPlan.targetDate)}"><button class="secondary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">Cambiar fecha</button><button class="secondary" onclick="clearExamTargetDate()">Eliminar fecha</button></div></div>`;
+ const en=appState.planLang==='en',plan=getExamPlan(),today=dailyDateKey(),locale=en?'en-US':'es-US';
+ if(!plan)return `<div class="card exam-plan-card"><span class="pill">${en?'NCLEX PLAN':'PLAN NCLEX'}</span><h2>🎓 ${en?'Set your exam date':'Define tu fecha de examen'}</h2><p>${en?'The app will automatically calculate your daily goal based on the time available and your progress.':'La app calculará automáticamente tu meta diaria según el tiempo disponible y tu progreso.'}</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">${en?'Save date':'Guardar fecha'}</button></div></div>`;
+ if(plan.days<0)return `<div class="card exam-plan-card"><span class="pill">${en?'NCLEX PLAN':'PLAN NCLEX'}</span><h2>📅 ${en?'Update your exam date':'Actualiza tu fecha de examen'}</h2><p>${en?'The saved date has already passed.':'La fecha guardada ya pasó.'}</p><div class="actions"><input class="exam-plan-date" type="date" min="${today}"><button class="primary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">${en?'Save new date':'Guardar nueva fecha'}</button></div></div>`;
+ const when=plan.days===0?(en?'Exam day is today!':'¡El examen es hoy!'):(en?`${plan.days} day${plan.days===1?'':'s'} remaining`:`Faltan ${plan.days} día${plan.days===1?'':'s'}`);
+ return `<div class="card exam-plan-card"><span class="pill">${en?'NCLEX PLAN':'PLAN NCLEX'}</span><h2>🎓 ${when}</h2><p>${esc(plan.target.toLocaleDateString(locale,{weekday:'long',year:'numeric',month:'long',day:'numeric'}))}</p><div class="exam-plan-number">${plan.todayQuestions}/${plan.dailyGoal} ${en?'questions today':'preguntas hoy'}</div><div class="progressbar"><span style="width:${weeklyBar(plan.todayQuestions,plan.dailyGoal)}%"></span></div><p><b>${plan.status}</b></p><div class="exam-plan-details"><div><b>${plan.mastered}/20</b>${en?'Mastered modules':'Módulos dominados'}</div><div><b>${plan.pending}</b>${en?'Modules to master':'Módulos por dominar'}</div><div><b>${plan.errors}</b>${en?'Pending errors':'Errores pendientes'}</div></div><div class="actions"><button class="goodbtn" onclick="startDailyPractice()">${en?'Study now':'Estudiar ahora'}</button><input class="exam-plan-date" type="date" min="${today}" value="${esc(appState.examPlan.targetDate)}"><button class="secondary" onclick="saveExamTargetDate(this.closest('.card').querySelector('input').value)">${en?'Change date':'Cambiar fecha'}</button><button class="secondary" onclick="clearExamTargetDate()">${en?'Remove date':'Eliminar fecha'}</button></div></div>`;
 }
 let flashDeck=[],flashPos=0,flashFlipped=false,flashKnown=0,flashReview=0;
 function allFlashcards(){const cards=[];CORE_MODULES.forEach(([key,title],moduleIndex)=>{(lessons[key]?.items||[]).forEach((item,itemIndex)=>cards.push({id:`${key}:${itemIndex}`,key,moduleIndex,moduleTitle:title.replace(/^Clase \d+ — /,''),front:item[0],back:item[1]}))});return cards}
@@ -2102,13 +2124,29 @@ function renderModuleMasteryOverview(){
  return `<div class="card"><h3>📘 ${en?'Mastery by module':'Dominio por módulo'}</h3><p class="muted">${en?'Modules that need the most review appear first.':'Los módulos que necesitan más repaso aparecen primero.'}</p><div class="module-report">${rows.map(r=>`<div class="module-report-row"><strong>${r.number}. ${esc(r.title)}<br><small class="${r.cls}">${r.level} · ${r.attempts} ${en?(r.attempts===1?'attempt':'attempts'):(r.attempts===1?'intento':'intentos')}${r.lastDate?` · ${esc(new Date(r.lastDate).toLocaleDateString(locale))}`:''}</small></strong><span>${en?'Last':'Último'} ${r.last}%<br>${en?'Best':'Mejor'} ${r.best}%</span><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Repeat quiz':'Repetir quiz'}</button></div>`).join('')}</div></div>`;
 }
 function getStudyRecommendation(){
- const mistakesByModule={};(appState.mistakes||[]).forEach(idx=>{const key=qs[idx]?.[4];if(key)mistakesByModule[key]=(mistakesByModule[key]||0)+1});
- const ranked=CORE_MODULES.map(([key,title],index)=>{const p=moduleMastery(key),errors=mistakesByModule[key]||0;let days=0;if(p?.lastDate)days=Math.max(0,Math.floor((Date.now()-new Date(p.lastDate).getTime())/86400000));let priority=p?100-p.best:70;priority+=Math.min(48,errors*12)+Math.min(30,days)+(p?0:20);if(appState.completed.includes(key))priority-=8;if(p?.best>=80&&!errors)priority-=30;return{key,index,title:title.replace(/^Clase \d+ — /,''),p,errors,days,priority}}).sort((a,b)=>b.priority-a.priority||a.index-b.index);
- const pick=ranked[0];if(!pick)return null;let reason='Es el mejor siguiente paso según tu progreso.';if(pick.errors)reason=`Tienes ${pick.errors} pregunta${pick.errors===1?'':'s'} pendiente${pick.errors===1?'':'s'} de este módulo.`;else if(!pick.p)reason='Todavía no has completado el quiz de este módulo.';else if(pick.p.best<65)reason=`Tu mejor resultado es ${pick.p.best}%; conviene reforzarlo.`;else if(pick.days>=7)reason=`Han pasado ${pick.days} días desde tu último intento.`;else if(pick.p.best<80)reason=`Estás en progreso con ${pick.p.best}%; un repaso puede llevarlo a Dominado.`;return{...pick,reason};
+ const en=appState.planLang==='en',mistakesByModule={};
+ (appState.mistakes||[]).forEach(idx=>{const key=qs[idx]?.[4];if(key)mistakesByModule[key]=(mistakesByModule[key]||0)+1});
+ const ranked=CORE_MODULES.map(([key,title],index)=>{
+  const p=moduleMastery(key),errors=mistakesByModule[key]||0;let days=0;
+  if(p?.lastDate)days=Math.max(0,Math.floor((Date.now()-new Date(p.lastDate).getTime())/86400000));
+  let priority=p?100-p.best:70;priority+=Math.min(48,errors*12)+Math.min(30,days)+(p?0:20);
+  if(appState.completed.includes(key))priority-=8;if(p?.best>=80&&!errors)priority-=30;
+  const localized=(typeof mnModuleTitle==='function'?mnModuleTitle(key,en):(en&&typeof lessonsEn!=='undefined'&&lessonsEn[key]?lessonsEn[key].title:title)).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+  return{key,index,title:localized,p,errors,days,priority};
+ }).sort((a,b)=>b.priority-a.priority||a.index-b.index);
+ const pick=ranked[0];if(!pick)return null;
+ let reason=en?'This is the best next step based on your progress.':'Es el mejor siguiente paso según tu progreso.';
+ if(pick.errors)reason=en?`You have ${pick.errors} pending question${pick.errors===1?'':'s'} from this module.`:`Tienes ${pick.errors} pregunta${pick.errors===1?'':'s'} pendiente${pick.errors===1?'':'s'} de este módulo.`;
+ else if(!pick.p)reason=en?'You have not completed this module’s quiz yet.':'Todavía no has completado el quiz de este módulo.';
+ else if(pick.p.best<65)reason=en?`Your best score is ${pick.p.best}%; it’s worth reinforcing.`:`Tu mejor resultado es ${pick.p.best}%; conviene reforzarlo.`;
+ else if(pick.days>=7)reason=en?`It has been ${pick.days} day${pick.days===1?'':'s'} since your last attempt.`:`Han pasado ${pick.days} días desde tu último intento.`;
+ else if(pick.p.best<80)reason=en?`You are at ${pick.p.best}%; one more review can move this module toward Mastered.`:`Estás en progreso con ${pick.p.best}%; un repaso puede llevarlo a Dominado.`;
+ return{...pick,reason};
 }
 function renderStudyRecommendation(){
  const r=getStudyRecommendation();if(!r)return '';
- return `<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">RECOMENDACIÓN DE HOY</span><h2>🧠 Módulo ${r.index+1}: ${esc(r.title)}</h2><p>${esc(r.reason)}</p><div class="actions"><button class="warnbtn" onclick="openLesson('${r.key}')">Estudiar recomendación de hoy</button><button class="secondary" onclick="startModuleQuiz('${r.key}')">Ir directamente al quiz</button></div></div>`;
+ const en=appState.planLang==='en';
+ return `<div class="card" style="border:2px solid #8b5cf6;background:linear-gradient(135deg,#fbf9ff,#eef8ff)"><span class="pill">${en?'TODAY’S RECOMMENDATION':'RECOMENDACIÓN DE HOY'}</span><h2>🧠 ${en?'Module':'Módulo'} ${r.index+1}: ${esc(r.title)}</h2><p>${esc(r.reason)}</p><div class="actions"><button class="warnbtn" onclick="openLesson('${r.key}')">${en?'Study today’s recommendation':'Estudiar recomendación de hoy'}</button><button class="secondary" onclick="startModuleQuiz('${r.key}')">${en?'Go straight to the quiz':'Ir directamente al quiz'}</button></div></div>`;
 }
 function rememberStudy(type,key='',label=''){
  const next={type,key,label,updatedAt:Date.now()};
