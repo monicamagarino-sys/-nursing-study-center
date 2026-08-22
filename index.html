@@ -2600,8 +2600,15 @@ function mnEnglishClinicalText(text){
  s=s.replace(/\s+([,.;:!?])/g,'$1').replace(/\s{2,}/g,' ').trim();
  return s;
 }
+const MN_EN_QUESTION_OVERRIDES = {
+ '¿Qué vitamina aparece relacionada con la cicatrización junto con zinc?': ['What vitamin is associated with wound healing along with zinc?',['A','B1','C','K'],'The summary indicates vitamin C for wound healing along with zinc.'],
+ '¿Qué vitamina ayuda a la cicatrización junto con zinc?': ['Which vitamin helps with wound healing along with zinc?',['Vitamin C','Vitamin K','Vitamin B3','Vitamin D'],'The summary indicates vitamin C for wound healing along with zinc.'],
+ '🆕 ¿Cómo se provoca el signo de Trousseau según la guía?': ['🆕 How is Trousseau sign elicited according to the guide?',['By applying pressure with a blood pressure cuff for 3 minutes to provoke carpal spasm','By tapping gently in front of the ear','By flexing the neck toward the chest','By extending the knee with the hip flexed'],'The guide describes Trousseau sign as carpal spasm provoked by pressure over the brachial artery with a blood pressure cuff for 3 minutes.']
+};
 function mnBuildEnglishQuestion(idx){
  const q=qs[idx]||['',[],0,'',''];
+ const ov=MN_EN_QUESTION_OVERRIDES[String(q[0]||'').trim()];
+ if(ov)return [ov[0],ov[1],q[2],ov[2],q[4]];
  return [mnEnglishClinicalText(q[0]),(q[1]||[]).map(mnEnglishClinicalText),q[2],mnEnglishClinicalText(q[3]),q[4]];
 }
 
@@ -2644,7 +2651,7 @@ function mnQuestionRecord(q){
 
 function renderPractice(){
  answeredFinal=false;
- const idx=practiceOrder[practicePos] ?? 0, x=qs[idx];
+ const idx=practiceOrder[practicePos] ?? 0, x=questionForLang(idx);
  document.getElementById('score').textContent=practiceSessionCorrect;
  const total=practiceOrder.length;
  const label=practiceLabel||(practiceModule?(lessons[practiceModule]?.title||'Quiz del módulo'):'Práctica general');
@@ -4129,6 +4136,6 @@ answerAdaptiveExam=function(n){
   }
 
   // V29 final language consistency hook
-  window.mnBilingualVersion='V29-clean-datasets';
+  window.mnBilingualVersion='V30-question-language-fix';
 })();
 </script>
