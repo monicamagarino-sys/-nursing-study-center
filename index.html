@@ -4523,3 +4523,22 @@ new MutationObserver(()=>{clearTimeout(window.__v5);window.__v5=setTimeout(fix,1
 addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersion="V5-HISTORY-MODULES";
 })();
 </script>
+
+<script>
+/* MNSC V5 — clean obsolete Adaptive Training from Continue Studying only */
+(function(){
+  function cleanObsoleteContinueStudy(){
+    try{
+      const last=appState?.lastStudy;
+      if(!last)return;
+      const values=[last.type,last.label,last.title,last.mode].map(v=>String(v||'').toLowerCase());
+      if(values.some(v=>v.includes('adaptive training')||v.includes('entrenamiento adaptativo'))){
+        appState.lastStudy=null;
+        saveState();
+      }
+    }catch(e){}
+  }
+  cleanObsoleteContinueStudy();
+})();
+</script>
+
