@@ -4525,190 +4525,132 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 </script>
 
 <script>
-/* MNSC V6 — Adaptive Training
-   Adds a personalized 10-question reinforcement session without changing qs/qsEn. */
+/* MNSC V6 — Adaptive Training rebuilt cleanly from stable V5 */
 (function(){
-  let adaptiveTraining=false, adaptiveTrainingMeta=null;
+  let atActive=false, atMeta=null;
 
   function atEn(){ return appState?.planLang==='en'; }
   function atModuleName(key){
     if(typeof mnModuleLabelFixed==='function') return mnModuleLabelFixed(key,atEn());
     if(typeof mnModuleTitle==='function') return mnModuleTitle(key,atEn()).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
-    return key;
+    return String(key||'');
   }
   function atWeakModules(){
     const rows=[];
     for(const [key] of CORE_MODULES){
       const p=typeof moduleMastery==='function'?moduleMastery(key):null;
-      const mp=appState.moduleProgress?.[key];
-      const attempts=Number(p?.attempts||mp?.attempts||0);
-      const score=Number(p?.last ?? mp?.last ?? 0);
+      const score=Number(p?.last ?? appState.moduleProgress?.[key]?.last ?? 0);
+      const attempts=Number(p?.attempts ?? appState.moduleProgress?.[key]?.attempts ?? 0);
       if(attempts>0) rows.push({key,score,attempts});
     }
     rows.sort((a,b)=>a.score-b.score || b.attempts-a.attempts);
     return rows.slice(0,3);
   }
-  function atPoolFor(keys,exclude){
-    const set=new Set(keys), ex=new Set(exclude||[]);
-    return qs.reduce((a,q,i)=>{ if(set.has(q[4])&&!ex.has(i))a.push(i); return a; },[]);
+  function atFill(list,selected,used,limit=10){
+    for(const i of list){
+      if(selected.length>=limit)break;
+      if(qs[i]&&!used.has(i)){used.add(i);selected.push(i)}
+    }
   }
 
+  window.renderAdaptiveTrainingCard=function(){
+    const root=document.getElementById('practicar');
+    if(!root)return;
+    let card=document.getElementById('adaptiveTrainingCard');
+    if(!card){
+      card=document.createElement('div');
+      card.id='adaptiveTrainingCard';
+      card.className='card';
+      root.appendChild(card);
+    }
+    const en=atEn();
+    card.innerHTML=`<span class="pill">${en?'PERSONALIZED':'PERSONALIZADO'}</span>
+      <h2>🧠 ${en?'Adaptive Training':'Entrenamiento adaptativo'}</h2>
+      <p>${en
+        ?'10 questions selected from unresolved errors and your weakest modules.'
+        :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.'}</p>
+      <button class="primary" onclick="startAdaptiveTraining()">${en?'Start adaptive training':'Iniciar entrenamiento adaptativo'}</button>`;
+  };
+
   window.startAdaptiveTraining=function(){
-    const weak=atWeakModules();
-    const weakKeys=weak.map(x=>x.key);
+    const weak=atWeakModules(), weakKeys=weak.map(x=>x.key);
     const selected=[],used=new Set();
-    const add=list=>list.forEach(i=>{if(selected.length<10&&qs[i]&&!used.has(i)){used.add(i);selected.push(i)}});
 
-    // 1) unresolved errors, 2) fresh questions from weak modules, 3) general fill.
-    add(shuffled([...(appState.mistakes||[])]).slice(0,5));
-    add(shuffled(atPoolFor(weakKeys,selected)));
-    add(shuffled([...Array(qs.length).keys()]));
+    atFill(shuffled([...(appState.mistakes||[])]).slice(0,5),selected,used);
+    const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.includes(q[4]))a.push(i);return a},[]);
+    atFill(shuffled(weakPool),selected,used);
+    atFill(shuffled([...Array(qs.length).keys()]),selected,used);
 
-    adaptiveTraining=true;
-    adaptiveTrainingMeta={
-      weakKeys,
-      beforeMistakes:(appState.mistakes||[]).length,
-      byModule:{},
-      startedAt:Date.now()
-    };
+    atActive=true;
+    atMeta={weakKeys,beforeMistakes:(appState.mistakes||[]).length,byModule:{}};
     practiceModule='';
     practiceLabel=atEn()?'Adaptive Training':'Entrenamiento adaptativo';
-    practiceFinite=true; mistakePractice=false; dailyPractice=false;
-    practiceSessionCorrect=0; practiceSessionAnswered=0;
-    practiceOrder=shuffled(selected); practicePos=0;
-    if(typeof rememberStudy==='function') rememberStudy('adaptive-training','',practiceLabel);
+    practiceFinite=true;mistakePractice=false;dailyPractice=false;
+    practiceSessionCorrect=0;practiceSessionAnswered=0;
+    practiceOrder=shuffled(selected);practicePos=0;
+    if(typeof rememberStudy==='function')rememberStudy('adaptive-training','',practiceLabel);
     show('quiz');
   };
 
-  // Wrap answerPractice to record adaptive-training module performance.
-  const oldAnswerPractice=window.answerPractice;
-  window.answerPractice=function(idx,n){
-    if(adaptiveTraining && adaptiveTrainingMeta && !answeredFinal){
-      const q=qs[idx], key=q?.[4]||'other';
-      const row=adaptiveTrainingMeta.byModule[key]||{correct:0,total:0};
-      row.total++;
-      if(n===q[2]) row.correct++;
-      adaptiveTrainingMeta.byModule[key]=row;
-    }
-    return oldAnswerPractice(idx,n);
-  };
+  const baseAnswerPractice=window.answerPractice;
+  if(typeof baseAnswerPractice==='function'){
+    window.answerPractice=function(idx,n){
+      if(atActive && atMeta && !answeredFinal){
+        const q=qs[idx],key=q?.[4]||'other',row=atMeta.byModule[key]||{correct:0,total:0};
+        row.total++;if(n===q[2])row.correct++;
+        atMeta.byModule[key]=row;
+      }
+      return baseAnswerPractice(idx,n);
+    };
+  }
 
-  // Wrap finishPractice and replace the generic finish card with adaptive feedback.
-  const oldFinishPractice=window.finishPractice;
-  window.finishPractice=function(){
-    if(!adaptiveTraining) return oldFinishPractice();
+  const baseFinishPractice=window.finishPractice;
+  if(typeof baseFinishPractice==='function'){
+    window.finishPractice=function(){
+      if(!atActive)return baseFinishPractice();
+      const en=atEn(),total=practiceOrder.length,correct=practiceSessionCorrect;
+      const score=typeof pct==='function'?pct(correct,total):Math.round(correct*100/Math.max(1,total));
+      const incorrect=Math.max(0,total-correct),before=atMeta?.beforeMistakes||0,after=(appState.mistakes||[]).length,resolved=Math.max(0,before-after);
+      appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);saveState();
 
-    const en=atEn(), total=practiceOrder.length, correct=practiceSessionCorrect;
-    const score=typeof pct==='function'?pct(correct,total):Math.round(correct*100/Math.max(1,total));
-    const incorrect=Math.max(0,total-correct);
-    const before=adaptiveTrainingMeta?.beforeMistakes||0;
-    const after=(appState.mistakes||[]).length;
-    const resolved=Math.max(0,before-after);
-
-    appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);
-    saveState();
-
-    const rows=Object.entries(adaptiveTrainingMeta?.byModule||{})
-      .filter(([,r])=>r.total)
-      .sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total))
-      .map(([key,r])=>{
+      const rows=Object.entries(atMeta?.byModule||{}).filter(([,r])=>r.total).sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total)).map(([key,r])=>{
         const p=Math.round(r.correct*100/r.total);
         const level=p>=80?(en?'Strong':'Fuerte'):p>=65?(en?'Improving':'Mejorando'):(en?'Needs review':'Necesita repaso');
         return `<div class="module-report-row"><strong>${esc(atModuleName(key))}</strong><span>${r.correct}/${r.total}<br>${p}%</span><small class="${p>=80?'level-good':p>=65?'level-mid':'level-low'}">${level}</small></div>`;
       }).join('');
 
-    document.getElementById('quizBox').innerHTML=
-      `<div class="feedback"><span class="pill">${en?'ADAPTIVE TRAINING':'ENTRENAMIENTO ADAPTATIVO'}</span>
-       <h2>🧠 ${en?'Personalized reinforcement completed':'Refuerzo personalizado completado'}</h2>
-       <div class="final-stats">
-        <div class="stat"><b>${correct}/${total}</b>${en?'Correct':'Correctas'}</div>
-        <div class="stat"><b>${incorrect}</b>${en?'Incorrect':'Incorrectas'}</div>
-        <div class="stat"><b>${score}%</b>${en?'Accuracy':'Precisión'}</div>
-        <div class="stat"><b>${resolved}</b>${en?'Errors resolved':'Errores resueltos'}</div>
-       </div>
-       ${rows?`<h3>🎯 ${en?'Performance by reinforced area':'Rendimiento por área reforzada'}</h3><div class="module-report">${rows}</div>`:''}
-       <p class="muted">${score>=80
-          ?(en?'Strong session. Your next training will keep shifting toward remaining weak areas.':'Sesión fuerte. El próximo entrenamiento seguirá moviéndose hacia las áreas débiles restantes.')
-          :score>=65
-          ?(en?'You are improving. Repeat focused reinforcement to consolidate these topics.':'Estás mejorando. Repite el refuerzo enfocado para consolidar estos temas.')
-          :(en?'These areas still need review. The next adaptive session will continue prioritizing them.':'Estas áreas todavía necesitan repaso. La próxima sesión adaptativa seguirá priorizándolas.')}</p>
-       <div class="actions"><button class="primary" onclick="startAdaptiveTraining()">${en?'Train again':'Entrenar otra vez'}</button>
-       <button class="secondary" onclick="show('inicio')">${en?'Back to Home':'Volver al inicio'}</button></div></div>`;
-
-    document.getElementById('next').style.display='none';
-    adaptiveTraining=false; adaptiveTrainingMeta=null;
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-
-  // Add one button to the Practice screen after it renders.
-  function addAdaptiveButton(){
-    const practice=document.getElementById('practicar') || document.querySelector('[data-page="practicar"]');
-    if(!practice || practice.querySelector('#adaptiveTrainingCard')) return;
-    const cards=practice.querySelector('.grid') || practice;
-    const div=document.createElement('div');
-    div.id='adaptiveTrainingCard'; div.className='card';
-    div.innerHTML=`<span class="pill">${atEn()?'PERSONALIZED':'PERSONALIZADO'}</span>
-      <h2>🧠 ${atEn()?'Adaptive Training':'Entrenamiento adaptativo'}</h2>
-      <p>${atEn()
-        ?'10 questions selected from unresolved errors and your weakest modules.'
-        :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.'}</p>
-      <button class="primary" onclick="startAdaptiveTraining()">${atEn()?'Start adaptive training':'Iniciar entrenamiento adaptativo'}</button>`;
-    cards.appendChild(div);
+      document.getElementById('quizBox').innerHTML=`<div class="feedback"><span class="pill">${en?'ADAPTIVE TRAINING':'ENTRENAMIENTO ADAPTATIVO'}</span>
+        <h2>🧠 ${en?'Personalized reinforcement completed':'Refuerzo personalizado completado'}</h2>
+        <div class="final-stats"><div class="stat"><b>${correct}/${total}</b>${en?'Correct':'Correctas'}</div><div class="stat"><b>${incorrect}</b>${en?'Incorrect':'Incorrectas'}</div><div class="stat"><b>${score}%</b>${en?'Accuracy':'Precisión'}</div><div class="stat"><b>${resolved}</b>${en?'Errors resolved':'Errores resueltos'}</div></div>
+        ${rows?`<h3>🎯 ${en?'Performance by reinforced area':'Rendimiento por área reforzada'}</h3><div class="module-report">${rows}</div>`:''}
+        <div class="actions"><button class="primary" onclick="startAdaptiveTraining()">${en?'Train again':'Entrenar otra vez'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to Home':'Volver al inicio'}</button></div></div>`;
+      document.getElementById('next').style.display='none';
+      atActive=false;atMeta=null;window.scrollTo({top:0,behavior:'smooth'});
+    };
   }
 
-  const obs=new MutationObserver(()=>setTimeout(addAdaptiveButton,0));
-  obs.observe(document.documentElement,{subtree:true,childList:true});
-  addEventListener('load',addAdaptiveButton); setTimeout(addAdaptiveButton,0);
-  window.mnAdaptiveTrainingVersion='V6';
-})();
-</script>
-
-<script>
-/* MNSC V6.2 — safe instant language refresh for Adaptive Training */
-(function(){
-  function renderAdaptiveTrainingCardLanguage(){
-    const card=document.getElementById('adaptiveTrainingCard');
-    if(!card)return;
-    const en=appState?.planLang==='en';
-    const pill=card.querySelector('.pill');
-    const title=card.querySelector('h2');
-    const desc=card.querySelector('p');
-    const btn=card.querySelector('button');
-    if(pill) pill.textContent=en?'PERSONALIZED':'PERSONALIZADO';
-    if(title) title.textContent='🧠 '+(en?'Adaptive Training':'Entrenamiento adaptativo');
-    if(desc) desc.textContent=en
-      ?'10 questions selected from unresolved errors and your weakest modules.'
-      :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.';
-    if(btn) btn.textContent=en?'Start adaptive training':'Iniciar entrenamiento adaptativo';
-  }
-
-  const previousSetGlobalLanguage=window.setGlobalLanguage;
-  if(typeof previousSetGlobalLanguage==='function'){
+  // Safe language hook: one direct call, no observers.
+  const baseSetGlobalLanguage=window.setGlobalLanguage;
+  if(typeof baseSetGlobalLanguage==='function'){
     window.setGlobalLanguage=function(lang){
-      const result=previousSetGlobalLanguage(lang);
-      renderAdaptiveTrainingCardLanguage();
+      const result=baseSetGlobalLanguage(lang);
+      window.renderAdaptiveTrainingCard();
       return result;
     };
   }
 
-  // Only detect first insertion of the card; do not rewrite innerHTML in a mutation loop.
-  const observer=new MutationObserver((mutations)=>{
-    for(const m of mutations){
-      for(const node of m.addedNodes){
-        if(node?.nodeType===1){
-          if(node.id==='adaptiveTrainingCard' || node.querySelector?.('#adaptiveTrainingCard')){
-            renderAdaptiveTrainingCardLanguage();
-            return;
-          }
-        }
-      }
-    }
-  });
-  observer.observe(document.documentElement,{subtree:true,childList:true});
+  // Safe show hook: render card only when Practice hub is opened.
+  const baseShow=window.show;
+  if(typeof baseShow==='function'){
+    window.show=function(id){
+      const result=baseShow(id);
+      if(id==='practicar')window.renderAdaptiveTrainingCard();
+      return result;
+    };
+  }
 
-  window.renderAdaptiveTrainingCardLanguage=renderAdaptiveTrainingCardLanguage;
-  setTimeout(renderAdaptiveTrainingCardLanguage,0);
-  window.mnAdaptiveTrainingVersion='V6.2-SAFE-LIVE-LANG';
+  window.renderAdaptiveTrainingCard();
+  window.mnAdaptiveTrainingVersion='V6-REBUILT-FROM-V5';
 })();
 </script>
 
