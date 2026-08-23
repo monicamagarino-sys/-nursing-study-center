@@ -4267,3 +4267,169 @@ answerAdaptiveExam=function(n){
 })();
 </script>
 
+<script>
+/* MNSC DIRECT BILINGUAL SECONDARY SCREENS V3
+   Uses question indices and the structural qs/qsEn banks directly.
+   No text-guessing is used for Answer Review. */
+(function(){
+ const enNow=()=>appState?.planLang==='en';
+
+ function activeQuestion(idx){
+   const base=qs[idx]||["",[],0,"",""];
+   if(enNow() && window.qsEn?.[idx]){
+     const e=window.qsEn[idx];
+     return [e[0],[...(e[1]||[])],base[2],e[3],base[4]];
+   }
+   return [base[0],[...(base[1]||[])],base[2],base[3],base[4]];
+ }
+ window.mnQuestionForActiveLanguage=activeQuestion;
+
+ function moduleLabel(key,en=enNow()){
+   if(typeof mnModuleTitle==='function'){
+     return mnModuleTitle(key,en).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+   }
+   const hit=CORE_MODULES.find(x=>x[0]===key);
+   return hit?String(hit[1]).replace(/^Clase\s+\d+\s+—\s+/,''):key;
+ }
+ function storedModuleLabel(value,en=enNow()){
+   const raw=String(value||'');
+   if(!en)return raw;
+   if(raw==='Todos los módulos')return 'All modules';
+   const byKey=CORE_MODULES.find(x=>x[0]===raw);
+   if(byKey)return moduleLabel(byKey[0],true);
+   const byTitle=CORE_MODULES.find(x=>{
+     const es=String(x[1]||'');
+     return raw===es || raw===es.replace(/^Clase\s+\d+\s+—\s+/,'');
+   });
+   return byTitle?moduleLabel(byTitle[0],true):raw
+      .replace(/^Personalizado$/,'Custom')
+      .replace(/^Práctica$/,'Practice');
+ }
+ function historyTypeLabel(type,en=enNow()){
+   const raw=String(type||'');
+   if(!en)return raw;
+   return raw
+    .replace(/Simulacro adaptativo/g,'Adaptive exam')
+    .replace(/Examen personalizado/g,'Custom exam')
+    .replace(/Personalizado/g,'Custom')
+    .replace(/Práctica/g,'Practice')
+    .replace(/Simulacro NCLEX/g,'NCLEX simulation')
+    .replace(/Examen/g,'Exam');
+ }
+
+ // DIRECT Answer Review: question, selected answer, correct answer and explanation
+ // all come from the same indexed active-language record.
+ window.adaptiveReviewHTML=function(filter='wrong'){
+   const list=adaptiveResults.filter(r=>filter==='all'||!r.isCorrect);
+   if(!list.length)return `<div class="feedback"><b>✅ ${adaptiveText('No tuviste errores en este simulacro.','You had no errors in this exam.')}</b></div>`;
+   return list.map((r,i)=>{
+     const q=activeQuestion(r.idx);
+     const module=moduleLabel(r.key,enNow())||adaptiveText('Módulo','Module');
+     return `<div class="lesson" style="border-left:5px solid ${r.isCorrect?'#16a36a':'#dc3545'}">
+       <span class="pill">${adaptiveLevelLabel(r.level)} · ${esc(module)}</span>
+       <h3>${i+1}. ${esc(q[0])}</h3>
+       <p><b>${adaptiveText('Tu respuesta','Your answer')}:</b> ${r.isCorrect?'✅':'❌'} ${esc(q[1][r.selected]??'')}</p>
+       ${r.isCorrect?'':`<p><b>${adaptiveText('Respuesta correcta','Correct answer')}:</b> ✅ ${esc(q[1][r.correct]??'')}</p>`}
+       <div class="feedback"><b>${adaptiveText('Explicación','Explanation')}:</b> ${esc(q[3]||'')}
+         <div class="actions"><button class="secondary" onclick="readTextAloud(mnQuestionForActiveLanguage(${r.idx})[3])">🔊 ${adaptiveText('Escuchar','Listen')}</button></div>
+       </div>
+     </div>`;
+   }).join('');
+ };
+
+ window.renderExamHistory=function(){
+   const items=appState.history||[],en=enNow();
+   if(!items.length)return `<div class="card"><h3>📊 ${en?'Exam history':'Historial de exámenes'}</h3><p class="muted">${en?'Your upcoming exam results will appear here automatically.':'Los próximos exámenes aparecerán aquí automáticamente.'}</p></div>`;
+   return `<div class="card"><h3>📊 ${en?'History and progress':'Historial y evolución'}</h3>
+     <p class="muted">${en?`Last ${items.length} results. The bar shows your percentage.`:`Últimos ${items.length} resultados. La barra muestra tu porcentaje.`}</p>
+     <div class="history-list">${items.map(item=>{
+       const date=new Date(item.date).toLocaleString(en?'en-US':'es-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+       const mods=(item.modules||[]).map(v=>storedModuleLabel(v,en)).join(' · ');
+       return `<div class="history-row"><div class="history-head"><div><strong>${esc(historyTypeLabel(item.type,en))}</strong><br><small>${esc(date)}</small></div>
+       <button class="history-delete" onclick="deleteExamHistory('${item.id}')">${en?'Delete':'Eliminar'}</button></div>
+       <div class="history-bar"><span style="width:${Math.max(0,Math.min(100,item.score))}%"></span></div>
+       <p><b>${item.score}%</b> · ${item.correct}/${item.total} ${en?'correct':'correctas'}</p><small>${esc(mods)}</small></div>`;
+     }).join('')}</div></div>`;
+ };
+
+ window.renderNotesOverview=function(){
+   const en=enNow(),saved=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
+   if(!saved.length)return `<div class="card"><h3>🗒️ ${en?'Personal notes':'Notas personales'}</h3><p class="muted">${en?'You have not saved any module notes yet.':'Todavía no has guardado notas en los módulos.'}</p></div>`;
+   return `<div class="card"><h3>🗒️ ${en?'Personal notes':'Notas personales'}</h3><p>${saved.length} ${en?(saved.length===1?'module with saved notes.':'modules with saved notes.'):`módulo${saved.length===1?'':'s'} con notas guardadas.`}</p>
+   <div class="actions">${saved.map(([key])=>`<button class="secondary" onclick="openLesson('${key}')">${esc(moduleLabel(key,en))}</button>`).join('')}</div></div>`;
+ };
+
+ function achievementText(a,en){
+   if(en && typeof MN_ACHIEVEMENT_I18N!=='undefined' && MN_ACHIEVEMENT_I18N[a.id]){
+     const t=MN_ACHIEVEMENT_I18N[a.id];return {title:t[2],desc:t[3]};
+   }
+   return {title:a.title,desc:a.desc};
+ }
+
+ window.exportProgressReport=function(){
+   closeProgressReport();updateAchievements();
+   const en=enNow(),weekly=ensureWeekly(),examPlan=getExamPlan(),flashStats=flashcardStats();
+   const generated=new Date().toLocaleString(en?'en-US':'es-US',{dateStyle:'long',timeStyle:'short'});
+   const completed=CORE_MODULES.filter(([key])=>appState.completed.includes(key));
+   const notes=CORE_MODULES.filter(([key])=>String(appState.notes[key]||'').trim());
+   const breakdown=appState.exam?.breakdown||{};
+   const performance=CORE_MODULES.map(([key],i)=>{const row=breakdown[key];if(!row?.total)return null;const score=pct(row.correct,row.total);return{key,number:i+1,title:moduleLabel(key,en),correct:row.correct,total:row.total,score}}).filter(Boolean).sort((a,b)=>a.score-b.score);
+   const masteryRows=CORE_MODULES.map(([key],i)=>{const p=moduleMastery(key);return p?{key,number:i+1,title:moduleLabel(key,en),...p}:null}).filter(Boolean).sort((a,b)=>a.best-b.best);
+   const earnedAchievements=ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]);
+   const history=(appState.history||[]).map(item=>`<tr><td>${esc(new Date(item.date).toLocaleString(en?'en-US':'es-US'))}</td><td>${esc(historyTypeLabel(item.type,en)|| (en?'Exam':'Examen'))}</td><td>${Number(item.correct)||0}/${Number(item.total)||0}</td><td><b>${Number(item.score)||0}%</b></td></tr>`).join('');
+
+   const report=document.createElement('div');report.id='printReport';report.className='report-preview';
+   report.innerHTML=`<div class="report-toolbar"><button class="secondary" onclick="closeProgressReport()">${en?'Close':'Cerrar'}</button><button class="primary" onclick="window.print()">🖨️ ${en?'Print / Save PDF':'Imprimir / Guardar PDF'}</button></div><article class="report-sheet">
+   <div class="report-head"><span class="pill">${en?'STUDY REPORT':'INFORME DE ESTUDIO'}</span><h1>📚 Monica Nursing Study Center</h1><p>${en?'Progress and personal notes':'Progreso y notas personales'}</p><small>${en?'Generated':'Generado'}: ${esc(generated)}</small></div>
+   <div class="report-summary">
+    <div class="report-metric"><b>${completed.length}/20</b>${en?'Modules completed':'Módulos completados'}</div>
+    <div class="report-metric"><b>${pct(appState.practice.correct,appState.practice.attempts)}%</b>${en?'Practice':'Práctica'} · ${appState.practice.correct}/${appState.practice.attempts}</div>
+    <div class="report-metric"><b>${appState.exam.last}%</b>${en?'Last exam':'Último examen'}</div>
+    <div class="report-metric"><b>${appState.exam.best}%</b>${en?'Best exam':'Mejor examen'}</div>
+    <div class="report-metric"><b>${appState.daily.streak}</b>${en?'Daily streak':'Racha diaria'}</div>
+    <div class="report-metric"><b>${appState.favorites.length} / ${appState.mistakes.length}</b>${en?'Favorites / errors':'Favoritos / errores'}</div>
+    <div class="report-metric"><b>${weekly.questions}/${weekly.goals.questions}</b>${en?'Questions this week':'Preguntas esta semana'}</div>
+    <div class="report-metric"><b>${weekly.modules}/${weekly.goals.modules}</b>${en?'Modules this week':'Módulos esta semana'}</div>
+    <div class="report-metric"><b>${weekly.exams}/${weekly.goals.exams}</b>${en?'Exams this week':'Exámenes esta semana'}</div>
+    <div class="report-metric"><b>${flashStats.mastered}/${flashStats.total}</b>${en?'Mastered flashcards':'Tarjetas dominadas'}</div>
+   </div>
+
+   <section class="report-section" style="display:block"><h2>🎓 ${en?'NCLEX Plan':'Plan NCLEX'}</h2>${examPlan
+     ?`<p><b>${en?'Target date':'Fecha prevista'}:</b> ${esc(examPlan.target.toLocaleDateString(en?'en-US':'es-US'))} · <b>${Math.max(0,examPlan.days)} ${en?'days':'días'}</b> · ${en?'Daily goal':'Meta diaria'}: <b>${examPlan.dailyGoal} ${en?'questions':'preguntas'}</b> · ${en?'Today':'Hoy'}: ${examPlan.todayQuestions}/${examPlan.dailyGoal}.</p>`
+     :`<p class="report-empty">${en?'No target exam date has been set.':'No se ha definido una fecha prevista para el examen.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>✅ ${en?'Completed modules':'Módulos completados'}</h2>${completed.length
+     ?`<ol>${completed.map(([key])=>`<li>${esc(moduleLabel(key,en))}</li>`).join('')}</ol>`
+     :`<p class="report-empty">${en?'No modules have been marked completed yet.':'Aún no hay módulos marcados como completados.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>🏆 ${en?'Achievements earned':'Logros conseguidos'}</h2>${earnedAchievements.length
+     ?`<ul>${earnedAchievements.map(a=>{const t=achievementText(a,en);return `<li>${a.icon} <b>${esc(t.title)}</b> — ${esc(t.desc)}</li>`}).join('')}</ul>`
+     :`<p class="report-empty">${en?'No medals have been earned yet.':'Todavía no hay medallas conseguidas.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>📘 ${en?'Quiz mastery by module':'Dominio de quizzes por módulo'}</h2>${masteryRows.length
+     ?`<table class="report-table"><thead><tr><th>${en?'Module':'Módulo'}</th><th>${en?'Last':'Último'}</th><th>${en?'Best':'Mejor'}</th><th>${en?'Attempts':'Intentos'}</th><th>${en?'Level':'Nivel'}</th></tr></thead><tbody>${masteryRows.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.last}%</td><td>${row.best}%</td><td>${row.attempts}</td><td>${esc(String(row.level))}</td></tr>`).join('')}</tbody></table>`
+     :`<p class="report-empty">${en?'No module quizzes have been completed yet.':'Todavía no hay quizzes de módulos completados.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>🎯 ${en?'Performance by module':'Rendimiento por módulo'}</h2>${performance.length
+     ?`<table class="report-table"><thead><tr><th>${en?'Module':'Módulo'}</th><th>${en?'Result':'Resultado'}</th><th>${en?'Level':'Nivel'}</th></tr></thead><tbody>${performance.map(row=>`<tr><td>${row.number}. ${esc(row.title)}</td><td>${row.correct}/${row.total} · ${row.score}%</td><td>${row.score>=80?(en?'Strong':'Fortaleza'):row.score>=65?(en?'In progress':'En progreso'):(en?'Review':'Repasar')}</td></tr>`).join('')}</tbody></table>`
+     :`<p class="report-empty">${en?'Complete an exam to generate an analysis of strong and weak topics.':'Completa un examen para generar el análisis de temas fuertes y débiles.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>📊 ${en?'Exam history':'Historial de exámenes'}</h2>${history
+     ?`<table class="report-table"><thead><tr><th>${en?'Date':'Fecha'}</th><th>${en?'Type':'Tipo'}</th><th>${en?'Correct':'Correctas'}</th><th>${en?'Score':'Puntuación'}</th></tr></thead><tbody>${history}</tbody></table>`
+     :`<p class="report-empty">${en?'No saved exams.':'No hay exámenes guardados.'}</p>`}</section>
+
+   <section class="report-section" style="display:block"><h2>🗒️ ${en?'Personal notes':'Notas personales'}</h2>${notes.length
+     ?notes.map(([key])=>`<h3>${esc(moduleLabel(key,en))}</h3><div class="report-note">${esc(String(appState.notes[key]))}</div>`).join('')
+     :`<p class="report-empty">${en?'No personal notes have been saved.':'No hay notas personales guardadas.'}</p>`}</section>
+
+   <p class="muted" style="margin-top:30px;font-size:12px">${en
+     ?'Study content based on the provided document. This report does not replace protocols, laws, clinical guidelines, or official course material.'
+     :'Contenido de estudio basado en el documento proporcionado. Este informe no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.'}</p>
+   </article>`;
+   document.body.appendChild(report);report.scrollTop=0;
+ };
+
+ window.mnSecondaryBilingualVersion='V3-DIRECT';
+})();
+</script>
+
