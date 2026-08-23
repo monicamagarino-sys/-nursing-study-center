@@ -4160,3 +4160,110 @@ answerAdaptiveExam=function(n){
 })();
 </script>
 
+<script>
+/* MNSC BILINGUAL SECONDARY-SCREENS PATCH V2 */
+(function(){
+  const isEN=()=>appState && appState.planLang==="en";
+  const qLang=(idx)=>{
+    const base=qs[idx];
+    if(!base) return ["",[],0,"",""];
+    if(isEN() && window.qsEn && window.qsEn[idx]){
+      const en=window.qsEn[idx];
+      return [en[0],[...(en[1]||[])],base[2],en[3],base[4]];
+    }
+    return [base[0],[...(base[1]||[])],base[2],base[3],base[4]];
+  };
+  window.mnQuestionForActiveLanguage=qLang;
+
+  // Translate recurring report/history labels at render time.
+  const ES_EN = new Map([
+    ["INFORME DE ESTUDIO","STUDY REPORT"],
+    ["Progreso y notas personales","Progress and personal notes"],
+    ["Módulos completados","Modules completed"],
+    ["Práctica","Practice"],
+    ["Último examen","Last exam"],
+    ["Mejor examen","Best exam"],
+    ["Racha diaria","Daily streak"],
+    ["Favoritos / errores","Favorites / errors"],
+    ["Preguntas esta semana","Questions this week"],
+    ["Módulos esta semana","Modules this week"],
+    ["Exámenes esta semana","Exams this week"],
+    ["Tarjetas dominadas","Mastered flashcards"],
+    ["Plan NCLEX","NCLEX Plan"],
+    ["Historial y evolución","History and progress"],
+    ["Notas personales","Personal notes"],
+    ["Eliminar","Delete"],
+    ["correctas","correct"],
+    ["Todavía no has guardado notas en los módulos.","You have not saved any module notes yet."]
+  ]);
+
+  function translateTextNodes(root){
+    if(!isEN() || !root) return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{
+      let s=n.nodeValue, t=s.trim();
+      if(ES_EN.has(t)) n.nodeValue=s.replace(t,ES_EN.get(t));
+      else {
+        n.nodeValue=s
+          .replace(/Generado:/g,"Generated:")
+          .replace(/Últimos (\d+) resultados\./g,"Last $1 results.")
+          .replace(/La barra muestra tu porcentaje\./g,"The bar shows your percentage.")
+          .replace(/Personalizado/g,"Custom")
+          .replace(/ago (\d+), (\d{4})/g,"Aug $1, $2");
+      }
+    });
+  }
+
+  // Answer-review content: replace stored Spanish question/answers/explanation
+  // from the canonical parallel bank whenever a review item exposes its index.
+  function repairReview(root=document){
+    if(!isEN() || !window.qsEn) return;
+    const candidates=root.querySelectorAll("[data-qidx],[data-question-index],[data-idx]");
+    candidates.forEach(el=>{
+      const raw=el.getAttribute("data-qidx") ?? el.getAttribute("data-question-index") ?? el.getAttribute("data-idx");
+      const idx=Number(raw);
+      if(!Number.isInteger(idx) || !qs[idx] || !qsEn[idx]) return;
+      const en=qLang(idx);
+      const qEl=el.querySelector(".review-question,.qtext,[data-role='question']");
+      const expEl=el.querySelector(".review-explanation,.explanation,[data-role='explanation']");
+      if(qEl) qEl.textContent=en[0];
+      if(expEl) expEl.textContent=en[3];
+    });
+  }
+
+  // Generic exact-content repair for review cards even when legacy markup
+  // does not expose the question index.
+  function repairLegacyReview(root=document){
+    if(!isEN() || !window.qsEn) return;
+    const map=new Map();
+    for(let i=0;i<qs.length;i++){
+      const es=qs[i], en=qsEn[i];
+      if(!es||!en) continue;
+      map.set(String(es[0]).trim(),String(en[0]));
+      map.set(String(es[3]||"").trim(),String(en[3]||""));
+      (es[1]||[]).forEach((v,j)=>map.set(String(v).trim(),String((en[1]||[])[j]??v)));
+    }
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{
+      const t=n.nodeValue.trim();
+      if(t && map.has(t)) n.nodeValue=n.nodeValue.replace(t,map.get(t));
+    });
+  }
+
+  function bilingualSecondaryPass(){
+    if(!isEN()) return;
+    translateTextNodes(document.body);
+    repairReview(document);
+    repairLegacyReview(document);
+  }
+
+  const obs=new MutationObserver(()=>{ clearTimeout(window.__mnBiTimer); window.__mnBiTimer=setTimeout(bilingualSecondaryPass,20); });
+  obs.observe(document.documentElement,{subtree:true,childList:true});
+  window.addEventListener("load",bilingualSecondaryPass);
+  setTimeout(bilingualSecondaryPass,0);
+  window.mnSecondaryBilingualVersion="V2";
+})();
+</script>
+
