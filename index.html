@@ -4515,4 +4515,11 @@ answerAdaptiveExam=function(n){
  window.mnSecondaryBilingualVersion='V4-MODULE-LABELS';
 })();
 </script>
-
+<script>
+(function(){
+const P=[["Ética, legal y gestión","Ethics, Legal and Management"],["Ética y gestión","Ethics and Management"],["Prevención y seguridad","Prevention & Safety"],["Examen físico","Physical Assessment"],["Nutrición","Nutrition"],["Terapia IV y sangre","IV Therapy and Blood"],["Laboratorios y procedimientos","Labs and Procedures"],["Gases arteriales y electrolitos","ABG and Electrolytes"],["Trastornos respiratorios","Respiratory Disorders"],["Sistema cardiovascular","Cardiovascular"],["Trastornos neurológicos","Neurologic Disorders"],["Ojos, oídos, nariz y garganta","Eyes, Ears, Nose and Throat"],["Trastornos musculoesqueléticos","Musculoskeletal Disorders"],["Sistema gastrointestinal","Gastrointestinal System"],["Trastornos renales y urinarios","Renal and Urinary Disorders"],["Oncología","Oncology"],["Trastornos hematológicos","Hematologic Disorders"],["Sistema endocrino","Endocrine System"],["Sistema tegumentario","Integumentary System"],["Salud de la mujer, maternidad y recién nacido","Women's Health, Maternity and Newborn"],["Salud mental y psiquiatría","Mental Health and Psychiatric Nursing"],["Todos los módulos","All modules"]];
+function fix(){if(appState?.planLang!=="en")return;const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),a=[];while(w.nextNode())a.push(w.currentNode);a.forEach(n=>{let s=n.nodeValue;P.forEach(([x,y])=>s=s.split(x).join(y));if(s!==n.nodeValue)n.nodeValue=s})}
+new MutationObserver(()=>{clearTimeout(window.__v5);window.__v5=setTimeout(fix,10)}).observe(document.documentElement,{subtree:true,childList:true});
+addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersion="V5-HISTORY-MODULES";
+})();
+</script>
