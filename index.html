@@ -3634,7 +3634,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
    launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn'),
-   `<button class="mn-launch" onclick="startAdaptiveTraining()"><span class="mn-icon">🧠</span><b>${en?'Adaptive Training':'Entrenamiento adaptativo'}</b><small>${en?'10 personalized questions from unresolved errors and your weakest modules.':'10 preguntas personalizadas de errores pendientes y tus módulos más débiles.'}</small></button>`
+   `<button class="mn-launch" onclick="startAdaptiveTraining()"><span class="mn-icon">🧠</span><b id="adaptiveTrainingTitle" data-es="Entrenamiento adaptativo" data-en="Adaptive Training">${en?'Adaptive Training':'Entrenamiento adaptativo'}</b><small>${en?'10 personalized questions from unresolved errors and your weakest modules.':'10 preguntas personalizadas de errores pendientes y tus módulos más débiles.'}</small></button>`
   ]);
   ensureHub('miprogreso',titleIcon('chart',en?'My progress':'Mi progreso'),[
    launcher('star',en?'Favorites':'Favoritos',en?'Your saved questions and topics.':'Tus preguntas y temas guardados.','favoritos'),
@@ -4606,6 +4606,33 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
    };
  }
  window.mnAdaptiveTrainingVersion='V6.3-INTEGRATED-HUB';
+})();
+</script>
+
+<script>
+/* MNSC V6.4 — instant Adaptive Training title sync */
+(function(){
+  function syncAdaptiveTitle(lang){
+    const title=document.getElementById('adaptiveTrainingTitle');
+    if(!title)return;
+    const en=(lang||appState?.planLang)==='en';
+    title.textContent=en?'Adaptive Training':'Entrenamiento adaptativo';
+  }
+
+  const previousSetGlobalLanguage=window.setGlobalLanguage;
+  if(typeof previousSetGlobalLanguage==='function'){
+    window.setGlobalLanguage=function(lang){
+      const result=previousSetGlobalLanguage(lang);
+      syncAdaptiveTitle(lang);
+      // Some hub rebuilds finish at the end of the same event loop.
+      setTimeout(()=>syncAdaptiveTitle(lang),0);
+      return result;
+    };
+  }
+
+  window.syncAdaptiveTitle=syncAdaptiveTitle;
+  setTimeout(()=>syncAdaptiveTitle(),0);
+  window.mnAdaptiveTrainingVersion='V6.4-TITLE-SYNC';
 })();
 </script>
 
