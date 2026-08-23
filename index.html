@@ -211,6 +211,11 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <section id="medcalc"><h2>💊 Medicamentos y cálculos</h2><div id="medCalcBox"></div></section>
 <section id="favoritos"><h2>⭐ Preguntas favoritas</h2><div id="favBox"></div></section>
 <section id="progreso"><h2>📈 Tu progreso</h2><div id="progressBox"></div></section>
+
+<section id="guias">
+  <div id="studyGuidesBox"></div>
+</section>
+
 <footer>Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.</footer>
 </main>
 
@@ -3533,7 +3538,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 <script>
 (function(){
  const groupFor={
-  inicio:'inicio',estudio:'estudio',temas:'estudio',buscar:'estudio',tarjetas:'estudio',
+  inicio:'inicio',estudio:'estudio',temas:'estudio',buscar:'estudio',tarjetas:'estudio',guias:'estudio',
   practicar:'practicar',quiz:'practicar',exam:'practicar',medcalc:'practicar',ngn:'practicar',
   miprogreso:'miprogreso',favoritos:'miprogreso',errores:'miprogreso',logros:'miprogreso',progreso:'miprogreso',
   cuenta:'cuenta'
@@ -3626,7 +3631,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   ensureHub('estudio',titleIcon('book',en?'Study':'Estudiar'),[
    launcher('book',en?'Modules':'Módulos',en?'All classes organized by topic.':'Todas las clases organizadas por tema.','temas'),
    launcher('search',en?'Search':'Buscar',en?'Quickly find any content.':'Encuentra rápidamente cualquier contenido.','buscar'),
-   launcher('cards',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas')
+   launcher('cards',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas'),
+   launcher('book',en?'Study Guides':'Guías de estudio',en?'Open and print the cleaned original study guides.':'Abre e imprime las guías originales limpias.','guias')
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
    '<button class="mn-launch" onclick="startPractice(true)"><span class="mn-icon">'+windowIcon('questions')+'</span><b>'+(en?'Questions':'Preguntas')+'</b><small>'+(en?'All '+qs.length+' questions with answers and explanations.':qs.length+' preguntas con respuestas y explicaciones.')+'</small></button>',
@@ -4643,6 +4649,69 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   }
   setTimeout(ensureInsights,0);
   window.mnStatisticsInsightsVersion='V5.1';
+})();
+</script>
+
+<script>
+/* MNSC V5.2 — Study Guides / Guías de estudio */
+(function(){
+  const studyGuides=[
+    {icon:'⭐',es:'Guía principal NCLEX',en:'Principal NCLEX Study Guide',file:'Principal_NCLEX_Study_Guide.pdf',type:'pdf'},
+    {icon:'❤️',es:'Cardiovascular',en:'Cardiovascular',file:'Cardiovascular.pdf',type:'pdf'},
+    {icon:'🫀',es:'Resumen cardiovascular',en:'Cardiovascular Summary',file:'Cardiovascular_Summary.pdf',type:'pdf'},
+    {icon:'🧪',es:'Laboratorios y pruebas',en:'Lab Tests',file:'Lab_Tests.pdf',type:'pdf'},
+    {icon:'🤰',es:'Maternidad',en:'Maternity',file:'Maternity.pdf',type:'pdf'},
+    {icon:'🧠',es:'Desarrollo psicosocial',en:'Psychosocial Development',file:'Psychosocial_Development.pdf',type:'pdf'},
+    {icon:'🩺',es:'Signos clínicos',en:'Clinical Signs',file:'Clinical_Signs.pdf',type:'pdf'},
+    {icon:'📋',es:'Índice de repaso NCLEX',en:'NCLEX Class Review Outline',file:'NCLEX_Class_Review_Outline.docx',type:'docx'}
+  ];
+
+  window.renderStudyGuides=function(){
+    const box=document.getElementById('studyGuidesBox');
+    if(!box)return;
+    const en=appState?.planLang==='en';
+    const cards=studyGuides.map(g=>{
+      const openLabel=g.type==='pdf'?(en?'Open / Print':'Abrir / Imprimir'):(en?'Open / Download':'Abrir / Descargar');
+      const note=g.type==='pdf'
+        ?(en?'Opens the cleaned guide in a new tab so you can read, print, or save it as PDF.':'Abre la guía limpia en otra pestaña para leerla, imprimirla o guardarla como PDF.')
+        :(en?'Word document. Open it with Word or Pages to read and print.':'Documento de Word. Ábrelo con Word o Pages para leerlo e imprimirlo.');
+      return `<div class="card">
+        <span class="pill">${g.type.toUpperCase()}</span>
+        <h3>${g.icon} ${en?g.en:g.es}</h3>
+        <p class="muted">${note}</p>
+        <div class="actions">
+          <a class="primary" style="text-decoration:none;display:inline-block" href="${g.file}" target="_blank" rel="noopener">${openLabel}</a>
+        </div>
+      </div>`;
+    }).join('');
+    box.innerHTML=`<span class="pill">${en?'PRINTABLE STUDY MATERIAL':'MATERIAL DE ESTUDIO IMPRIMIBLE'}</span>
+      <h2>📚 ${en?'Study Guides':'Guías de estudio'}</h2>
+      <p class="muted">${en
+        ?'Cleaned original study guides with personal information removed from the prepared copies.'
+        :'Guías originales preparadas para estudio, con la información personal eliminada de las copias limpias.'}</p>
+      <div class="grid">${cards}</div>`;
+  };
+
+  const baseShow=window.show;
+  if(typeof baseShow==='function'){
+    window.show=function(id){
+      const result=baseShow(id);
+      if(id==='guias')window.renderStudyGuides();
+      return result;
+    };
+  }
+
+  const baseLang=window.setGlobalLanguage;
+  if(typeof baseLang==='function'){
+    window.setGlobalLanguage=function(lang){
+      const result=baseLang(lang);
+      if(document.getElementById('guias')?.classList.contains('active'))window.renderStudyGuides();
+      return result;
+    };
+  }
+
+  setTimeout(()=>window.renderStudyGuides(),0);
+  window.mnStudyGuidesVersion='V5.2';
 })();
 </script>
 
