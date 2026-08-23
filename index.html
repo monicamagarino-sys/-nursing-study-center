@@ -4433,3 +4433,86 @@ answerAdaptiveExam=function(n){
 })();
 </script>
 
+<script>
+/* MNSC V4 — authoritative English module labels for secondary screens */
+(function(){
+ const MODULE_EN = {
+  etica:"Ethics and Management",
+  prev:"Prevention and Safety",
+  fisico:"Physical Assessment",
+  nutri:"Nutrition",
+  ivblood:"IV Therapy and Blood",
+  labs:"Labs and Procedures",
+  abg:"ABG & Electrolytes",
+  resp:"Respiratory Disorders",
+  cardio:"Cardiovascular",
+  neuro:"Neurologic Disorders",
+  eyesent:"Eyes and ENT",
+  msk:"Musculoskeletal Disorders",
+  gi:"Gastrointestinal System",
+  renal:"Renal and Urinary Disorders",
+  onc:"Oncology",
+  heme:"Hematologic Disorders",
+  endo:"Endocrine",
+  skin:"Integumentary",
+  ob:"Women's Health, Maternity and Neonate",
+  maternity:"Women's Health, Maternity and Neonate",
+  psych:"Psychiatric",
+  peds:"Pediatrics"
+ };
+
+ window.mnModuleLabelFixed=function(key,en=appState?.planLang==='en'){
+   if(en && MODULE_EN[key]) return MODULE_EN[key];
+   if(typeof mnModuleTitle==='function'){
+     return mnModuleTitle(key,false).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+   }
+   const hit=CORE_MODULES?.find(x=>x[0]===key);
+   return hit?String(hit[1]).replace(/^Clase\s+\d+\s+—\s+/,''):String(key||'');
+ };
+
+ // Override the secondary-screen helper where present.
+ try{
+   window.moduleLabel = window.mnModuleLabelFixed;
+ }catch(e){}
+
+ // Fix already-rendered module names in English by exact Spanish->English pairs.
+ const pairs = new Map([
+   ["Ética y gestión","Ethics and Management"],
+   ["Ética, legal y gestión","Ethics and Management"],
+   ["Prevención y seguridad","Prevention and Safety"],
+   ["Examen físico","Physical Assessment"],
+   ["Nutrición","Nutrition"],
+   ["Terapia IV y sangre","IV Therapy and Blood"],
+   ["Laboratorios y procedimientos","Labs and Procedures"],
+   ["Gases arteriales y electrolitos","ABG & Electrolytes"],
+   ["Trastornos respiratorios","Respiratory Disorders"],
+   ["Sistema cardiovascular","Cardiovascular"],
+   ["Trastornos neurológicos","Neurologic Disorders"],
+   ["Ojos, oídos, nariz y garganta","Eyes and ENT"],
+   ["Trastornos musculoesqueléticos","Musculoskeletal Disorders"],
+   ["Sistema gastrointestinal","Gastrointestinal System"],
+   ["Trastornos renales y urinarios","Renal and Urinary Disorders"],
+   ["Oncología","Oncology"],
+   ["Trastornos hematológicos","Hematologic Disorders"],
+   ["Sistema endocrino","Endocrine"],
+   ["Sistema tegumentario","Integumentary"],
+   ["Salud de la mujer, maternidad y recién nacido","Women's Health, Maternity and Neonate"],
+   ["Salud mental y psiquiatría","Psychiatric"]
+ ]);
+
+ function fixRenderedModuleLabels(){
+   if(appState?.planLang!=='en') return;
+   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+   const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+   nodes.forEach(n=>{
+     const t=n.nodeValue.trim();
+     if(pairs.has(t)) n.nodeValue=n.nodeValue.replace(t,pairs.get(t));
+   });
+ }
+ const obs=new MutationObserver(()=>setTimeout(fixRenderedModuleLabels,0));
+ obs.observe(document.documentElement,{subtree:true,childList:true});
+ setTimeout(fixRenderedModuleLabels,0);
+ window.mnSecondaryBilingualVersion='V4-MODULE-LABELS';
+})();
+</script>
+
