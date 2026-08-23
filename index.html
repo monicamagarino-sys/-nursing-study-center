@@ -4542,3 +4542,107 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 })();
 </script>
 
+<script>
+/* MNSC V5.1 — Statistics Insights
+   Adds strengths, review priorities and recent trend without changing question banks. */
+(function(){
+  function siEn(){return appState?.planLang==='en';}
+  function siModuleName(key){
+    if(typeof mnModuleLabelFixed==='function')return mnModuleLabelFixed(key,siEn());
+    if(typeof mnModuleTitle==='function')return mnModuleTitle(key,siEn()).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+    return String(key||'');
+  }
+  function siModuleRows(){
+    const rows=[];
+    for(const [key] of CORE_MODULES){
+      const p=typeof moduleMastery==='function'?moduleMastery(key):null;
+      const mp=appState.moduleProgress?.[key];
+      const attempts=Number(p?.attempts ?? mp?.attempts ?? 0);
+      const last=Number(p?.last ?? mp?.last ?? 0);
+      const best=Number(p?.best ?? mp?.best ?? last);
+      if(attempts>0)rows.push({key,attempts,last,best});
+    }
+    return rows;
+  }
+  function siTrend(){
+    const h=(appState.history||[]).filter(x=>Number.isFinite(Number(x.score))).slice(-6);
+    if(h.length<2)return {kind:'none',delta:0,count:h.length};
+    const mid=Math.max(1,Math.floor(h.length/2));
+    const avg=a=>a.reduce((s,x)=>s+Number(x.score||0),0)/Math.max(1,a.length);
+    const delta=Math.round(avg(h.slice(mid))-avg(h.slice(0,mid)));
+    return {kind:delta>=5?'up':delta<=-5?'down':'steady',delta,count:h.length};
+  }
+  function siCard(row,kind){
+    const en=siEn(),score=row.last;
+    return `<div class="lesson" style="margin:8px 0">
+      <strong>${kind==='strong'?'💪':'📘'} ${esc(siModuleName(row.key))}</strong>
+      <div class="history-bar"><span style="width:${Math.max(0,Math.min(100,score))}%"></span></div>
+      <small>${en?'Last result':'Último resultado'}: <b>${score}%</b> · ${en?'Best':'Mejor'}: ${row.best}% · ${en?'Attempts':'Intentos'}: ${row.attempts}</small>
+    </div>`;
+  }
+  window.renderStatisticsInsights=function(){
+    const host=document.getElementById('statisticsInsights');
+    if(!host)return;
+    const en=siEn(),rows=siModuleRows();
+    const strong=[...rows].sort((a,b)=>b.last-a.last||b.best-a.best).slice(0,3);
+    const review=[...rows].sort((a,b)=>a.last-b.last||a.best-b.best).slice(0,3);
+    const trend=siTrend();
+    const trendText=trend.kind==='up'
+      ?(en?`Improving: about +${trend.delta} points across recent exams.`:`Mejorando: aproximadamente +${trend.delta} puntos en los exámenes recientes.`)
+      :trend.kind==='down'
+      ?(en?`Recent scores are about ${Math.abs(trend.delta)} points lower. Consider reinforcing weak areas.`:`Los resultados recientes están aproximadamente ${Math.abs(trend.delta)} puntos más bajos. Conviene reforzar las áreas débiles.`)
+      :trend.kind==='steady'
+      ?(en?'Your recent performance is stable.':'Tu rendimiento reciente se mantiene estable.')
+      :(en?'Complete at least two exams to calculate your recent trend.':'Completa al menos dos exámenes para calcular tu evolución reciente.');
+
+    host.innerHTML=`<div class="card">
+      <span class="pill">${en?'STUDY INSIGHTS':'ANÁLISIS DE ESTUDIO'}</span>
+      <h2>📊 ${en?'Your NCLEX performance':'Tu rendimiento NCLEX'}</h2>
+      <p class="muted">${en?'Based only on the progress already saved in the app.':'Basado únicamente en el progreso que ya guarda la app.'}</p>
+      <div class="grid">
+        <div><h3>💪 ${en?'3 strongest modules':'3 módulos más fuertes'}</h3>
+          ${strong.length?strong.map(r=>siCard(r,'strong')).join(''):`<p class="muted">${en?'Complete module quizzes to identify strengths.':'Completa quizzes de módulos para identificar fortalezas.'}</p>`}
+        </div>
+        <div><h3>📘 ${en?'3 modules to review':'3 módulos para repasar'}</h3>
+          ${review.length?review.map(r=>siCard(r,'review')).join(''):`<p class="muted">${en?'Complete module quizzes to identify review priorities.':'Completa quizzes de módulos para identificar prioridades de repaso.'}</p>`}
+        </div>
+      </div>
+      <div class="feedback" style="margin-top:12px"><b>📈 ${en?'Recent trend':'Evolución reciente'}:</b> ${trendText}</div>
+    </div>`;
+  };
+
+  function ensureInsights(){
+    const progress=document.getElementById('progreso');
+    if(!progress)return;
+    let host=document.getElementById('statisticsInsights');
+    if(!host){
+      host=document.createElement('div');
+      host.id='statisticsInsights';
+      const history=progress.querySelector('.history-list')?.closest('.card');
+      if(history&&history.parentNode)history.parentNode.insertBefore(host,history);
+      else progress.appendChild(host);
+    }
+    window.renderStatisticsInsights();
+  }
+
+  const baseShow=window.show;
+  if(typeof baseShow==='function'){
+    window.show=function(id){
+      const result=baseShow(id);
+      if(id==='progreso')setTimeout(ensureInsights,0);
+      return result;
+    };
+  }
+  const baseSetLanguage=window.setGlobalLanguage;
+  if(typeof baseSetLanguage==='function'){
+    window.setGlobalLanguage=function(lang){
+      const result=baseSetLanguage(lang);
+      if(document.getElementById('statisticsInsights'))setTimeout(ensureInsights,0);
+      return result;
+    };
+  }
+  setTimeout(ensureInsights,0);
+  window.mnStatisticsInsightsVersion='V5.1';
+})();
+</script>
+
