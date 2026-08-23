@@ -3633,7 +3633,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    `<button class="mn-launch" onclick="startNewQuestionsPractice()"><span class="mn-icon">🆕</span><b>${en?'New questions':'Preguntas nuevas'}</b><small>${qs.filter(q=>String(q[0]||'').trim().startsWith('🆕')).length} ${en?'recently added questions.':'preguntas recién añadidas.'}</small></button>`,
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
-   launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
+   launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn'),
+   `<button class="mn-launch" onclick="startAdaptiveTraining()"><span class="mn-icon">🧠</span><b>${en?'Adaptive Training':'Entrenamiento adaptativo'}</b><small>${en?'10 personalized questions from unresolved errors and your weakest modules.':'10 preguntas personalizadas de errores pendientes y tus módulos más débiles.'}</small></button>`
   ]);
   ensureHub('miprogreso',titleIcon('chart',en?'My progress':'Mi progreso'),[
    launcher('star',en?'Favorites':'Favoritos',en?'Your saved questions and topics.':'Tus preguntas y temas guardados.','favoritos'),
@@ -4525,132 +4526,86 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 </script>
 
 <script>
-/* MNSC V6 — Adaptive Training rebuilt cleanly from stable V5 */
+/* MNSC V6.3 — Adaptive Training integrated into the native Practice hub */
 (function(){
-  let atActive=false, atMeta=null;
+ let atActive=false,atMeta=null;
+ const enNow=()=>appState?.planLang==='en';
 
-  function atEn(){ return appState?.planLang==='en'; }
-  function atModuleName(key){
-    if(typeof mnModuleLabelFixed==='function') return mnModuleLabelFixed(key,atEn());
-    if(typeof mnModuleTitle==='function') return mnModuleTitle(key,atEn()).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
-    return String(key||'');
-  }
-  function atWeakModules(){
-    const rows=[];
-    for(const [key] of CORE_MODULES){
-      const p=typeof moduleMastery==='function'?moduleMastery(key):null;
-      const score=Number(p?.last ?? appState.moduleProgress?.[key]?.last ?? 0);
-      const attempts=Number(p?.attempts ?? appState.moduleProgress?.[key]?.attempts ?? 0);
-      if(attempts>0) rows.push({key,score,attempts});
-    }
-    rows.sort((a,b)=>a.score-b.score || b.attempts-a.attempts);
-    return rows.slice(0,3);
-  }
-  function atFill(list,selected,used,limit=10){
-    for(const i of list){
-      if(selected.length>=limit)break;
-      if(qs[i]&&!used.has(i)){used.add(i);selected.push(i)}
-    }
-  }
+ function moduleName(key){
+   if(typeof mnModuleLabelFixed==='function')return mnModuleLabelFixed(key,enNow());
+   if(typeof mnModuleTitle==='function')return mnModuleTitle(key,enNow()).replace(/^(Clase|Class)\s+\d+\s+—\s+/,'');
+   return String(key||'');
+ }
+ function weakModules(){
+   const rows=[];
+   for(const [key] of CORE_MODULES){
+     const p=typeof moduleMastery==='function'?moduleMastery(key):null;
+     const score=Number(p?.last ?? appState.moduleProgress?.[key]?.last ?? 0);
+     const attempts=Number(p?.attempts ?? appState.moduleProgress?.[key]?.attempts ?? 0);
+     if(attempts>0)rows.push({key,score,attempts});
+   }
+   rows.sort((a,b)=>a.score-b.score||b.attempts-a.attempts);
+   return rows.slice(0,3);
+ }
+ function add(list,selected,used){
+   for(const idx of list){
+     if(selected.length>=10)break;
+     if(qs[idx]&&!used.has(idx)){used.add(idx);selected.push(idx)}
+   }
+ }
 
-  window.renderAdaptiveTrainingCard=function(){
-    const root=document.getElementById('practicar');
-    if(!root)return;
-    let card=document.getElementById('adaptiveTrainingCard');
-    if(!card){
-      card=document.createElement('div');
-      card.id='adaptiveTrainingCard';
-      card.className='card';
-      root.appendChild(card);
-    }
-    const en=atEn();
-    card.innerHTML=`<span class="pill">${en?'PERSONALIZED':'PERSONALIZADO'}</span>
-      <h2>🧠 ${en?'Adaptive Training':'Entrenamiento adaptativo'}</h2>
-      <p>${en
-        ?'10 questions selected from unresolved errors and your weakest modules.'
-        :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.'}</p>
-      <button class="primary" onclick="startAdaptiveTraining()">${en?'Start adaptive training':'Iniciar entrenamiento adaptativo'}</button>`;
-  };
+ window.startAdaptiveTraining=function(){
+   const weak=weakModules(),weakKeys=weak.map(x=>x.key),selected=[],used=new Set();
+   add(shuffled([...(appState.mistakes||[])]).slice(0,5),selected,used);
+   const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.includes(q[4]))a.push(i);return a},[]);
+   add(shuffled(weakPool),selected,used);
+   add(shuffled([...Array(qs.length).keys()]),selected,used);
 
-  window.startAdaptiveTraining=function(){
-    const weak=atWeakModules(), weakKeys=weak.map(x=>x.key);
-    const selected=[],used=new Set();
+   atActive=true;atMeta={weakKeys,beforeMistakes:(appState.mistakes||[]).length,byModule:{}};
+   practiceModule='';practiceLabel=enNow()?'Adaptive Training':'Entrenamiento adaptativo';
+   practiceFinite=true;mistakePractice=false;dailyPractice=false;
+   practiceSessionCorrect=0;practiceSessionAnswered=0;
+   practiceOrder=shuffled(selected);practicePos=0;
+   if(typeof rememberStudy==='function')rememberStudy('adaptive-training','',practiceLabel);
+   show('quiz');
+ };
 
-    atFill(shuffled([...(appState.mistakes||[])]).slice(0,5),selected,used);
-    const weakPool=qs.reduce((a,q,i)=>{if(weakKeys.includes(q[4]))a.push(i);return a},[]);
-    atFill(shuffled(weakPool),selected,used);
-    atFill(shuffled([...Array(qs.length).keys()]),selected,used);
+ const baseAnswer=window.answerPractice;
+ if(typeof baseAnswer==='function'){
+   window.answerPractice=function(idx,n){
+     if(atActive&&atMeta&&!answeredFinal){
+       const q=qs[idx],key=q?.[4]||'other',row=atMeta.byModule[key]||{correct:0,total:0};
+       row.total++;if(n===q[2])row.correct++;atMeta.byModule[key]=row;
+     }
+     return baseAnswer(idx,n);
+   };
+ }
 
-    atActive=true;
-    atMeta={weakKeys,beforeMistakes:(appState.mistakes||[]).length,byModule:{}};
-    practiceModule='';
-    practiceLabel=atEn()?'Adaptive Training':'Entrenamiento adaptativo';
-    practiceFinite=true;mistakePractice=false;dailyPractice=false;
-    practiceSessionCorrect=0;practiceSessionAnswered=0;
-    practiceOrder=shuffled(selected);practicePos=0;
-    if(typeof rememberStudy==='function')rememberStudy('adaptive-training','',practiceLabel);
-    show('quiz');
-  };
+ const baseFinish=window.finishPractice;
+ if(typeof baseFinish==='function'){
+   window.finishPractice=function(){
+     if(!atActive)return baseFinish();
+     const en=enNow(),total=practiceOrder.length,correct=practiceSessionCorrect;
+     const score=typeof pct==='function'?pct(correct,total):Math.round(correct*100/Math.max(1,total));
+     const incorrect=Math.max(0,total-correct),before=atMeta?.beforeMistakes||0,after=(appState.mistakes||[]).length,resolved=Math.max(0,before-after);
+     appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);saveState();
 
-  const baseAnswerPractice=window.answerPractice;
-  if(typeof baseAnswerPractice==='function'){
-    window.answerPractice=function(idx,n){
-      if(atActive && atMeta && !answeredFinal){
-        const q=qs[idx],key=q?.[4]||'other',row=atMeta.byModule[key]||{correct:0,total:0};
-        row.total++;if(n===q[2])row.correct++;
-        atMeta.byModule[key]=row;
-      }
-      return baseAnswerPractice(idx,n);
-    };
-  }
+     const rows=Object.entries(atMeta?.byModule||{}).filter(([,r])=>r.total).sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total)).map(([key,r])=>{
+       const p=Math.round(r.correct*100/r.total);
+       const level=p>=80?(en?'Strong':'Fuerte'):p>=65?(en?'Improving':'Mejorando'):(en?'Needs review':'Necesita repaso');
+       return `<div class="module-report-row"><strong>${esc(moduleName(key))}</strong><span>${r.correct}/${r.total}<br>${p}%</span><small class="${p>=80?'level-good':p>=65?'level-mid':'level-low'}">${level}</small></div>`;
+     }).join('');
 
-  const baseFinishPractice=window.finishPractice;
-  if(typeof baseFinishPractice==='function'){
-    window.finishPractice=function(){
-      if(!atActive)return baseFinishPractice();
-      const en=atEn(),total=practiceOrder.length,correct=practiceSessionCorrect;
-      const score=typeof pct==='function'?pct(correct,total):Math.round(correct*100/Math.max(1,total));
-      const incorrect=Math.max(0,total-correct),before=atMeta?.beforeMistakes||0,after=(appState.mistakes||[]).length,resolved=Math.max(0,before-after);
-      appState.lifetime.practiceSessions=Math.max(0,Number(appState.lifetime.practiceSessions||0)+1);saveState();
-
-      const rows=Object.entries(atMeta?.byModule||{}).filter(([,r])=>r.total).sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total)).map(([key,r])=>{
-        const p=Math.round(r.correct*100/r.total);
-        const level=p>=80?(en?'Strong':'Fuerte'):p>=65?(en?'Improving':'Mejorando'):(en?'Needs review':'Necesita repaso');
-        return `<div class="module-report-row"><strong>${esc(atModuleName(key))}</strong><span>${r.correct}/${r.total}<br>${p}%</span><small class="${p>=80?'level-good':p>=65?'level-mid':'level-low'}">${level}</small></div>`;
-      }).join('');
-
-      document.getElementById('quizBox').innerHTML=`<div class="feedback"><span class="pill">${en?'ADAPTIVE TRAINING':'ENTRENAMIENTO ADAPTATIVO'}</span>
-        <h2>🧠 ${en?'Personalized reinforcement completed':'Refuerzo personalizado completado'}</h2>
-        <div class="final-stats"><div class="stat"><b>${correct}/${total}</b>${en?'Correct':'Correctas'}</div><div class="stat"><b>${incorrect}</b>${en?'Incorrect':'Incorrectas'}</div><div class="stat"><b>${score}%</b>${en?'Accuracy':'Precisión'}</div><div class="stat"><b>${resolved}</b>${en?'Errors resolved':'Errores resueltos'}</div></div>
-        ${rows?`<h3>🎯 ${en?'Performance by reinforced area':'Rendimiento por área reforzada'}</h3><div class="module-report">${rows}</div>`:''}
-        <div class="actions"><button class="primary" onclick="startAdaptiveTraining()">${en?'Train again':'Entrenar otra vez'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to Home':'Volver al inicio'}</button></div></div>`;
-      document.getElementById('next').style.display='none';
-      atActive=false;atMeta=null;window.scrollTo({top:0,behavior:'smooth'});
-    };
-  }
-
-  // Safe language hook: one direct call, no observers.
-  const baseSetGlobalLanguage=window.setGlobalLanguage;
-  if(typeof baseSetGlobalLanguage==='function'){
-    window.setGlobalLanguage=function(lang){
-      const result=baseSetGlobalLanguage(lang);
-      window.renderAdaptiveTrainingCard();
-      return result;
-    };
-  }
-
-  // Safe show hook: render card only when Practice hub is opened.
-  const baseShow=window.show;
-  if(typeof baseShow==='function'){
-    window.show=function(id){
-      const result=baseShow(id);
-      if(id==='practicar')window.renderAdaptiveTrainingCard();
-      return result;
-    };
-  }
-
-  window.renderAdaptiveTrainingCard();
-  window.mnAdaptiveTrainingVersion='V6-REBUILT-FROM-V5';
+     document.getElementById('quizBox').innerHTML=`<div class="feedback"><span class="pill">${en?'ADAPTIVE TRAINING':'ENTRENAMIENTO ADAPTATIVO'}</span>
+       <h2>🧠 ${en?'Personalized reinforcement completed':'Refuerzo personalizado completado'}</h2>
+       <div class="final-stats"><div class="stat"><b>${correct}/${total}</b>${en?'Correct':'Correctas'}</div><div class="stat"><b>${incorrect}</b>${en?'Incorrect':'Incorrectas'}</div><div class="stat"><b>${score}%</b>${en?'Accuracy':'Precisión'}</div><div class="stat"><b>${resolved}</b>${en?'Errors resolved':'Errores resueltos'}</div></div>
+       ${rows?`<h3>🎯 ${en?'Performance by reinforced area':'Rendimiento por área reforzada'}</h3><div class="module-report">${rows}</div>`:''}
+       <div class="actions"><button class="primary" onclick="startAdaptiveTraining()">${en?'Train again':'Entrenar otra vez'}</button><button class="secondary" onclick="show('inicio')">${en?'Back to Home':'Volver al inicio'}</button></div></div>`;
+     document.getElementById('next').style.display='none';
+     atActive=false;atMeta=null;window.scrollTo({top:0,behavior:'smooth'});
+   };
+ }
+ window.mnAdaptiveTrainingVersion='V6.3-INTEGRATED-HUB';
 })();
 </script>
 
