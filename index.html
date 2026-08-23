@@ -4664,37 +4664,51 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 </script>
 
 <script>
-/* MNSC V6.1 — instant ES/EN refresh for Adaptive Training card */
+/* MNSC V6.2 — safe instant language refresh for Adaptive Training */
 (function(){
-  function updateAdaptiveTrainingCardText(){
+  function renderAdaptiveTrainingCardLanguage(){
     const card=document.getElementById('adaptiveTrainingCard');
     if(!card)return;
     const en=appState?.planLang==='en';
-    card.innerHTML=`<span class="pill">${en?'PERSONALIZED':'PERSONALIZADO'}</span>
-      <h2>🧠 ${en?'Adaptive Training':'Entrenamiento adaptativo'}</h2>
-      <p>${en
-        ?'10 questions selected from unresolved errors and your weakest modules.'
-        :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.'}</p>
-      <button class="primary" onclick="startAdaptiveTraining()">${en?'Start adaptive training':'Iniciar entrenamiento adaptativo'}</button>`;
+    const pill=card.querySelector('.pill');
+    const title=card.querySelector('h2');
+    const desc=card.querySelector('p');
+    const btn=card.querySelector('button');
+    if(pill) pill.textContent=en?'PERSONALIZED':'PERSONALIZADO';
+    if(title) title.textContent='🧠 '+(en?'Adaptive Training':'Entrenamiento adaptativo');
+    if(desc) desc.textContent=en
+      ?'10 questions selected from unresolved errors and your weakest modules.'
+      :'10 preguntas seleccionadas de tus errores pendientes y módulos más débiles.';
+    if(btn) btn.textContent=en?'Start adaptive training':'Iniciar entrenamiento adaptativo';
   }
 
   const previousSetGlobalLanguage=window.setGlobalLanguage;
   if(typeof previousSetGlobalLanguage==='function'){
     window.setGlobalLanguage=function(lang){
       const result=previousSetGlobalLanguage(lang);
-      updateAdaptiveTrainingCardText();
+      renderAdaptiveTrainingCardLanguage();
       return result;
     };
   }
 
-  const observer=new MutationObserver(()=>{
-    if(document.getElementById('adaptiveTrainingCard')) updateAdaptiveTrainingCardText();
+  // Only detect first insertion of the card; do not rewrite innerHTML in a mutation loop.
+  const observer=new MutationObserver((mutations)=>{
+    for(const m of mutations){
+      for(const node of m.addedNodes){
+        if(node?.nodeType===1){
+          if(node.id==='adaptiveTrainingCard' || node.querySelector?.('#adaptiveTrainingCard')){
+            renderAdaptiveTrainingCardLanguage();
+            return;
+          }
+        }
+      }
+    }
   });
   observer.observe(document.documentElement,{subtree:true,childList:true});
 
-  window.updateAdaptiveTrainingCardText=updateAdaptiveTrainingCardText;
-  setTimeout(updateAdaptiveTrainingCardText,0);
-  window.mnAdaptiveTrainingVersion='V6.1-LIVE-LANG';
+  window.renderAdaptiveTrainingCardLanguage=renderAdaptiveTrainingCardLanguage;
+  setTimeout(renderAdaptiveTrainingCardLanguage,0);
+  window.mnAdaptiveTrainingVersion='V6.2-SAFE-LIVE-LANG';
 })();
 </script>
 
