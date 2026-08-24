@@ -4058,56 +4058,7 @@ answerAdaptiveExam=function(n){
 </script>
 
 
-<script>
-/* MNSC V5.2.2 — Second reviewed batch: 12 new Renal + Endocrine questions (1308 total) */
-(function(){
-  if(window.mnSecondBatch12Loaded)return;
-  window.mnSecondBatch12Loaded=true;
-  const batchStart=qs.length;
-  const esBatch=[
-    ["🆕 Después de una hipofisectomía, el paciente presenta drenaje nasal claro. ¿Cuál es la acción más apropiada de la enfermera?",["Notificar el hallazgo por posible fuga de líquido cefalorraquídeo","Pedir al paciente que se suene la nariz con fuerza","Insertar una gasa profundamente en la fosa nasal","Indicar que tosa para eliminar las secreciones"],0,"Después de una hipofisectomía, el drenaje nasal claro puede indicar fuga de líquido cefalorraquídeo y debe notificarse; deben evitarse acciones que aumenten la presión sobre el cierre dural.","endo"],
-    ["🆕 Un paciente se recupera de una hipofisectomía. ¿Qué instrucción ayuda a proteger el cierre dural?",["Evitar toser, estornudar y hacer esfuerzo","Cepillarse los dientes vigorosamente después de cada comida","Realizar ejercicios de Valsalva varias veces al día","Sonarse la nariz para mantener las fosas nasales despejadas"],0,"Toser, estornudar y hacer esfuerzo pueden aumentar la presión y favorecer una fuga de líquido cefalorraquídeo después de una hipofisectomía.","endo"],
-    ["🆕 ¿Qué cuidado bucal es apropiado durante la recuperación temprana de una hipofisectomía?",["Realizar cuidado frecuente de la boca con una esponja suave","Usar un cepillo dental rígido para retirar la placa","Usar hilo dental con fuerza alrededor de todas las encías","Suspender todo cuidado de la boca durante 10 días"],0,"La guía recomienda cuidado bucal frecuente con una esponja suave y evitar el cepillo dental durante al menos 10 días para no alterar la línea de sutura.","endo"],
-    ["🆕 Un paciente pregunta por qué debe evitar el esfuerzo después de una hipofisectomía. ¿Cuál explicación es correcta?",["El esfuerzo puede favorecer una fuga de líquido cefalorraquídeo","El esfuerzo causa hipoglucemia inmediata","El esfuerzo impide la absorción intestinal de calcio","El esfuerzo produce infección urinaria"],0,"El objetivo postoperatorio principal es proteger el cierre de la duramadre; el esfuerzo puede aumentar la presión y contribuir a una fuga de líquido cefalorraquídeo.","endo"],
-    ["🆕 Una enfermera valora una fístula arteriovenosa recién creada para hemodiálisis. ¿Qué hallazgo indica que está permeable?",["Frémito palpable sobre la fístula","Ausencia de vibración sobre el acceso","Relleno capilar marcadamente disminuido","Entumecimiento progresivo de la mano"],0,"Un frémito palpable sobre la fístula indica flujo sanguíneo y permeabilidad del acceso.","renal"],
-    ["🆕 Al auscultar una fístula arteriovenosa, ¿qué hallazgo apoya que el acceso está permeable?",["Un soplo sobre la fístula","Silencio completo sobre el acceso","Crepitantes pulmonares","Ruidos intestinales hiperactivos"],0,"Un soplo producido por el flujo sanguíneo turbulento es un hallazgo esperado en una fístula arteriovenosa permeable.","renal"],
-    ["🆕 Un paciente con una fístula para hemodiálisis presenta ausencia del frémito que estaba presente anteriormente. ¿Qué debe sospechar la enfermera?",["Posible formación de un coágulo en la fístula","Maduración normal del acceso","Mejoría del flujo sanguíneo","Un hallazgo esperado después del ejercicio de la mano"],0,"La ausencia de frémito o soplo puede indicar posible formación de un coágulo y compromiso de la permeabilidad de la fístula.","renal"],
-    ["🆕 Después de crear una fístula arteriovenosa, ¿qué actividad ayuda a su maduración?",["Apretar repetidamente una pelota de goma con la mano","Mantener la mano completamente inmóvil durante varias semanas","Aplicar presión continua sobre la fístula","Evitar todo movimiento de los dedos"],0,"Los ejercicios de la mano, como apretar una pelota de goma, ayudan a que la vena se engrose y madure para el acceso de hemodiálisis.","renal"],
-    ["🆕 Durante diálisis peritoneal, el líquido drenado se observa turbio. ¿Qué complicación debe sospechar la enfermera?",["Peritonitis","Hipoglucemia","Neumotórax","Trombosis venosa profunda"],0,"El efluente turbio es un signo de posible infección y peritonitis durante la diálisis peritoneal.","renal"],
-    ["🆕 ¿Qué acción tiene mayor prioridad al conectar o cambiar una bolsa de dializado para diálisis peritoneal?",["Mantener una técnica estéril","Colocar al paciente completamente en decúbito supino","Elevar la bolsa de drenaje por encima del abdomen","Limitar todo cambio de posición"],0,"La técnica estéril al conectar o cambiar el dializado es prioritaria para prevenir contaminación y peritonitis.","renal"],
-    ["🆕 El flujo de salida durante la diálisis peritoneal se vuelve lento. ¿Qué intervención puede ayudar a mejorar el drenaje?",["Girar al paciente de un lado al otro","Elevar la bolsa de drenaje por encima del abdomen","Pinzar permanentemente el catéter","Colocar al paciente en Trendelenburg"],0,"Si el flujo de salida es lento, cambiar al paciente de un lado al otro puede favorecer el drenaje por gravedad.","renal"],
-    ["🆕 ¿Dónde debe colocarse la bolsa de drenaje durante la diálisis peritoneal para favorecer la salida del efluente?",["Por debajo del nivel del abdomen","Por encima de la cabeza","Al mismo nivel que el tórax","Sobre el abdomen del paciente"],0,"La bolsa de drenaje se coloca por debajo del nivel del abdomen para favorecer la salida del efluente por gravedad.","renal"]
-  ];
-  const enBatch=[
-    ["🆕 After a hypophysectomy, the patient develops clear nasal drainage. What is the nurse's most appropriate action?",["Report the finding as a possible cerebrospinal fluid leak","Ask the patient to blow the nose forcefully","Pack gauze deeply into the nostril","Encourage coughing to clear secretions"],0,"After a hypophysectomy, clear nasal drainage can indicate a cerebrospinal fluid leak and should be reported; actions that increase pressure on the dural closure should be avoided.","endo"],
-    ["🆕 A patient is recovering from a hypophysectomy. Which instruction helps protect the dural closure?",["Avoid coughing, sneezing, and straining","Brush the teeth vigorously after every meal","Perform Valsalva exercises several times a day","Blow the nose to keep the nasal passages clear"],0,"Coughing, sneezing, and straining can increase pressure and contribute to cerebrospinal fluid leakage after a hypophysectomy.","endo"],
-    ["🆕 Which oral-care intervention is appropriate during early recovery from a hypophysectomy?",["Provide frequent mouth care with a soft sponge","Use a firm toothbrush to remove plaque","Floss vigorously around all gums","Withhold all mouth care for 10 days"],0,"The guide recommends frequent mouth care with a soft sponge and avoiding a toothbrush for at least 10 days to prevent disruption of the suture line.","endo"],
-    ["🆕 A patient asks why straining should be avoided after a hypophysectomy. Which explanation is correct?",["Straining can contribute to a cerebrospinal fluid leak","Straining causes immediate hypoglycemia","Straining prevents intestinal calcium absorption","Straining causes a urinary tract infection"],0,"A major postoperative goal is protecting the dural closure; straining can increase pressure and contribute to cerebrospinal fluid leakage.","endo"],
-    ["🆕 A nurse assesses a newly created arteriovenous fistula for hemodialysis. Which finding indicates patency?",["A palpable thrill over the fistula","Absence of vibration over the access","Markedly decreased capillary refill","Progressive numbness of the hand"],0,"A palpable thrill over the fistula indicates blood flow and patency of the access.","renal"],
-    ["🆕 When auscultating an arteriovenous fistula, which finding supports that the access is patent?",["A bruit over the fistula","Complete silence over the access","Pulmonary crackles","Hyperactive bowel sounds"],0,"A bruit produced by turbulent blood flow is an expected finding in a patent arteriovenous fistula.","renal"],
-    ["🆕 A patient with a hemodialysis fistula no longer has the thrill that was previously present. What should the nurse suspect?",["Possible clot formation in the fistula","Normal maturation of the access","Improved blood flow","An expected finding after hand exercise"],0,"Absence of a thrill or bruit can indicate possible clot formation and impaired fistula patency.","renal"],
-    ["🆕 After creation of an arteriovenous fistula, which activity helps the access mature?",["Repeatedly squeezing a rubber ball with the hand","Keeping the hand completely immobile for several weeks","Applying continuous pressure over the fistula","Avoiding all finger movement"],0,"Hand exercises such as squeezing a rubber ball help the vein enlarge and mature for hemodialysis access.","renal"],
-    ["🆕 During peritoneal dialysis, the drained fluid appears cloudy. Which complication should the nurse suspect?",["Peritonitis","Hypoglycemia","Pneumothorax","Deep vein thrombosis"],0,"Cloudy effluent is a sign of possible infection and peritonitis during peritoneal dialysis.","renal"],
-    ["🆕 Which action has the highest priority when connecting or changing a dialysate bag for peritoneal dialysis?",["Maintain sterile technique","Place the patient completely supine","Raise the drainage bag above the abdomen","Prevent all position changes"],0,"Sterile technique when connecting or changing dialysate is a priority to prevent contamination and peritonitis.","renal"],
-    ["🆕 Peritoneal dialysis outflow becomes sluggish. Which intervention may help improve drainage?",["Turn the patient from side to side","Raise the drainage bag above the abdomen","Permanently clamp the catheter","Place the patient in Trendelenburg position"],0,"When outflow is sluggish, turning the patient from side to side can help promote gravity drainage.","renal"],
-    ["🆕 Where should the drainage bag be placed during peritoneal dialysis to promote effluent outflow?",["Below the level of the abdomen","Above the patient's head","At the same level as the chest","On top of the patient's abdomen"],0,"The drainage bag is placed below the level of the abdomen to promote effluent outflow by gravity.","renal"]
-  ];
-  esBatch.forEach(q=>qs.push(q));
-  if(!Array.isArray(window.qsEn))window.qsEn=[];
-  enBatch.forEach(q=>window.qsEn.push(q));
-  const batchEnd=qs.length;
-  window.mnLatestQuestionBatch={start:batchStart,end:batchEnd,count:batchEnd-batchStart};
-  window.startNewQuestionsPractice=function(){
-    const fresh=[];for(let i=batchStart;i<batchEnd;i++)fresh.push(i);
-    practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
-    practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
-    rememberStudy('practice','',practiceLabel);show('quiz');
-  };
-  window.mnQuestionBankVersion='STRUCTURAL-1308-ES-EN-V5.2.2';
-  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
-  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI()}catch(e){console.warn('1308 bank refresh:',e)}},0);
-})();
-</script>
+
 </body>
 </html>
 
@@ -4886,5 +4837,73 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   window.mnQuestionBankVersion='STRUCTURAL-1296-ES-EN-V5.2.1';
   window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
   setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchPracticeCounts()}catch(e){console.warn('1296 bank refresh:',e)}},0);
+})();
+</script>
+
+<script>
+/* MNSC V5.2.2 — Second reviewed batch: 12 new Renal + Endocrine questions (1308 total) */
+(function(){
+  if(window.mnSecondBatch12Loaded)return;
+  window.mnSecondBatch12Loaded=true;
+  const batchStart=qs.length;
+  const esBatch=[
+    ["🆕 Después de una hipofisectomía, el paciente presenta drenaje nasal claro. ¿Cuál es la acción más apropiada de la enfermera?",["Notificar el hallazgo por posible fuga de líquido cefalorraquídeo","Pedir al paciente que se suene la nariz con fuerza","Insertar una gasa profundamente en la fosa nasal","Indicar que tosa para eliminar las secreciones"],0,"Después de una hipofisectomía, el drenaje nasal claro puede indicar fuga de líquido cefalorraquídeo y debe notificarse; deben evitarse acciones que aumenten la presión sobre el cierre dural.","endo"],
+    ["🆕 Un paciente se recupera de una hipofisectomía. ¿Qué instrucción ayuda a proteger el cierre dural?",["Evitar toser, estornudar y hacer esfuerzo","Cepillarse los dientes vigorosamente después de cada comida","Realizar ejercicios de Valsalva varias veces al día","Sonarse la nariz para mantener las fosas nasales despejadas"],0,"Toser, estornudar y hacer esfuerzo pueden aumentar la presión y favorecer una fuga de líquido cefalorraquídeo después de una hipofisectomía.","endo"],
+    ["🆕 ¿Qué cuidado bucal es apropiado durante la recuperación temprana de una hipofisectomía?",["Realizar cuidado frecuente de la boca con una esponja suave","Usar un cepillo dental rígido para retirar la placa","Usar hilo dental con fuerza alrededor de todas las encías","Suspender todo cuidado de la boca durante 10 días"],0,"La guía recomienda cuidado bucal frecuente con una esponja suave y evitar el cepillo dental durante al menos 10 días para no alterar la línea de sutura.","endo"],
+    ["🆕 Un paciente pregunta por qué debe evitar el esfuerzo después de una hipofisectomía. ¿Cuál explicación es correcta?",["El esfuerzo puede favorecer una fuga de líquido cefalorraquídeo","El esfuerzo causa hipoglucemia inmediata","El esfuerzo impide la absorción intestinal de calcio","El esfuerzo produce infección urinaria"],0,"El objetivo postoperatorio principal es proteger el cierre de la duramadre; el esfuerzo puede aumentar la presión y contribuir a una fuga de líquido cefalorraquídeo.","endo"],
+    ["🆕 Una enfermera valora una fístula arteriovenosa recién creada para hemodiálisis. ¿Qué hallazgo indica que está permeable?",["Frémito palpable sobre la fístula","Ausencia de vibración sobre el acceso","Relleno capilar marcadamente disminuido","Entumecimiento progresivo de la mano"],0,"Un frémito palpable sobre la fístula indica flujo sanguíneo y permeabilidad del acceso.","renal"],
+    ["🆕 Al auscultar una fístula arteriovenosa, ¿qué hallazgo apoya que el acceso está permeable?",["Un soplo sobre la fístula","Silencio completo sobre el acceso","Crepitantes pulmonares","Ruidos intestinales hiperactivos"],0,"Un soplo producido por el flujo sanguíneo turbulento es un hallazgo esperado en una fístula arteriovenosa permeable.","renal"],
+    ["🆕 Un paciente con una fístula para hemodiálisis presenta ausencia del frémito que estaba presente anteriormente. ¿Qué debe sospechar la enfermera?",["Posible formación de un coágulo en la fístula","Maduración normal del acceso","Mejoría del flujo sanguíneo","Un hallazgo esperado después del ejercicio de la mano"],0,"La ausencia de frémito o soplo puede indicar posible formación de un coágulo y compromiso de la permeabilidad de la fístula.","renal"],
+    ["🆕 Después de crear una fístula arteriovenosa, ¿qué actividad ayuda a su maduración?",["Apretar repetidamente una pelota de goma con la mano","Mantener la mano completamente inmóvil durante varias semanas","Aplicar presión continua sobre la fístula","Evitar todo movimiento de los dedos"],0,"Los ejercicios de la mano, como apretar una pelota de goma, ayudan a que la vena se engrose y madure para el acceso de hemodiálisis.","renal"],
+    ["🆕 Durante diálisis peritoneal, el líquido drenado se observa turbio. ¿Qué complicación debe sospechar la enfermera?",["Peritonitis","Hipoglucemia","Neumotórax","Trombosis venosa profunda"],0,"El efluente turbio es un signo de posible infección y peritonitis durante la diálisis peritoneal.","renal"],
+    ["🆕 ¿Qué acción tiene mayor prioridad al conectar o cambiar una bolsa de dializado para diálisis peritoneal?",["Mantener una técnica estéril","Colocar al paciente completamente en decúbito supino","Elevar la bolsa de drenaje por encima del abdomen","Limitar todo cambio de posición"],0,"La técnica estéril al conectar o cambiar el dializado es prioritaria para prevenir contaminación y peritonitis.","renal"],
+    ["🆕 El flujo de salida durante la diálisis peritoneal se vuelve lento. ¿Qué intervención puede ayudar a mejorar el drenaje?",["Girar al paciente de un lado al otro","Elevar la bolsa de drenaje por encima del abdomen","Pinzar permanentemente el catéter","Colocar al paciente en Trendelenburg"],0,"Si el flujo de salida es lento, cambiar al paciente de un lado al otro puede favorecer el drenaje por gravedad.","renal"],
+    ["🆕 ¿Dónde debe colocarse la bolsa de drenaje durante la diálisis peritoneal para favorecer la salida del efluente?",["Por debajo del nivel del abdomen","Por encima de la cabeza","Al mismo nivel que el tórax","Sobre el abdomen del paciente"],0,"La bolsa de drenaje se coloca por debajo del nivel del abdomen para favorecer la salida del efluente por gravedad.","renal"]
+  ];
+  const enBatch=[
+    ["🆕 After a hypophysectomy, the patient develops clear nasal drainage. What is the nurse's most appropriate action?",["Report the finding as a possible cerebrospinal fluid leak","Ask the patient to blow the nose forcefully","Pack gauze deeply into the nostril","Encourage coughing to clear secretions"],0,"After a hypophysectomy, clear nasal drainage can indicate a cerebrospinal fluid leak and should be reported; actions that increase pressure on the dural closure should be avoided.","endo"],
+    ["🆕 A patient is recovering from a hypophysectomy. Which instruction helps protect the dural closure?",["Avoid coughing, sneezing, and straining","Brush the teeth vigorously after every meal","Perform Valsalva exercises several times a day","Blow the nose to keep the nasal passages clear"],0,"Coughing, sneezing, and straining can increase pressure and contribute to cerebrospinal fluid leakage after a hypophysectomy.","endo"],
+    ["🆕 Which oral-care intervention is appropriate during early recovery from a hypophysectomy?",["Provide frequent mouth care with a soft sponge","Use a firm toothbrush to remove plaque","Floss vigorously around all gums","Withhold all mouth care for 10 days"],0,"The guide recommends frequent mouth care with a soft sponge and avoiding a toothbrush for at least 10 days to prevent disruption of the suture line.","endo"],
+    ["🆕 A patient asks why straining should be avoided after a hypophysectomy. Which explanation is correct?",["Straining can contribute to a cerebrospinal fluid leak","Straining causes immediate hypoglycemia","Straining prevents intestinal calcium absorption","Straining causes a urinary tract infection"],0,"A major postoperative goal is protecting the dural closure; straining can increase pressure and contribute to cerebrospinal fluid leakage.","endo"],
+    ["🆕 A nurse assesses a newly created arteriovenous fistula for hemodialysis. Which finding indicates patency?",["A palpable thrill over the fistula","Absence of vibration over the access","Markedly decreased capillary refill","Progressive numbness of the hand"],0,"A palpable thrill over the fistula indicates blood flow and patency of the access.","renal"],
+    ["🆕 When auscultating an arteriovenous fistula, which finding supports that the access is patent?",["A bruit over the fistula","Complete silence over the access","Pulmonary crackles","Hyperactive bowel sounds"],0,"A bruit produced by turbulent blood flow is an expected finding in a patent arteriovenous fistula.","renal"],
+    ["🆕 A patient with a hemodialysis fistula no longer has the thrill that was previously present. What should the nurse suspect?",["Possible clot formation in the fistula","Normal maturation of the access","Improved blood flow","An expected finding after hand exercise"],0,"Absence of a thrill or bruit can indicate possible clot formation and impaired fistula patency.","renal"],
+    ["🆕 After creation of an arteriovenous fistula, which activity helps the access mature?",["Repeatedly squeezing a rubber ball with the hand","Keeping the hand completely immobile for several weeks","Applying continuous pressure over the fistula","Avoiding all finger movement"],0,"Hand exercises such as squeezing a rubber ball help the vein enlarge and mature for hemodialysis access.","renal"],
+    ["🆕 During peritoneal dialysis, the drained fluid appears cloudy. Which complication should the nurse suspect?",["Peritonitis","Hypoglycemia","Pneumothorax","Deep vein thrombosis"],0,"Cloudy effluent is a sign of possible infection and peritonitis during peritoneal dialysis.","renal"],
+    ["🆕 Which action has the highest priority when connecting or changing a dialysate bag for peritoneal dialysis?",["Maintain sterile technique","Place the patient completely supine","Raise the drainage bag above the abdomen","Prevent all position changes"],0,"Sterile technique when connecting or changing dialysate is a priority to prevent contamination and peritonitis.","renal"],
+    ["🆕 Peritoneal dialysis outflow becomes sluggish. Which intervention may help improve drainage?",["Turn the patient from side to side","Raise the drainage bag above the abdomen","Permanently clamp the catheter","Place the patient in Trendelenburg position"],0,"When outflow is sluggish, turning the patient from side to side can help promote gravity drainage.","renal"],
+    ["🆕 Where should the drainage bag be placed during peritoneal dialysis to promote effluent outflow?",["Below the level of the abdomen","Above the patient's head","At the same level as the chest","On top of the patient's abdomen"],0,"The drainage bag is placed below the level of the abdomen to promote effluent outflow by gravity.","renal"]
+  ];
+  esBatch.forEach(q=>qs.push(q));
+  if(!Array.isArray(window.qsEn))window.qsEn=[];
+  enBatch.forEach(q=>window.qsEn.push(q));
+  const batchEnd=qs.length;
+  window.mnLatestQuestionBatch={start:batchStart,end:batchEnd,count:batchEnd-batchStart};
+  window.startNewQuestionsPractice=function(){
+    const fresh=[];for(let i=batchStart;i<batchEnd;i++)fresh.push(i);
+    practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
+    practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
+    rememberStudy('practice','',practiceLabel);show('quiz');
+  };
+  function patchSecondBatchCounts(){
+    const hub=document.getElementById('practicar');if(!hub)return;
+    const en=appState?.planLang==='en';
+    const launchers=[...hub.querySelectorAll('.mn-launch')];
+    const allBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startPractice(true)'));
+    const newBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startNewQuestionsPractice'));
+    if(allBtn){const small=allBtn.querySelector('small');if(small)small.textContent=en?`All ${qs.length} questions with answers and explanations.`:`${qs.length} preguntas con respuestas y explicaciones.`;}
+    if(newBtn){const small=newBtn.querySelector('small');if(small)small.textContent=en?`${batchEnd-batchStart} recently added questions.`:`${batchEnd-batchStart} preguntas recién añadidas.`;}
+  }
+  const previousBuildGrouped=window.mnBuildGroupedUI;
+  if(typeof previousBuildGrouped==='function'){
+    window.mnBuildGroupedUI=function(){const r=previousBuildGrouped.apply(this,arguments);setTimeout(patchSecondBatchCounts,0);return r;};
+  }
+  const previousLanguageSetter=window.setGlobalLanguage;
+  if(typeof previousLanguageSetter==='function'){
+    window.setGlobalLanguage=function(lang){const r=previousLanguageSetter.apply(this,arguments);setTimeout(patchSecondBatchCounts,0);return r;};
+  }
+  window.mnQuestionBankVersion='STRUCTURAL-1308-ES-EN-V5.2.2';
+  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchSecondBatchCounts()}catch(e){console.warn('1308 bank refresh:',e)}},0);
 })();
 </script>
