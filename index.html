@@ -3999,6 +3999,23 @@ answerAdaptiveExam=function(n){
 })();
 </script>
 
+
+<script>
+/* V5.2 counter refresh fix: rebuild Practice hub after all late question batches load. */
+(function(){
+  function refreshQuestionCounters(){
+    try{
+      if(typeof window.mnBuildGroupedUI==='function') window.mnBuildGroupedUI();
+      if(typeof window.mnMarkGroup==='function') window.mnMarkGroup(document.querySelector('section.active')?.id||'inicio');
+    }catch(e){ console.warn('Question counter refresh:',e); }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshQuestionCounters,50));
+  }else{
+    setTimeout(refreshQuestionCounters,50);
+  }
+})();
+</script>
 </body>
 </html>
 
