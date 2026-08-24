@@ -3578,7 +3578,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
    '<button class="mn-launch" onclick="startPractice(true)"><span class="mn-icon">'+windowIcon('questions')+'</span><b>'+(en?'Questions':'Preguntas')+'</b><small>'+(en?'All '+qs.length+' questions with answers and explanations.':qs.length+' preguntas con respuestas y explicaciones.')+'</small></button>',
-   `<button class="mn-launch" onclick="startNewQuestionsPractice()"><span class="mn-icon">🆕</span><b>${en?'New questions':'Preguntas nuevas'}</b><small>${qs.filter(q=>String(q[0]||'').trim().startsWith('🆕')).length} ${en?'recently added questions.':'preguntas recién añadidas.'}</small></button>`,
+   `<button class="mn-launch" onclick="startNewQuestionsPractice()"><span class="mn-icon">🆕</span><b>${en?'New questions':'Preguntas nuevas'}</b><small>${Math.min(12,qs.length)} ${en?'recently added questions.':'preguntas recién añadidas.'}</small></button>`,
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
    launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
@@ -3740,7 +3740,7 @@ function mnQuestionView(idx){
 let mnPracticeView=null,mnExamView=null,mnCustomView=null,mnAdaptiveView=null;
 
 function startNewQuestionsPractice(){
- const fresh=qs.reduce((a,q,i)=>{if(String(q[0]||'').trim().startsWith('🆕'))a.push(i);return a},[]);
+ const fresh=[...Array(Math.min(12,qs.length)).keys()].map(n=>qs.length-Math.min(12,qs.length)+n);
  if(!fresh.length){alert(appState.planLang==='en'?'There are no questions marked as new yet.':'Todavía no hay preguntas marcadas como nuevas.');return}
  practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
  practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
@@ -3821,7 +3821,7 @@ answerAdaptiveExam=function(n){
    if(hub&&!hub.querySelector('#mnNewQuestionsBtn')){
      const actions=hub.querySelector('.hub-grid,.grid,.actions')||hub;
      const b=document.createElement('button');b.id='mnNewQuestionsBtn';b.className='launcher-card secondary';
-     b.innerHTML=appState.planLang==='en'?'<b>🆕 New questions</b><br><small>Practice only the recently added questions.</small>':'<b>🆕 Preguntas nuevas</b><br><small>Practica solo las preguntas recién añadidas.</small>';
+     b.innerHTML=appState.planLang==='en'?'<b>🆕 New questions</b><br><small>Practice the 12 questions from the latest batch.</small>':'<b>🆕 Preguntas nuevas</b><br><small>Practica las 12 preguntas del último lote.</small>';
      b.onclick=startNewQuestionsPractice;actions.appendChild(b);
    }
  }
@@ -4014,6 +4014,24 @@ answerAdaptiveExam=function(n){
   }else{
     setTimeout(refreshQuestionCounters,50);
   }
+})();
+</script>
+
+<script>
+/* V5.2 latest-batch fix: New Questions = only the latest 12; total bank remains qs.length. */
+(function(){
+ function clarifyQuestionCounts(){
+   try{
+     const hub=document.getElementById('practicar'); if(!hub)return;
+     const en=(appState&&appState.planLang)==='en';
+     let badge=document.getElementById('mnTotalQuestionsBadge');
+     if(!badge){ badge=document.createElement('div'); badge.id='mnTotalQuestionsBadge'; badge.className='card'; badge.style.marginBottom='12px'; hub.insertBefore(badge,hub.firstChild.nextSibling||hub.firstChild); }
+     badge.innerHTML='<b>'+(en?'Total question bank: ':'Banco total de preguntas: ')+qs.length+'</b><br><small>'+(en?'Latest new batch: 12 questions.':'Último lote nuevo: 12 preguntas.')+'</small>';
+   }catch(e){console.warn('Count clarification:',e)}
+ }
+ const oldBuild=window.mnBuildGroupedUI;
+ if(typeof oldBuild==='function'){window.mnBuildGroupedUI=function(){const r=oldBuild.apply(this,arguments);setTimeout(clarifyQuestionCounts,0);return r}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(clarifyQuestionCounts,100));else setTimeout(clarifyQuestionCounts,100);
 })();
 </script>
 </body>
