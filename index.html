@@ -114,7 +114,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
 /* Pantalla de bienvenida al abrir la app */
-#mnSplash{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#mnSplash{position:fixed;inset:0;bottom:calc(0px - env(safe-area-inset-bottom,0px));z-index:2147483647;display:grid;place-items:center;background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);box-shadow:0 100px 0 #128878;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
 #mnSplash svg{width:min(42vw,180px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
@@ -129,7 +129,8 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
   <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
     <path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/>
     <path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <rect x="22" y="7" width="20" height="6" rx="1.5" fill="white"/>
+    <rect x="27" y="1" width="10" height="7" rx="1.5" fill="white"/>
   </svg>
 </div>
 
