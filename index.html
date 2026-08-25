@@ -113,10 +113,21 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 .security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}.security-field label{display:block;font-weight:800;margin-bottom:6px}.security-field input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #d8deec;border-radius:12px;font-size:16px;background:#fff}.mfa-qr{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:14px 0}.mfa-qr img{width:190px;max-width:100%;height:auto;background:#fff;border:1px solid #d8deec;border-radius:14px;padding:8px}.mfa-secret{overflow-wrap:anywhere;background:#f4f6fb;border-radius:10px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.security-status{padding:11px 13px;border-radius:12px;background:#f4f6fb;margin:10px 0}.security-status.good{background:#eaf8f1;color:#126b4a}.security-status.warn{background:#fff7df;color:#755300}
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
+/* Pantalla de bienvenida al abrir la app */
+#mnSplash{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
+#mnSplash img{width:min(42vw,180px);height:auto;border-radius:32px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash img{animation:none;transition:none}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<div id="mnSplash" role="status" aria-label="Monica Nursing Study Center">
+  <img src="icon-512.png" alt="Monica Nursing Study Center">
+</div>
 
 <div id="proLogin">
 <div class="pro-wrap">
@@ -4061,6 +4072,28 @@ answerAdaptiveExam=function(n){
 </script>
 
 
+
+<script>
+/* Transición de la pantalla de bienvenida hacia la aplicación */
+(function(){
+  const started=Date.now();
+  let closing=false;
+  function closeSplash(){
+    if(closing)return;
+    closing=true;
+    const splash=document.getElementById('mnSplash');
+    if(!splash)return;
+    const remaining=Math.max(0,1500-(Date.now()-started));
+    setTimeout(function(){
+      splash.classList.add('mn-splash-hide');
+      setTimeout(function(){splash.remove();},650);
+    },remaining);
+  }
+  if(document.readyState==='complete')closeSplash();
+  else window.addEventListener('load',closeSplash,{once:true});
+  setTimeout(closeSplash,3500);
+})();
+</script>
 
 </body>
 </html>
