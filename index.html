@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <style>
 :root{--bg:#f4f7f6;--card:#fff;--ink:#132A2E;--muted:#5c7278;--brand:#0e6e63;--brand-dark:#0b4f47;--brand2:#e3f1ed;--accent:#e2793d;--accent2:#fdece0;--good:#15865b;--bad:#c83d4a}
-*{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+*{box-sizing:border-box}html{overflow-x:hidden;background:#0d4f4c}body{overflow-x:hidden;margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 header{background:linear-gradient(135deg,var(--brand-dark),var(--brand) 65%,#1c9c8a);color:#fff;padding:28px 18px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px;letter-spacing:-.01em}.tag{opacity:.85;margin-top:6px;letter-spacing:.06em;font-size:12px;font-weight:700}.mn-brand-title{display:flex;align-items:center;gap:10px}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:14px;object-fit:cover;display:block;box-shadow:0 7px 20px #08302a4d}
 nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0}.tab{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:12px;padding:11px 16px;background:#fff;cursor:pointer;font-weight:700;color:var(--ink);box-shadow:0 1px 0 #1c28520d;transition:background .15s,color .15s}.tab .ic{stroke:var(--muted)}.tab:hover{background:var(--brand2)}.tab.active{background:var(--brand);color:#fff}.tab.active .ic{stroke:#fff}
 .ic{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -175,6 +175,28 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </div>
 
 <header><div class="wrap head"><div><h1 class="mn-brand-title"><img class="mn-brandmark" src="icon-192.png" alt=""><span>Monica Nursing Study Center</span></h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
+
+<script>
+/* Keep the header score numeric even if cached study text tries to overwrite it. */
+(function(){
+ const scoreTop=document.getElementById('scoreTop');
+ if(!scoreTop)return;
+ let repairing=false;
+ function validScore(value){return /^\d+(?:\/\d+|%)$/.test(String(value||'').trim())}
+ function savedScore(){
+  const practice=window.appState&&window.appState.practice;
+  const correct=Number(practice&&practice.correct)||0;
+  const attempts=Number(practice&&practice.attempts)||0;
+  return attempts?Math.round(correct*100/attempts)+'%':'0%';
+ }
+ function repair(){
+  if(repairing||validScore(scoreTop.textContent))return;
+  repairing=true;scoreTop.textContent=savedScore();repairing=false;
+ }
+ new MutationObserver(repair).observe(scoreTop,{childList:true,subtree:true,characterData:true});
+ repair();
+})();
+</script>
 
 <main class="wrap">
 <nav>
@@ -3604,7 +3626,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  .mn-launch-grid{grid-template-columns:1fr 1fr;gap:10px}
  .mn-launch{min-height:128px;padding:14px}
  .mn-launch b{font-size:16px}
- header{padding:14px 14px}
+ header{padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
  header .head{gap:10px;align-items:flex-start;flex-direction:row}
  header .head>div:first-child{min-width:0;flex:1}
  header .head>div:last-child{flex:0 0 auto;text-align:right}
