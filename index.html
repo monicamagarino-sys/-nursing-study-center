@@ -15,7 +15,7 @@
 <style>
 :root{--bg:#f4f7f6;--card:#fff;--ink:#132A2E;--muted:#5c7278;--brand:#0e6e63;--brand-dark:#0b4f47;--brand2:#e3f1ed;--accent:#e2793d;--accent2:#fdece0;--good:#15865b;--bad:#c83d4a}
 *{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:linear-gradient(135deg,var(--brand-dark),var(--brand) 65%,#1c9c8a);color:#fff;padding:28px 18px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px;letter-spacing:-.01em}.tag{opacity:.85;margin-top:6px;letter-spacing:.06em;font-size:12px;font-weight:700}.mn-brand-title{display:flex;align-items:center;gap:10px}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:14px;padding:5px;background:linear-gradient(135deg,var(--brand-dark),var(--brand));box-shadow:0 7px 20px #08302a4d}
+header{background:linear-gradient(135deg,var(--brand-dark),var(--brand) 65%,#1c9c8a);color:#fff;padding:28px 18px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px;letter-spacing:-.01em}.tag{opacity:.85;margin-top:6px;letter-spacing:.06em;font-size:12px;font-weight:700}.mn-brand-title{display:flex;align-items:center;gap:10px}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:14px;object-fit:cover;display:block;box-shadow:0 7px 20px #08302a4d}
 nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0}.tab{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:12px;padding:11px 16px;background:#fff;cursor:pointer;font-weight:700;color:var(--ink);box-shadow:0 1px 0 #1c28520d;transition:background .15s,color .15s}.tab .ic{stroke:var(--muted)}.tab:hover{background:var(--brand2)}.tab.active{background:var(--brand);color:#fff}.tab.active .ic{stroke:#fff}
 .ic{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 h2 .ic,h3 .ic{width:19px;height:19px;vertical-align:-4px;margin-right:5px;stroke:var(--brand)}
@@ -99,7 +99,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 #proLogin{position:fixed;inset:0;z-index:9999;overflow:auto;background:linear-gradient(135deg,#eef8fff0 0%,#f8f5ffe8 55%,#ffffffdc 100%),url('monica-clinical-bg.png') center/cover fixed;color:#16233f}
 .pro-wrap{max-width:1180px;margin:0 auto;padding:28px 18px 40px}
 .pro-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
-.pro-brand{display:flex;align-items:center;gap:12px}.pro-logo{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;box-shadow:0 10px 30px rgba(11,79,71,.25)}.pro-logo svg{width:46px;height:46px}
+.pro-brand{display:flex;align-items:center;gap:12px}.pro-logo{width:58px;height:58px;border-radius:18px;display:block;object-fit:cover;box-shadow:0 10px 30px rgba(11,79,71,.25)}
 .pro-brand h1{font-size:24px;margin:0}.pro-brand p{margin:3px 0 0;color:#63708a;font-weight:700;letter-spacing:.04em}
 .pro-lang{display:flex;gap:8px}.pro-lang button{border:1px solid #d8def0;background:#fff;border-radius:999px;padding:9px 14px;font-weight:800;cursor:pointer}.pro-lang button.active{background:var(--ink);color:#fff}
 .pro-grid{display:grid;grid-template-columns:1.05fr .85fr;gap:24px;align-items:stretch}.pro-hero,.pro-card{background:#ffffffd9;backdrop-filter:blur(8px);border:1px solid #e5e9f5;border-radius:26px;box-shadow:0 18px 50px rgba(19,42,46,.10)}
@@ -114,7 +114,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
 /* Pantalla de bienvenida al abrir la app */
-#mnSplash{position:fixed;inset:0;bottom:calc(0px - env(safe-area-inset-bottom,0px));z-index:2147483647;display:grid;place-items:center;background:#0d4f4c;box-shadow:0 100px 0 #0d4f4c;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#mnSplash{position:fixed;top:-2px;left:-2px;right:-2px;bottom:-220px;width:calc(100vw + 4px);height:calc(100dvh + 222px);min-height:calc(100vh + 222px);z-index:2147483647;display:grid;place-items:center;background:#0d4f4c;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
 #mnSplash img{width:min(72vw,360px);height:auto;display:block;mix-blend-mode:normal;animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
@@ -132,7 +132,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <div id="proLogin">
 <div class="pro-wrap">
 <div class="pro-top">
-<div class="pro-brand"><div class="pro-logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/><path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/></svg></div><div><h1>Monica Nursing Study Center</h1><p>LEARN • PRACTICE • PASS</p></div></div>
+<div class="pro-brand"><img class="pro-logo" src="icon-192.png" alt=""><div><h1>Monica Nursing Study Center</h1><p>LEARN • PRACTICE • PASS</p></div></div>
 <div><div style="font-size:12px;font-weight:900;color:#63708a;text-align:center;margin-bottom:5px">IDIOMA / LANGUAGE</div><div class="pro-lang"><button id="btnES" class="active" data-lang-option="es" onclick="setGlobalLanguage('es')">ES</button><button id="btnEN" data-lang-option="en" onclick="setGlobalLanguage('en')">EN</button></div></div>
 </div>
 <div class="pro-grid">
@@ -173,7 +173,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </div>
 </div>
 
-<header><div class="wrap head"><div><h1 class="mn-brand-title"><svg class="mn-brandmark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/><path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/></svg><span>Monica Nursing Study Center</span></h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
+<header><div class="wrap head"><div><h1 class="mn-brand-title"><img class="mn-brandmark" src="icon-192.png" alt=""><span>Monica Nursing Study Center</span></h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
 
 <main class="wrap">
 <nav>
