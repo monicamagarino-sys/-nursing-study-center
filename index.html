@@ -114,11 +114,11 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
 /* Pantalla de bienvenida al abrir la app */
-#mnSplash{position:fixed;inset:0;bottom:calc(0px - env(safe-area-inset-bottom,0px));z-index:2147483647;display:grid;place-items:center;background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);box-shadow:0 100px 0 #128878;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#mnSplash{position:fixed;inset:0;bottom:calc(0px - env(safe-area-inset-bottom,0px));z-index:2147483647;display:grid;place-items:center;background:#0d4f4c;box-shadow:0 100px 0 #0d4f4c;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
-#mnSplash svg{width:min(42vw,180px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
+#mnSplash img{width:min(72vw,360px);height:auto;display:block;mix-blend-mode:normal;animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash svg{animation:none;transition:none}}
+@media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash img{animation:none;transition:none}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -126,12 +126,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <body>
 
 <div id="mnSplash" role="status" aria-label="Monica Nursing Study Center">
-  <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-    <path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/>
-    <path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="22" y="7" width="20" height="6" rx="1.5" fill="white"/>
-    <rect x="27" y="1" width="10" height="7" rx="1.5" fill="white"/>
-  </svg>
+  <img src="splash-logo.png" alt="Monica Nursing Study Center">
 </div>
 
 <div id="proLogin">
@@ -1623,6 +1618,78 @@ renderTopics=function(){
 }
 renderTopics();
 
+</script>
+
++<script>
+/* MNSC V5.3 — Third reviewed batch: 12 bilingual Infection Control questions (1320 total) */
+(function(){
+  if(window.mnThirdBatch12Loaded)return;
+  window.mnThirdBatch12Loaded=true;
+  const batchStart=qs.length;
+  const esBatch=[
+    ["🆕 Durante la preparación de un campo estéril, una solución moja la cubierta. ¿Cómo debe actuar la enfermera?",["Secar la zona y continuar","Considerar contaminado el campo y preparar uno nuevo","Cubrir la zona húmeda con una gasa estéril","Usar solamente el lado opuesto del campo"],1,"La humedad permite el paso de microorganismos por capilaridad; un campo estéril mojado se considera contaminado y debe reemplazarse.","prev"],
+    ["🆕 ¿Qué parte de un campo estéril abierto se considera contaminada?",["Solamente el centro","Todo el campo después de cinco minutos","El borde exterior de 1 pulgada (2.5 cm)","Únicamente la esquina más cercana a la enfermera"],2,"La guía identifica el borde exterior de 1 pulgada (2.5 cm) como no estéril; los objetos estériles deben mantenerse dentro del área segura.","prev"],
+    ["🆕 Las precauciones estándar tratan como potencialmente infecciosos todos los siguientes, EXCEPTO:",["Sangre","Secreciones corporales","Piel no intacta","Sudor sin sangre visible"],3,"Las precauciones estándar se aplican a sangre, líquidos corporales, secreciones y excreciones excepto sudor, además de mucosas y piel no intacta.","prev"],
+    ["🆕 ¿Cuál es el orden general correcto para colocarse el equipo de protección personal?",["Bata, mascarilla o respirador, protección ocular y guantes","Guantes, bata, protección ocular y mascarilla","Mascarilla, guantes, bata y protección ocular","Protección ocular, bata, guantes y mascarilla"],0,"El orden general es bata, mascarilla o respirador, gafas o protector facial y, al final, guantes.","prev"],
+    ["🆕 ¿Cuál es el orden general correcto para retirar el equipo de protección personal?",["Mascarilla, bata, guantes y protección ocular","Bata, mascarilla, protección ocular y guantes","Guantes, protección ocular, bata y mascarilla o respirador","Protección ocular, guantes, mascarilla y bata"],2,"Para reducir la autocontaminación se retiran primero los guantes, después la protección ocular, luego la bata y finalmente la mascarilla o el respirador.","prev"],
+    ["🆕 Un adolescente con mononucleosis infecciosa presenta dolor súbito en el cuadrante superior izquierdo que se irradia al hombro izquierdo. ¿Qué debe sospechar la enfermera?",["Apendicitis","Rotura esplénica","Otitis media","Cólico renal"],1,"La mononucleosis puede causar esplenomegalia; el dolor abdominal izquierdo que se irradia al hombro puede indicar rotura esplénica y requiere atención urgente.","prev"],
+    ["🆕 Después de una picadura de garrapata, ¿qué hallazgo es característico de la enfermedad de Lyme temprana?",["Lengua aframbuesada","Lesiones con costra color miel","Manchas de Koplik","Erupción expansiva en forma de diana"],3,"El eritema migratorio es una lesión circular expansiva con apariencia de diana y es característica de la enfermedad de Lyme temprana.","prev"],
+    ["🆕 ¿Qué hallazgo cutáneo es más compatible con impétigo?",["Lesiones con costra color miel alrededor de la nariz o la boca","Vesículas dolorosas en un dermatoma","Erupción en diana después de una garrapata","Petequias en tobillos y muñecas"],0,"El impétigo suele producir lesiones superficiales con costras color miel, con frecuencia alrededor de la nariz y la boca.","prev"],
+    ["🆕 Un niño con sospecha de difteria presenta edema marcado del cuello. ¿Cuál es la prioridad de enfermería?",["Ofrecer bebidas ácidas","Tener disponible equipo de succión y vía aérea","Aplicar crema antimicótica","Estimular la tos vigorosa"],1,"El cuello de toro y las secreciones pueden acompañar una obstrucción respiratoria; la prioridad es anticipar y preparar el manejo de la vía aérea.","prev"],
+    ["🆕 Un niño con parvovirus B19 desarrolla la erupción característica de mejillas abofeteadas. ¿Qué enseñanza es correcta para un niño por lo demás sano?",["La contagiosidad comienza solamente después de la erupción","Debe permanecer aislado hasta que desaparezca toda la erupción","Generalmente ya no es contagioso cuando aparece la erupción","Necesita precauciones aéreas durante seis semanas"],2,"El parvovirus B19 suele contagiarse antes de la erupción; un niño sano generalmente deja de ser contagioso cuando aparece la erupción característica.","prev"],
+    ["🆕 ¿Qué combinación describe correctamente una habitación de aislamiento para infección transmitida por el aire?",["Presión positiva y puerta abierta","Habitación compartida y mascarilla quirúrgica para el personal","Presión neutra y ventilador dirigido al pasillo","Presión negativa, puerta cerrada y 6–12 recambios de aire por hora"],3,"Una habitación de aislamiento aéreo mantiene presión negativa y flujo dirigido hacia el interior; las guías describen 6 recambios por hora en estructuras existentes y 12 en construcciones nuevas o renovadas.","prev"],
+    ["🆕 ¿Qué precauciones requiere un paciente con herpes zóster diseminado?",["Estándar, contacto y aéreas","Solamente estándar","Solamente gotas","Estándar y gotas"],0,"El herpes zóster diseminado requiere precauciones estándar, de contacto y aéreas para limitar la exposición a lesiones y partículas infecciosas.","prev"]
+  ];
+  const enBatch=[
+    ["🆕 While preparing a sterile field, solution soaks through the drape. What should the nurse do?",["Dry the area and continue","Consider the field contaminated and prepare a new one","Cover the wet area with sterile gauze","Use only the opposite side of the field"],1,"Moisture permits microorganisms to travel by capillary action; a wet sterile field is considered contaminated and must be replaced.","prev"],
+    ["🆕 Which part of an opened sterile field is considered contaminated?",["Only the center","The entire field after five minutes","The outer 1-inch (2.5-cm) border","Only the corner nearest the nurse"],2,"The guide identifies the outer 1-inch (2.5-cm) border as nonsterile; sterile items must remain inside the safe area.","prev"],
+    ["🆕 Standard Precautions treat all of the following as potentially infectious EXCEPT:",["Blood","Body secretions","Nonintact skin","Sweat without visible blood"],3,"Standard Precautions apply to blood, body fluids, secretions, and excretions except sweat, as well as mucous membranes and nonintact skin.","prev"],
+    ["🆕 What is the correct general sequence for donning personal protective equipment?",["Gown, mask or respirator, eye protection, and gloves","Gloves, gown, eye protection, and mask","Mask, gloves, gown, and eye protection","Eye protection, gown, gloves, and mask"],0,"The general sequence is gown, mask or respirator, goggles or face shield, and gloves last.","prev"],
+    ["🆕 What is the correct general sequence for removing personal protective equipment?",["Mask, gown, gloves, and eye protection","Gown, mask, eye protection, and gloves","Gloves, eye protection, gown, and mask or respirator","Eye protection, gloves, mask, and gown"],2,"To reduce self-contamination, remove gloves first, then eye protection, then the gown, and finally the mask or respirator.","prev"],
+    ["🆕 An adolescent with infectious mononucleosis develops sudden left upper-quadrant pain radiating to the left shoulder. What should the nurse suspect?",["Appendicitis","Splenic rupture","Otitis media","Renal colic"],1,"Mononucleosis can cause splenomegaly; left-sided abdominal pain radiating to the shoulder may indicate splenic rupture and requires urgent attention.","prev"],
+    ["🆕 After a tick bite, which finding is characteristic of early Lyme disease?",["Strawberry tongue","Honey-crusted lesions","Koplik spots","An expanding bull's-eye rash"],3,"Erythema migrans is an expanding circular target-like lesion characteristic of early Lyme disease.","prev"],
+    ["🆕 Which skin finding is most consistent with impetigo?",["Honey-crusted lesions around the nose or mouth","Painful vesicles in a dermatome","A target rash after a tick bite","Petechiae on the ankles and wrists"],0,"Impetigo commonly causes superficial honey-crusted lesions, often around the nose and mouth.","prev"],
+    ["🆕 A child with suspected diphtheria has marked neck swelling. What is the nursing priority?",["Offer acidic drinks","Keep suction and airway equipment available","Apply antifungal cream","Encourage forceful coughing"],1,"Bull-neck swelling and secretions can accompany respiratory obstruction; anticipating and preparing for airway management is the priority.","prev"],
+    ["🆕 A child with parvovirus B19 develops the characteristic slapped-cheek rash. Which teaching is correct for an otherwise healthy child?",["Contagiousness begins only after the rash","Isolation must continue until the entire rash disappears","The child is generally no longer contagious once the rash appears","Airborne Precautions are needed for six weeks"],2,"Parvovirus B19 is usually spread before the rash; an otherwise healthy child is generally no longer contagious when the characteristic rash appears.","prev"],
+    ["🆕 Which combination correctly describes an airborne infection isolation room?",["Positive pressure with the door open","A shared room and surgical mask for staff","Neutral pressure with a fan toward the hallway","Negative pressure, closed door, and 6–12 air changes per hour"],3,"An airborne infection isolation room uses negative pressure and inward airflow; guidance describes 6 air changes per hour in existing structures and 12 in new or renovated construction.","prev"],
+    ["🆕 Which precautions are required for a patient with disseminated herpes zoster?",["Standard, Contact, and Airborne","Standard only","Droplet only","Standard and Droplet"],0,"Disseminated herpes zoster requires Standard, Contact, and Airborne Precautions to limit exposure to lesions and infectious particles.","prev"]
+  ];
+  esBatch.forEach(q=>qs.push(q));
+  if(!Array.isArray(window.qsEn))window.qsEn=[];
+  enBatch.forEach(q=>window.qsEn.push(q));
+  const batchEnd=qs.length;
+  window.mnLatestQuestionBatch={start:batchStart,end:batchEnd,count:batchEnd-batchStart};
+
+  window.startNewQuestionsPractice=function(){
+    const fresh=[];for(let i=batchStart;i<batchEnd;i++)fresh.push(i);
+    practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
+    practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
+    rememberStudy('practice','',practiceLabel);show('quiz');
+  };
+
+  function patchThirdBatchCounts(){
+    const hub=document.getElementById('practicar');if(!hub)return;
+    const en=appState?.planLang==='en';
+    const launchers=[...hub.querySelectorAll('.mn-launch')];
+    const allBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startPractice(true)'));
+    const newBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startNewQuestionsPractice'));
+    if(allBtn){const small=allBtn.querySelector('small');if(small)small.textContent=en?`All ${qs.length} questions with answers and explanations.`:`${qs.length} preguntas con respuestas y explicaciones.`;}
+    if(newBtn){const small=newBtn.querySelector('small');if(small)small.textContent=en?`${batchEnd-batchStart} recently added questions.`:`${batchEnd-batchStart} preguntas recién añadidas.`;}
+  }
+
+  const previousBuildGrouped=window.mnBuildGroupedUI;
+  if(typeof previousBuildGrouped==='function'){
+    window.mnBuildGroupedUI=function(){const r=previousBuildGrouped.apply(this,arguments);setTimeout(patchThirdBatchCounts,0);return r;};
+  }
+  const previousLanguageSetter=window.setGlobalLanguage;
+  if(typeof previousLanguageSetter==='function'){
+    window.setGlobalLanguage=function(lang){const r=previousLanguageSetter.apply(this,arguments);setTimeout(patchThirdBatchCounts,0);return r;};
+  }
+
+  window.mnQuestionBankVersion='STRUCTURAL-1320-ES-EN-V5.3';
+  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchThirdBatchCounts()}catch(e){console.warn('1320 bank refresh:',e)}},0);
+})();
 </script>
 
 <script>
@@ -4100,6 +4167,57 @@ answerAdaptiveExam=function(n){
 })();
 </script>
 
++<script>
+/* MNSC V5.3 finalizer — keep the infection-control set as the visible latest batch */
+(function(){
+  const batchStart=qs.findIndex(q=>(q?.[0]||'').includes('Durante la preparación de un campo estéril'));
+  const batchEnd=batchStart>=0?batchStart+12:qs.length;
+  const infectionEnglish=[
+    ["🆕 While preparing a sterile field, solution soaks through the drape. What should the nurse do?",["Dry the area and continue","Consider the field contaminated and prepare a new one","Cover the wet area with sterile gauze","Use only the opposite side of the field"],1,"Moisture permits microorganisms to travel by capillary action; a wet sterile field is considered contaminated and must be replaced.","prev"],
+    ["🆕 Which part of an opened sterile field is considered contaminated?",["Only the center","The entire field after five minutes","The outer 1-inch (2.5-cm) border","Only the corner nearest the nurse"],2,"The guide identifies the outer 1-inch (2.5-cm) border as nonsterile; sterile items must remain inside the safe area.","prev"],
+    ["🆕 Standard Precautions treat all of the following as potentially infectious EXCEPT:",["Blood","Body secretions","Nonintact skin","Sweat without visible blood"],3,"Standard Precautions apply to blood, body fluids, secretions, and excretions except sweat, as well as mucous membranes and nonintact skin.","prev"],
+    ["🆕 What is the correct general sequence for donning personal protective equipment?",["Gown, mask or respirator, eye protection, and gloves","Gloves, gown, eye protection, and mask","Mask, gloves, gown, and eye protection","Eye protection, gown, gloves, and mask"],0,"The general sequence is gown, mask or respirator, goggles or face shield, and gloves last.","prev"],
+    ["🆕 What is the correct general sequence for removing personal protective equipment?",["Mask, gown, gloves, and eye protection","Gown, mask, eye protection, and gloves","Gloves, eye protection, gown, and mask or respirator","Eye protection, gloves, mask, and gown"],2,"To reduce self-contamination, remove gloves first, then eye protection, then the gown, and finally the mask or respirator.","prev"],
+    ["🆕 An adolescent with infectious mononucleosis develops sudden left upper-quadrant pain radiating to the left shoulder. What should the nurse suspect?",["Appendicitis","Splenic rupture","Otitis media","Renal colic"],1,"Mononucleosis can cause splenomegaly; left-sided abdominal pain radiating to the shoulder may indicate splenic rupture and requires urgent attention.","prev"],
+    ["🆕 After a tick bite, which finding is characteristic of early Lyme disease?",["Strawberry tongue","Honey-crusted lesions","Koplik spots","An expanding bull's-eye rash"],3,"Erythema migrans is an expanding circular target-like lesion characteristic of early Lyme disease.","prev"],
+    ["🆕 Which skin finding is most consistent with impetigo?",["Honey-crusted lesions around the nose or mouth","Painful vesicles in a dermatome","A target rash after a tick bite","Petechiae on the ankles and wrists"],0,"Impetigo commonly causes superficial honey-crusted lesions, often around the nose and mouth.","prev"],
+    ["🆕 A child with suspected diphtheria has marked neck swelling. What is the nursing priority?",["Offer acidic drinks","Keep suction and airway equipment available","Apply antifungal cream","Encourage forceful coughing"],1,"Bull-neck swelling and secretions can accompany respiratory obstruction; anticipating and preparing for airway management is the priority.","prev"],
+    ["🆕 A child with parvovirus B19 develops the characteristic slapped-cheek rash. Which teaching is correct for an otherwise healthy child?",["Contagiousness begins only after the rash","Isolation must continue until the entire rash disappears","The child is generally no longer contagious once the rash appears","Airborne Precautions are needed for six weeks"],2,"Parvovirus B19 is usually spread before the rash; an otherwise healthy child is generally no longer contagious when the characteristic rash appears.","prev"],
+    ["🆕 Which combination correctly describes an airborne infection isolation room?",["Positive pressure with the door open","A shared room and surgical mask for staff","Neutral pressure with a fan toward the hallway","Negative pressure, closed door, and 6–12 air changes per hour"],3,"An airborne infection isolation room uses negative pressure and inward airflow; guidance describes 6 air changes per hour in existing structures and 12 in new or renovated construction.","prev"],
+    ["🆕 Which precautions are required for a patient with disseminated herpes zoster?",["Standard, Contact, and Airborne","Standard only","Droplet only","Standard and Droplet"],0,"Disseminated herpes zoster requires Standard, Contact, and Airborne Precautions to limit exposure to lesions and infectious particles.","prev"]
+  ];
+  if(batchStart>=0 && Array.isArray(window.qsEn)){
+    const aligned=window.qsEn[batchStart]?.[0]?.includes('While preparing a sterile field');
+    if(!aligned)window.qsEn.splice(batchStart,0,...infectionEnglish);
+  }
+  if(batchStart>=0){
+    window.mnLatestQuestionBatch={start:batchStart,end:batchEnd,count:12};
+    window.startNewQuestionsPractice=function(){
+      const fresh=[];for(let i=batchStart;i<batchEnd;i++)fresh.push(i);
+      practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
+      practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
+      rememberStudy('practice','',practiceLabel);show('quiz');
+    };
+  }
+  function patchFinalCounts(){
+    const hub=document.getElementById('practicar');if(!hub)return;
+    const en=appState?.planLang==='en';
+    const launchers=[...hub.querySelectorAll('.mn-launch')];
+    const allBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startPractice(true)'));
+    const newBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startNewQuestionsPractice'));
+    if(allBtn){const small=allBtn.querySelector('small');if(small)small.textContent=en?`All ${qs.length} questions with answers and explanations.`:`${qs.length} preguntas con respuestas y explicaciones.`;}
+    if(newBtn){const small=newBtn.querySelector('small');if(small)small.textContent=en?'12 recently added questions.':'12 preguntas recién añadidas.';}
+  }
+  const previousBuildGrouped=window.mnBuildGroupedUI;
+  if(typeof previousBuildGrouped==='function')window.mnBuildGroupedUI=function(){const r=previousBuildGrouped.apply(this,arguments);setTimeout(patchFinalCounts,0);return r;};
+  const previousLanguageSetter=window.setGlobalLanguage;
+  if(typeof previousLanguageSetter==='function')window.setGlobalLanguage=function(lang){const r=previousLanguageSetter.apply(this,arguments);setTimeout(patchFinalCounts,0);return r;};
+  window.mnQuestionBankVersion='STRUCTURAL-1320-ES-EN-V5.3';
+  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchFinalCounts()}catch(e){console.warn('1320 bank refresh:',e)}},0);
+})();
+</script>
+
 </body>
 </html>
 
@@ -4946,5 +5064,56 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   window.mnQuestionBankVersion='STRUCTURAL-1308-ES-EN-V5.2.2';
   window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
   setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchSecondBatchCounts()}catch(e){console.warn('1308 bank refresh:',e)}},0);
+})();
+</script>
+
++<script>
+/* MNSC V5.3 finalizer — keep the infection-control set as the visible latest batch */
+(function(){
+  const batchStart=qs.findIndex(q=>(q?.[0]||'').includes('Durante la preparación de un campo estéril'));
+  const batchEnd=batchStart>=0?batchStart+12:qs.length;
+  const infectionEnglish=[
+    ["🆕 While preparing a sterile field, solution soaks through the drape. What should the nurse do?",["Dry the area and continue","Consider the field contaminated and prepare a new one","Cover the wet area with sterile gauze","Use only the opposite side of the field"],1,"Moisture permits microorganisms to travel by capillary action; a wet sterile field is considered contaminated and must be replaced.","prev"],
+    ["🆕 Which part of an opened sterile field is considered contaminated?",["Only the center","The entire field after five minutes","The outer 1-inch (2.5-cm) border","Only the corner nearest the nurse"],2,"The guide identifies the outer 1-inch (2.5-cm) border as nonsterile; sterile items must remain inside the safe area.","prev"],
+    ["🆕 Standard Precautions treat all of the following as potentially infectious EXCEPT:",["Blood","Body secretions","Nonintact skin","Sweat without visible blood"],3,"Standard Precautions apply to blood, body fluids, secretions, and excretions except sweat, as well as mucous membranes and nonintact skin.","prev"],
+    ["🆕 What is the correct general sequence for donning personal protective equipment?",["Gown, mask or respirator, eye protection, and gloves","Gloves, gown, eye protection, and mask","Mask, gloves, gown, and eye protection","Eye protection, gown, gloves, and mask"],0,"The general sequence is gown, mask or respirator, goggles or face shield, and gloves last.","prev"],
+    ["🆕 What is the correct general sequence for removing personal protective equipment?",["Mask, gown, gloves, and eye protection","Gown, mask, eye protection, and gloves","Gloves, eye protection, gown, and mask or respirator","Eye protection, gloves, mask, and gown"],2,"To reduce self-contamination, remove gloves first, then eye protection, then the gown, and finally the mask or respirator.","prev"],
+    ["🆕 An adolescent with infectious mononucleosis develops sudden left upper-quadrant pain radiating to the left shoulder. What should the nurse suspect?",["Appendicitis","Splenic rupture","Otitis media","Renal colic"],1,"Mononucleosis can cause splenomegaly; left-sided abdominal pain radiating to the shoulder may indicate splenic rupture and requires urgent attention.","prev"],
+    ["🆕 After a tick bite, which finding is characteristic of early Lyme disease?",["Strawberry tongue","Honey-crusted lesions","Koplik spots","An expanding bull's-eye rash"],3,"Erythema migrans is an expanding circular target-like lesion characteristic of early Lyme disease.","prev"],
+    ["🆕 Which skin finding is most consistent with impetigo?",["Honey-crusted lesions around the nose or mouth","Painful vesicles in a dermatome","A target rash after a tick bite","Petechiae on the ankles and wrists"],0,"Impetigo commonly causes superficial honey-crusted lesions, often around the nose and mouth.","prev"],
+    ["🆕 A child with suspected diphtheria has marked neck swelling. What is the nursing priority?",["Offer acidic drinks","Keep suction and airway equipment available","Apply antifungal cream","Encourage forceful coughing"],1,"Bull-neck swelling and secretions can accompany respiratory obstruction; anticipating and preparing for airway management is the priority.","prev"],
+    ["🆕 A child with parvovirus B19 develops the characteristic slapped-cheek rash. Which teaching is correct for an otherwise healthy child?",["Contagiousness begins only after the rash","Isolation must continue until the entire rash disappears","The child is generally no longer contagious once the rash appears","Airborne Precautions are needed for six weeks"],2,"Parvovirus B19 is usually spread before the rash; an otherwise healthy child is generally no longer contagious when the characteristic rash appears.","prev"],
+    ["🆕 Which combination correctly describes an airborne infection isolation room?",["Positive pressure with the door open","A shared room and surgical mask for staff","Neutral pressure with a fan toward the hallway","Negative pressure, closed door, and 6–12 air changes per hour"],3,"An airborne infection isolation room uses negative pressure and inward airflow; guidance describes 6 air changes per hour in existing structures and 12 in new or renovated construction.","prev"],
+    ["🆕 Which precautions are required for a patient with disseminated herpes zoster?",["Standard, Contact, and Airborne","Standard only","Droplet only","Standard and Droplet"],0,"Disseminated herpes zoster requires Standard, Contact, and Airborne Precautions to limit exposure to lesions and infectious particles.","prev"]
+  ];
+  if(batchStart>=0 && Array.isArray(window.qsEn)){
+    const aligned=window.qsEn[batchStart]?.[0]?.includes('While preparing a sterile field');
+    if(!aligned)window.qsEn.splice(batchStart,0,...infectionEnglish);
+  }
+  if(batchStart>=0){
+    window.mnLatestQuestionBatch={start:batchStart,end:batchEnd,count:12};
+    window.startNewQuestionsPractice=function(){
+      const fresh=[];for(let i=batchStart;i<batchEnd;i++)fresh.push(i);
+      practiceModule='';practiceLabel=appState.planLang==='en'?'🆕 New questions':'🆕 Preguntas nuevas';practiceFinite=true;mistakePractice=false;dailyPractice=false;
+      practiceSessionCorrect=0;practiceSessionAnswered=0;practiceOrder=shuffled(fresh);practicePos=0;
+      rememberStudy('practice','',practiceLabel);show('quiz');
+    };
+  }
+  function patchFinalCounts(){
+    const hub=document.getElementById('practicar');if(!hub)return;
+    const en=appState?.planLang==='en';
+    const launchers=[...hub.querySelectorAll('.mn-launch')];
+    const allBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startPractice(true)'));
+    const newBtn=launchers.find(b=>(b.getAttribute('onclick')||'').includes('startNewQuestionsPractice'));
+    if(allBtn){const small=allBtn.querySelector('small');if(small)small.textContent=en?`All ${qs.length} questions with answers and explanations.`:`${qs.length} preguntas con respuestas y explicaciones.`;}
+    if(newBtn){const small=newBtn.querySelector('small');if(small)small.textContent=en?'12 recently added questions.':'12 preguntas recién añadidas.';}
+  }
+  const previousBuildGrouped=window.mnBuildGroupedUI;
+  if(typeof previousBuildGrouped==='function')window.mnBuildGroupedUI=function(){const r=previousBuildGrouped.apply(this,arguments);setTimeout(patchFinalCounts,0);return r;};
+  const previousLanguageSetter=window.setGlobalLanguage;
+  if(typeof previousLanguageSetter==='function')window.setGlobalLanguage=function(lang){const r=previousLanguageSetter.apply(this,arguments);setTimeout(patchFinalCounts,0);return r;};
+  window.mnQuestionBankVersion='STRUCTURAL-1320-ES-EN-V5.3';
+  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();patchFinalCounts()}catch(e){console.warn('1320 bank refresh:',e)}},0);
 })();
 </script>
