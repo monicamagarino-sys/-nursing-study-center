@@ -4,11 +4,11 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Monica Nursing Study Center</title>
 <meta name="theme-color" content="#0b4f47">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Monica Nursing">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -116,9 +116,9 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 /* Pantalla de bienvenida al abrir la app */
 #mnSplash{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
-#mnSplash img{width:min(42vw,180px);height:auto;border-radius:32px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
+#mnSplash svg{width:min(42vw,180px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash img{animation:none;transition:none}}
+@media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash svg{animation:none;transition:none}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -126,7 +126,11 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 <body>
 
 <div id="mnSplash" role="status" aria-label="Monica Nursing Study Center">
-  <img src="icon-512.png" alt="Monica Nursing Study Center">
+  <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <path d="M32 52S9 39 9 22c0-8 6-13 14-13 5 0 8 3 9 6 2-3 5-6 10-6 8 0 14 5 14 13 0 17-24 30-24 30Z" stroke="white" stroke-width="5"/>
+    <path d="M15 31h10l4-9 6 19 5-10h9" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23 10V4h18v6M27 4V0h10v4" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  </svg>
 </div>
 
 <div id="proLogin">
