@@ -3,22 +3,19 @@
 1 0 obj
 <<
 /Producer (pypdf)
-/Title (Maternity Study Guide)
-/Author (Monica Nursing Study Center)
 >>
 endobj
 2 0 obj
 <<
 /Type /Pages
 /Count 12
-/Kids [ 4 0 R 12 0 R 27 0 R 36 0 R 45 0 R 50 0 R 60 0 R 64 0 R 68 0 R 75 0 R 79 0 R 83 0 R ]
+/Kids [ 4 0 R 10 0 R 25 0 R 34 0 R 43 0 R 48 0 R 58 0 R 62 0 R 66 0 R 73 0 R 77 0 R 81 0 R ]
 >>
 endobj
 3 0 obj
 <<
 /Type /Catalog
 /Pages 2 0 R
-/Outlines 11 0 R
 >>
 endobj
 4 0 obj
@@ -26,29 +23,124 @@ endobj
 /Contents 5 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
-/Font 6 0 R
-/ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+/Font <<
+/F1 6 0 R
+/F1-0 7 0 R
+/F2 8 0 R
+/F2-0 9 0 R
+>>
+/ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
 /Rotate 0
 /Trans <<
 >>
 /Type /Page
+/Annots [ ]
 /Parent 2 0 R
 >>
 endobj
 5 0 obj
 <<
-/Filter [ /ASCII85Decode /FlateDecode ]
-/Length 666
+/Length 1526
 >>
 stream
-Gas1\9lJKG&A@P9Qm5R>g!A@-,Eu#)JeTO!JRdb#_'h%'8ZBk9B4brb(UYYhp5M6(c0W*J"[bL)s7Hu^I0FOR>-JL:*S@"e<1dPq.;a[G5(WF)A.q5?Pj&MHHdrE?M3<aK^4G)DV8lDk""c'"[%*\JP--K/83Xpg:c:la*tckb!G(g6dE#H@da84cO>-GIJHOJs*(#I,a?('^%Q]!gl7C7)(HrM0IVQimk@/6ncm;)k.\3^F\smeZMh0rfE<^M>D37`rK&JR/<)7.&KAtf`QmH`;8[W"]-B6(@MN:q(+gB*_;#&Nk)$T#NfLD..f]KR\D569;F?!l'D!M[>ID/ij?bV0Sm:q'_]Rk9Kqr'&1/sb$sobsk!:gGd,_ZNUXUJ$_s9HdS[h%s]9<`e?C$">N+*1A*oJG%EJ&)9]03^;@)R^&""WTh%goJe?_D.$cUk?^u@ab[h1FME6WX8@(pbV]<7+q61JS*4>oFAO#U-b>b"]WZm0_kG1>OOt(5d3*'XU*0p)9T@<t/+Qha&I&Jo@1_FSqjr%k%I4Yb!XAa)fnm]HN;_>mS*]=]+6'X1s*hSda\e`sF5b6so_VA7rbf1:ao6%E#<9",mH-*lj4!rNCde-qm0[!<^\#e,VC1'QNuib-4e$<sGCA5:g29,R#PA>O8+d`~>
+q
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+.043137 .309804 .278431 rg
+n 0 0 612 792 re f*
+.054902 .431373 .388235 rg
+n
+685 738 m
+685 807.0356 629.0356 863 560 863 c
+490.9644 863 435 807.0356 435 738 c
+435 668.9644 490.9644 613 560 613 c
+629.0356 613 685 668.9644 685 738 c
+f*
+.890196 .945098 .929412 rg
+n
+190 72 m
+190 137.1696 137.1696 190 72 190 c
+6.8304 190 -46 137.1696 -46 72 c
+-46 6.8304 6.8304 -46 72 -46 c
+137.1696 -46 190 6.8304 190 72 c
+f*
+1 1 1 rg
+BT /F2 11 Tf 13.2 TL ET
+BT 1 0 0 1 58 712 Tm (MONICA NURSING STUDY CENTER) Tj T* ET
+3 w
+.886275 .47451 .239216 RG
+n 58 689 m 190 689 l S
+BT /F2 34 Tf 40.8 TL ET
+BT 1 0 0 1 58 602 Tm (Maternity) Tj T* ET
+BT /F1 19 Tf 22.8 TL ET
+BT 1 0 0 1 58 570 Tm (Study Guide) Tj T* ET
+.890196 .945098 .929412 rg
+n
+72 462 m
+359 462 l
+366.7392 462 373 468.2608 373 476 c
+373 506 l
+373 513.7392 366.7392 520 359 520 c
+72 520 l
+64.2608 520 58 513.7392 58 506 c
+58 476 l
+58 468.2608 64.2608 462 72 462 c
+h
+f*
+.043137 .309804 .278431 rg
+BT /F2 12 Tf 14.4 TL ET
+BT 1 0 0 1 76 496 Tm (Organized review material) Tj T* ET
+1 1 1 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 58 48 Tm (Prepared for study and printing) Tj T* ET
+ 
+
+Q
+
+q
+0.0 0.0 612 792 re
+W
+n
+1 0 0 1 0 0 cm
+BT
+/F1-0 12 Tf
+14.4 TL
+ET
+0.043137 0.309804 0.278431 rg
+n
+63 43 m
+227 43 l
+231.4224 43 235 46.5776 235 51 c
+235 55 l
+235 59.4224 231.4224 63 227 63 c
+63 63 l
+58.5776 63 55 59.4224 55 55 c
+55 51 l
+55 46.5776 58.5776 43 63 43 c
+h
+f*
+1 1 1 rg
+BT
+/F2-0 7.5 Tf
+9 TL
+ET
+BT
+1 0 0 1 58 51 Tm
+(Prepared for study and printing) Tj
+T*
+ET
+Q
+
+
 endstream
 endobj
 6 0 obj
 <<
-/F1 7 0 R
-/F2 8 0 R
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+/Name /F1
+/Subtype /Type1
+/Type /Font
 >>
 endobj
 7 0 obj
@@ -71,39 +163,26 @@ endobj
 endobj
 9 0 obj
 <<
-/D [ 4 0 R /Fit ]
-/S /GoTo
+/BaseFont /Courier
+/Encoding /WinAnsiEncoding
+/Name /F2
+/Subtype /Type1
+/Type /Font
 >>
 endobj
 10 0 obj
 <<
-/A 9 0 R
-/Title (Cover)
-/Parent 11 0 R
-/Count 0
-/Next 93 0 R
->>
-endobj
-11 0 obj
-<<
-/First 10 0 R
-/Count 2
-/Last 93 0 R
->>
-endobj
-12 0 obj
-<<
-/Contents 13 0 R
+/Contents 11 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 15 0 R
-/F2 16 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 13 0 R
+/F2 14 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -115,7 +194,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-13 0 obj
+11 0 obj
 <<
 /Length 19626
 >>
@@ -1486,13 +1565,13 @@ Q
 
 endstream
 endobj
-14 0 obj
+12 0 obj
 <<
 /ca 1
 /BM /Normal
 >>
 endobj
-15 0 obj
+13 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -1501,7 +1580,7 @@ endobj
 /Type /Font
 >>
 endobj
-16 0 obj
+14 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -1510,20 +1589,20 @@ endobj
 /Type /Font
 >>
 endobj
-17 0 obj
+15 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /AAAAAA+Arial-BoldMT
 /Encoding /Identity-H
-/DescendantFonts [ 18 0 R ]
-/ToUnicode 21 0 R
+/DescendantFonts [ 16 0 R ]
+/ToUnicode 19 0 R
 >>
 endobj
-18 0 obj
+16 0 obj
 <<
 /Type /Font
-/FontDescriptor 19 0 R
+/FontDescriptor 17 0 R
 /BaseFont /AAAAAA+Arial-BoldMT
 /Subtype /CIDFontType2
 /CIDToGIDMap /Identity
@@ -1536,7 +1615,7 @@ endobj
 /DW 500
 >>
 endobj
-19 0 obj
+17 0 obj
 <<
 /Type /FontDescriptor
 /FontName /AAAAAA+Arial-BoldMT
@@ -1547,10 +1626,10 @@ endobj
 /CapHeight 715.82031
 /ItalicAngle 0
 /FontBBox [ -627.92969 -376.46484 2000 1017.57813 ]
-/FontFile2 20 0 R
+/FontFile2 18 0 R
 >>
 endobj
-20 0 obj
+18 0 obj
 <<
 /Length1 46692
 /Filter /FlateDecode
@@ -1664,7 +1743,7 @@ Uµ–OsŸ=…xIgÜ^#dñ.â›ÎJÄ–Æın¤ Ç İİÔ‘!4[CıÏ1n@*S³EfŸY.ÕSçu{ƒè êXÌf¨ƒÛnÔÏ\8
 Çšè%Kß»Õ¶¶í[ßc¾YşŞrtèÃ·¼»œ¢¨ÿÁ6¸+
 endstream
 endobj
-21 0 obj
+19 0 obj
 <<
 /Filter /FlateDecode
 /Length 318
@@ -1673,20 +1752,20 @@ stream
 xœ]RËnƒ0¼û+|L64‘RBZ‰C*í{I-cràïkï¦‰TK€fvgv´&©›ccÍÌ“w?ªfŞ«=LãÅ+à'8ËdÊµQóá[cI·Ë4ÃĞØ~deÉyòªÓì¾Úëñ,yó¼±g¾úªÛ€Û‹s?0€¹`UÅ5ôÁé¥s¯İ <AÙºÑ¡næe4÷ÏÅOKJ£F“ëøÎ•"œŠ—ÏáT¬şW/HuêÕwç±{º…H‹*¢T ÊˆÂ'¢bè°	(r‘Üå5M¹ú=ş¹ßÃĞBÔ4e‹Nâ	‘”D”‘43”'§’ç’H’g$ÈIDî)rŠdNò‚<7òš•ÒÅåÄK¼m^]¼KÇ›ÆmÇ=·ŸÁ.ªâóN· ”
 endstream
 endobj
-22 0 obj
+20 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /BAAAAA+ArialMT
 /Encoding /Identity-H
-/DescendantFonts [ 23 0 R ]
-/ToUnicode 26 0 R
+/DescendantFonts [ 21 0 R ]
+/ToUnicode 24 0 R
 >>
 endobj
-23 0 obj
+21 0 obj
 <<
 /Type /Font
-/FontDescriptor 24 0 R
+/FontDescriptor 22 0 R
 /BaseFont /BAAAAA+ArialMT
 /Subtype /CIDFontType2
 /CIDToGIDMap /Identity
@@ -1699,7 +1778,7 @@ endobj
 /DW 500
 >>
 endobj
-24 0 obj
+22 0 obj
 <<
 /Type /FontDescriptor
 /FontName /BAAAAA+ArialMT
@@ -1710,10 +1789,10 @@ endobj
 /CapHeight 715.82031
 /ItalicAngle 0
 /FontBBox [ -664.55078 -324.70703 2000 1005.85938 ]
-/FontFile2 25 0 R
+/FontFile2 23 0 R
 >>
 endobj
-25 0 obj
+23 0 obj
 <<
 /Length1 60580
 /Filter /FlateDecode
@@ -1867,7 +1946,7 @@ XL‰))©VY&'6H£…é/–†CÙ‚#‘F«ç˜#ìQéæùùâ,éòÀJáq©ôœ°ÛÜø·pB®Sí:¦N¯5êÌÚ@Sh3
 nß–Ì¬"ŒœL^7İg`+í;³ŒÓ½'bÖa€˜5D}Ô•ÊsS(î®D%\Ú Ü1F¸ãóÄv?Ä¨=‡P9oõ|°c`«R=°Õ ÿÂ­¶×úf*5¥h?QOËÔÓB°ÖÍGuÅzJ÷¿­©¾!4¤±íÜ¨çÕâÂ—Ş/T§m+.8+ÛgÕä–âåO[uÙä|³‚«ë~hÙšUËñü¿ßxöÔ‰—ëWÜGpÙ@¿ÙJ½İ$‘À.üš„¨Ÿ[ÙûG& :³rŸ^rF ×ÉMV+jUF¢áx¸4RgÍ@à¤iòxkº_&Í“¯EK¥kå;ĞÍÒmò7è(İ9%ê¥‚Ü*ı\ú3)Õî´Â-˜H™–Ì×Z,+XR”ÂDšcDwåÀ—ğò‹•KtÆİ|”“‚¡à]ÈÜFd;/<§3#R0DîªõbÇ˜i¬6<¨¿Yú”±”Q®Gh#ƒÆ1W1=Ë@O.&nZK«(û¢Îv7SÉê¦ÀÁ$™Ã~-…6ëãö¶î¡¦Ã3/,ãe¯'©çS"‹½½å%ê{tgO¢sIÎ^ÚIg‘N¥ÛX»s*” SÑüÁ“N‚w8´3Ù*K‘äT×Ümu»ÔDZqˆ<‘S¦õGBíH‚ÄÍUá:üø’)Åqì¬îß\µrúâ^Vî½ºû¢kåŸ•ï9‰^ç®"“Å2•‰ú38ÁC£në5îßîF>}û°ä9n	zı{h4g"û/<›Q™(ógÆúøÆ8şRü2ˆ??â=â ~Q|1ˆ7Šƒx½¸>ˆïïâëÅëƒø„t"„HBxš4-„5IáPP£š©2¬ùÁ~ƒ#­MgÚè†ã¦àUââİ"+¢à P›¡kmDus¢‰cIm1m,{7F8ë|ÒõJB¶¢Õ}vˆiïhë¦».æí€Dş3´‰1wvv¢Nïu pl¼±ªF¡ßd¦7laÑù÷ò~KÛøúáÑé‚ÈL`?Ãcù×`¦şêŒ…™:"	a$¡> â½âŞ î»‚x“¸)ˆâ{Å{ƒøâ‚x‘¸(ˆgK³Cx¢4Ñ›)b´±LèA:7šN¦Ì “…¤_ˆôBD&3mf›Fæ«VI¤.}ÆlC¦¬–¡mæÁlİFcƒm0U-€a?"‚ô‡ıãé“Uš§ÎN2o¨ƒfr†DØœh`s|áoÒ…éú³ñîk2AC&Ôˆ\<ñDùĞö3tÌÕR'ÿ¶ø‘ˆ7‹¿ñWú‘ôˆ„—H?ğ$i¶„±„$2Ş®„ŒTò“™Ò¯ƒŸ×^YBïWu»kïşÆ_vºîå?aÕ÷İ-½Ç‡ŠÙ+ø!ŒÅ0AúS#‘h8_kÃ÷İó@®wÓ}ë^[0{æÅËÙŸİüÒäËv¯sÑåÇÏä_:¯m}ÿæ6®†=Îèä¤_ÙÖzğü+÷-/wì,—ïc/Ş·˜@ï\òöbæÿìYÉÂ
 endstream
 endobj
-26 0 obj
+24 0 obj
 <<
 /Filter /FlateDecode
 /Length 322
@@ -1877,20 +1956,20 @@ xœ]’Énƒ0†ï<…é!ÂfkR ­Ä¡‹Jû `)R1–!Ş¾öLšHµèûgeÆaİœ=®,|·³laeÃ¨•…e¾X	¬‡ó¨15
 îNÉŠgwÊ ´úgÏ(ªäwgÑ;sŞœGqé)®‘Ò©".ÈVeDhqîIä)O<¥5Õ¼fü«uoí€éyN5SÌË+$q"ñ€bÄ‰"üÄ'©ÉDøD.G+òL)gFUŒT%ôõµWêÎÊ¯ô¶y±Ö­ ÷³÷S5Ü®†™òÏ/8¬£\
 endstream
 endobj
-27 0 obj
+25 0 obj
 <<
-/Contents 28 0 R
+/Contents 26 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 29 0 R
-/F2 30 0 R
-/F4 17 0 R
-/F5 22 0 R
-/F8 31 0 R
+/F1 27 0 R
+/F2 28 0 R
+/F4 15 0 R
+/F5 20 0 R
+/F8 29 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -1902,7 +1981,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-28 0 obj
+26 0 obj
 <<
 /Length 20423
 >>
@@ -3235,7 +3314,7 @@ Q
 
 endstream
 endobj
-29 0 obj
+27 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -3244,7 +3323,7 @@ endobj
 /Type /Font
 >>
 endobj
-30 0 obj
+28 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -3253,20 +3332,20 @@ endobj
 /Type /Font
 >>
 endobj
-31 0 obj
+29 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /CAAAAA+MS-PGothic
 /Encoding /Identity-H
-/DescendantFonts [ 32 0 R ]
-/ToUnicode 35 0 R
+/DescendantFonts [ 30 0 R ]
+/ToUnicode 33 0 R
 >>
 endobj
-32 0 obj
+30 0 obj
 <<
 /Type /Font
-/FontDescriptor 33 0 R
+/FontDescriptor 31 0 R
 /BaseFont /CAAAAA+MS-PGothic
 /Subtype /CIDFontType2
 /CIDToGIDMap /Identity
@@ -3278,7 +3357,7 @@ endobj
 /DW 1000
 >>
 endobj
-33 0 obj
+31 0 obj
 <<
 /Type /FontDescriptor
 /FontName /CAAAAA+MS-PGothic
@@ -3289,10 +3368,10 @@ endobj
 /CapHeight 679.6875
 /ItalicAngle 0
 /FontBBox [ -121.09375 -136.71875 996.09375 859.375 ]
-/FontFile2 34 0 R
+/FontFile2 32 0 R
 >>
 endobj
-34 0 obj
+32 0 obj
 <<
 /Length1 182552
 /Filter /FlateDecode
@@ -3303,7 +3382,7 @@ xœíÔ]lTyÇñçÌK_¦…¾Ó–zJ¡t¦-´¥PŞJ_¦-PZ,KÚ„u;)}AÚR¡’å/6qwã«{åÍ^˜˜¬g¹0Íj„xçKâ‰
 ì–üÖ{g¡%°·.íx67x÷îÂ£~ëztü˜JO·JªKåÈa•ÎC*Tü6•}­Öõ±í·}Ö:Ş1¾8ö±µëé´…ıAë°aŸÔİ>öGíˆû´¥¬+ì{­ÇºÃ¾ÏÛ±°?aÖŸïÍÎèªÓ—U.N©LdTÆFU.«œ;«rzHåä ì”´Áğ$gì´…ıy;ggÃ~Ä.ØpØÛ˜†ı¤şCÈ„ı%»hSaE?ñËaÕfm&ßçŸÑ‡îW+Wÿ%}¡½§§³öóÅ°êó¥Â>VtL\ß€ú°/É?İ¨%ŠÎ™(:g¢èœ‰¢s&ŠÎ™(:gâå9§mNw~VñmÛšİ²%»nËvW¿°[ZÛÔS°n=‘^ë^½«Õ{ú[ÑñCù÷û¯¼HWwÇŸ°/èL«ö]?«÷}Ş±‡mTßÇûvSGnëoHïÒk3ºı¾¶w4CÊ.ëµ›ê|mØ–Î¾¢c—´uÇ/èè½Ë×ß´æ„¶óùwÏXw`©v<ğWüÀ®Í·ç[/»°<–¼ÔEÆ;2‹“é ¢>:~2DÕ”…‹1õån1®&.–¨/q‹¥j*ÂÅ2õ•n±\Mc¸˜Pßä+ÔÔ‡‹•êÜâ.5{ÃÅİê[Üb•šİábµú*·X£¦&\¬U_ëëR·§f Ô§¼ê'é !en³'åù5~m¦#óÚü©–ö…tĞ˜²W—šR~Æİ’ÀÏêœÍ…½ÕÂŞŞ”4u¾®Ñ¢¶¹k'÷\}kÊ·SŞ©t°/Õö§>òZÇÇ>ŠìS‰îW‰µ©Ä}•’v•Ò*e*åU‡T*:U*“*»«ì>¢RuT¥ºK¥&¥R›V©ëV©ïQièUÙsL¥ñ¸JSŸJs¿ÊŞ•–ãzŠmeĞrÒrÊ2äF9íF9ãF9ëF9çF9ïFv£\p£Œ¸QFİ(cn”q7JÆ2áF™t£L¹Q.ºQ.¹Q.»Q¦İ(WÜ(3n”Y7ÊUâş—m'„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„B!„üÏ'ã™*                                                                                                        øxfúkÿoÏ                                                                                                       Àÿ;Ï¬ó_s¤éÕ
 endstream
 endobj
-35 0 obj
+33 0 obj
 <<
 /Filter /FlateDecode
 /Length 229
@@ -3313,20 +3392,20 @@ xœ]MjÃ0…÷:Å,ÓEPbšt#Á%àE¨ÛÈÒØÄ’Ëß¾#Õ¤Ğ	Ş|ÃÓÈ¦}n½K ß)˜Î[Â9,dzÇ
 ¬3iSå6“B2Ü­sÂ©õCJÈvçD+ì.6ôø äY$çGØ}5ën‰ñ†úQ×`qàI/:¾ê	AlßZö]Z÷Ìüu|®¡*úø›Æ‹sÔIû…:pÕ ®\µ@oÿùÕæ[“PçSÃİÕÓé\º·÷ÌåÿİC™…ˆó”%” 9‚óxßS1Sùü Ošoj
 endstream
 endobj
-36 0 obj
+34 0 obj
 <<
-/Contents 37 0 R
+/Contents 35 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 38 0 R
-/F11 39 0 R
-/F2 44 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 36 0 R
+/F11 37 0 R
+/F2 42 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -3338,7 +3417,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-37 0 obj
+35 0 obj
 <<
 /Length 27436
 >>
@@ -5173,7 +5252,7 @@ Q
 
 endstream
 endobj
-38 0 obj
+36 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -5182,20 +5261,20 @@ endobj
 /Type /Font
 >>
 endobj
-39 0 obj
+37 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /DAAAAA+Arial-ItalicMT
 /Encoding /Identity-H
-/DescendantFonts [ 40 0 R ]
-/ToUnicode 43 0 R
+/DescendantFonts [ 38 0 R ]
+/ToUnicode 41 0 R
 >>
 endobj
-40 0 obj
+38 0 obj
 <<
 /Type /Font
-/FontDescriptor 41 0 R
+/FontDescriptor 39 0 R
 /BaseFont /DAAAAA+Arial-ItalicMT
 /Subtype /CIDFontType2
 /CIDToGIDMap /Identity
@@ -5208,7 +5287,7 @@ endobj
 /DW 500
 >>
 endobj
-41 0 obj
+39 0 obj
 <<
 /Type /FontDescriptor
 /FontName /DAAAAA+Arial-ItalicMT
@@ -5219,10 +5298,10 @@ endobj
 /CapHeight 715.82031
 /ItalicAngle -12
 /FontBBox [ -517.08984 -324.70703 1358.88672 997.55859 ]
-/FontFile2 42 0 R
+/FontFile2 40 0 R
 >>
 endobj
-42 0 obj
+40 0 obj
 <<
 /Length1 27568
 /Filter /FlateDecode
@@ -5296,7 +5375,7 @@ e›¶Åt7ÙoxŒ°Ïn1ÇP¸ÀĞJCáØTZ’ØûN‡É\ZÔƒª«©áBç‚ïĞ&Â2²“P7!£ù©»Á˜ÚQ{,
 ãÛòäB.LH	ª}¾¼ÍÉÎ!y-öÓKS‹sIñÇ±ÁÄôÒ¢ŒHì9šBO.šI¶u|Ññ÷jçÅ61*6^Ü„4uÂÑ‰AwocÔuo5HšÉhvkC±Â,«ªf¶X .pU°êz‰bq*ŠÅl1(º`V‘£MVBĞ‡n!øÇb¨×Èz-¸8È|ú©¢ö"4uüh/y8mKœçuî=&vzyŒ.>§Vq1µ•'÷¹ˆâ ™m3Vô-ÏÈ/íw eœ×F>|²cÚ¬gWÇæİ¯ûBÓˆ½:¾Ø»W8ç·ÑÍ+ÿïB úp”68w9İn¦²qÙ,n0,7i”kÉH5³@‰HpQBD±$qÂiXÍxg¬B”U&™V«Ìú—Øg¤¦¯¶±-lÖ·(«¹šÆôGØ¿«k´”Â·öoùqÑ™_B9Å–gNÑ™àAõèöŒ§ª“O)y¢¬[º>ø|%^RNÊÊå0ûì€ÈJYIHÉM£ıŒ¼¨"¶&(ôõvë3sO¹#´ƒ^R3Ü¼geÇúò&õÕÿ %¨«Â
 endstream
 endobj
-43 0 obj
+41 0 obj
 <<
 /Filter /FlateDecode
 /Length 330
@@ -5307,7 +5386,7 @@ FÛJp­¹ +bJ^œü)õï>%Õ¹“?­Şbï½ã8İ•ˆ„öˆÒÑ6ÆH‹Fˆ5Ä=ãıâ
 MòD¡bDBy$2#2§4É$[uÁdIu%3£ò’ÓªC²¢*óµ,6%òymÉÉ,[uÁä”({YuHÜn‰¤qì’e Ôq˜jØşmeòêœß>\SX6p{Ev°A¾?ÆG«Š
 endstream
 endobj
-44 0 obj
+42 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -5316,21 +5395,21 @@ endobj
 /Type /Font
 >>
 endobj
-45 0 obj
+43 0 obj
 <<
-/Contents 46 0 R
+/Contents 44 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G14 47 0 R
-/G3 14 0 R
+/G14 45 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 48 0 R
-/F11 39 0 R
-/F2 49 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 46 0 R
+/F11 37 0 R
+/F2 47 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -5342,7 +5421,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-46 0 obj
+44 0 obj
 <<
 /Length 22578
 >>
@@ -6863,7 +6942,7 @@ Q
 
 endstream
 endobj
-47 0 obj
+45 0 obj
 <<
 /CA 1
 /ca 1
@@ -6875,7 +6954,7 @@ endobj
 /BM /Normal
 >>
 endobj
-48 0 obj
+46 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -6884,7 +6963,7 @@ endobj
 /Type /Font
 >>
 endobj
-49 0 obj
+47 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -6893,25 +6972,25 @@ endobj
 /Type /Font
 >>
 endobj
-50 0 obj
+48 0 obj
 <<
-/Contents 51 0 R
+/Contents 49 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G14 47 0 R
-/G3 14 0 R
+/G14 45 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 52 0 R
-/F11 39 0 R
-/F2 53 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 50 0 R
+/F11 37 0 R
+/F2 51 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /XObject <<
-/X17 54 0 R
-/X20 57 0 R
+/X17 52 0 R
+/X20 55 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -6923,7 +7002,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-51 0 obj
+49 0 obj
 <<
 /Length 24980
 >>
@@ -8629,7 +8708,7 @@ Q
 
 endstream
 endobj
-52 0 obj
+50 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -8638,7 +8717,7 @@ endobj
 /Type /Font
 >>
 endobj
-53 0 obj
+51 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -8647,14 +8726,14 @@ endobj
 /Type /Font
 >>
 endobj
-54 0 obj
+52 0 obj
 <<
 /Type /XObject
 /Subtype /Image
 /Width 50
 /Height 69
-/ColorSpace [ /ICCBased 55 0 R ]
-/SMask 56 0 R
+/ColorSpace [ /ICCBased 53 0 R ]
+/SMask 54 0 R
 /BitsPerComponent 8
 /Filter /FlateDecode
 /Length 505
@@ -8666,7 +8745,7 @@ bı”¢Ù%6tË¤F;,Œ %WU¢‚´=ÖÍ7w-Oû¬¨¿›{H‹¼œ+Ÿš{€éÔ¾jsxñxpş*x=¾|›Ó0
 flNVÑÃ*zXE«èa=¬¢‡Uô°ŠVÑÃ*zXEì;ìÇæ´ı2ìšA;hØGãnzs76j¤¬¨ÛÆÆ ‰ØB`¡BrU‰õÓ(°†”æ_RäIãÒÜI€Mû~½#´kj©ı2vA©Â^h¡«aaXYR¼ÀÒ!Æi¿U^IÛ×<¬éJlÉ´ïz3 ‰ø±aa³x7W×oÙ¶ŞU‚ @ƒûQ*ş2zúkÕô“8fÌµšà÷jš¿Ái>¯¦ùlŸæÿ «èa=¬¢‡Uô°ŠVÑÃ*zXE«èa=¬¢gjg?&rNæ?ÏMíüÕgÕzõÔ_œUKö8××ëÊ²m½ºş\ß'`·p(
 endstream
 endobj
-55 0 obj
+53 0 obj
 <<
 /N 3
 /Filter /FlateDecode
@@ -8676,7 +8755,7 @@ stream
 xœ}½JÃ`†kAÅA‡\ÔşhÀ¥­X\[…V§4M‹ØŸ¦èèæàê&.Ş€èe(âà%ˆ ³o$©çğæ{xó’/ç@$†*‡N×sË¥‚Q­SïL¨‡eZ}‡ñ¥Ô÷K}^ı'7®¦vßÒù!y®.×'âÅVÀ§>×¾ğùÄs<ñµÏî^¹(¾¯´F¸>Â–ãúù7ñV§=°ÂÿfÖîîWtV¥%JôÔ-ÚØ¬Sá˜#LQ†"›ì'IB” ENîÆPyâzfISPÕY½ÏH)¶•Îùû®ìİ@ö&/C¯~ç{½eÍ6÷¡îØ1]shE¥H³	Ÿ·0Wƒ…'˜9ü]ì˜Y?³ìÒÅbM”Ô4	Ò?…ÍK½
 endstream
 endobj
-56 0 obj
+54 0 obj
 <<
 /Type /XObject
 /Subtype /Image
@@ -8692,14 +8771,14 @@ xœ«ÿ_îß?½Ëü–Òk)"€´‚‚‚‰ƒs|^ıü?ş¸¸ Ïœ‰}0 l=õÒ»Ù:¤è‰Ü»¥$jaıI’Ë€€õ?ë¨Q
 W^"Á’ıArX‘ƒ3]êÕ1ªcT5tÚn'©o@Lÿ­sie¡>Õ“Ü YC—	
 endstream
 endobj
-57 0 obj
+55 0 obj
 <<
 /Type /XObject
 /Subtype /Image
 /Width 48
 /Height 67
-/ColorSpace [ /ICCBased 58 0 R ]
-/SMask 59 0 R
+/ColorSpace [ /ICCBased 56 0 R ]
+/SMask 57 0 R
 /BitsPerComponent 8
 /Filter /FlateDecode
 /Length 498
@@ -8708,7 +8787,7 @@ stream
 xœíÚ½nÂ0ğ¾sE!_té‚ÔÎ]X JlGQÇ¼KU°Ab)S»öEèÙNƒT©§ªX8ÃıåÁ‘òS>@w\ÌuÌU·"»Ì©ˆ}ï…„}Zê›ª‰„v‡™¶kså51Ì7ƒÙ~RlİJK›¥ópéNZ¶ÁX³4K¬=ª s=ß`2¦S8o	§°çm¯’´k•–ËŒË„UwBÀÀ§‰I	`Rñ’ò×„™šòöim÷0@º°çG “å2ÉU”7öBö¸ î»q¡-mº×34¤yğyğyğyğyğO?=Põ@íÚbbKiSBm"Ô‰Á=¦^†ª™)SAÒTÓLAemêërya+ŞmWÁ5@¤í6èŒKÀÄ|åÚ]w"¦_‘r•1=)¶£Es=ßf{$À´¦L†kÛ¢Q'a»·=œRO)»`†ùÆûQ×Çûêã®|3}êkÚ\vêz!Ë—Äµ€¦ÕHÁ¯O÷ü€ÿüôíıêß÷Oß¾ŸûøûEßB<äÁC<äÁC<äÁC<äÁC<½òôçÿ÷àó	›ßøÿ|‹°ã7şæ[âóæêú8­±¿ùŸøŒù¨‡êıñùH^$._4¹Â>
 endstream
 endobj
-58 0 obj
+56 0 obj
 <<
 /N 3
 /Filter /FlateDecode
@@ -8718,7 +8797,7 @@ stream
 xœ}½JÃ`†kAÅA‡\ÔşhÀ¥­X\[…V§4M‹ØŸ¦èèæàê&.Ş€èe(âà%ˆ ³o$©çğæ{xó’/ç@$†*‡N×sË¥‚Q­SïL¨‡eZ}‡ñ¥Ô÷K}^ı'7®¦vßÒù!y®.×'âÅVÀ§>×¾ğùÄs<ñµÏî^¹(¾¯´F¸>Â–ãúù7ñV§=°ÂÿfÖîîWtV¥%JôÔ-ÚØ¬Sá˜#LQ†"›ì'IB” ENîÆPyâzfISPÕY½ÏH)¶•Îùû®ìİ@ö&/C¯~ç{½eÍ6÷¡îØ1]shE¥H³	Ÿ·0Wƒ…'˜9ü]ì˜Y?³ìÒÅbM”Ô4	Ò?…ÍK½
 endstream
 endobj
-59 0 obj
+57 0 obj
 <<
 /Type /XObject
 /Subtype /Image
@@ -8733,21 +8812,21 @@ stream
 xœ«ÿÿÿÿ÷û÷/íß;¿»"ŞI†0`UPP0wğ¯î_|ôùÏ+‹óÌˆĞÜú	N>™¬E‚ÑŒ[ù$i`ÿNšz†ÿ£êGÕªU?@ê¿‹“¦>ÿV†(I´&?99!AŸ›-fy‹¯ü|~tqu¼·ƒ9°Ôg%B“eËşÿ J&’Ì×šñ†÷“>¤†ÿ`K?£êGÕª1êIkß’Ğ~·ÏßÌÀ×>Çlÿ3áV\Obÿ ÛšŒy
 endstream
 endobj
-60 0 obj
+58 0 obj
 <<
-/Contents 61 0 R
+/Contents 59 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G14 47 0 R
-/G3 14 0 R
+/G14 45 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 62 0 R
-/F11 39 0 R
-/F2 63 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 60 0 R
+/F11 37 0 R
+/F2 61 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -8759,7 +8838,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-61 0 obj
+59 0 obj
 <<
 /Length 25461
 >>
@@ -10472,7 +10551,7 @@ Q
 
 endstream
 endobj
-62 0 obj
+60 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -10481,7 +10560,7 @@ endobj
 /Type /Font
 >>
 endobj
-63 0 obj
+61 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -10490,21 +10569,21 @@ endobj
 /Type /Font
 >>
 endobj
-64 0 obj
+62 0 obj
 <<
-/Contents 65 0 R
+/Contents 63 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 66 0 R
-/F11 39 0 R
-/F2 67 0 R
-/F4 17 0 R
-/F5 22 0 R
-/F8 31 0 R
+/F1 64 0 R
+/F11 37 0 R
+/F2 65 0 R
+/F4 15 0 R
+/F5 20 0 R
+/F8 29 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -10516,7 +10595,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-65 0 obj
+63 0 obj
 <<
 /Length 26002
 >>
@@ -12253,7 +12332,7 @@ Q
 
 endstream
 endobj
-66 0 obj
+64 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -12262,7 +12341,7 @@ endobj
 /Type /Font
 >>
 endobj
-67 0 obj
+65 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -12271,23 +12350,23 @@ endobj
 /Type /Font
 >>
 endobj
-68 0 obj
+66 0 obj
 <<
-/Contents 69 0 R
+/Contents 67 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 70 0 R
-/F11 39 0 R
-/F2 71 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 68 0 R
+/F11 37 0 R
+/F2 69 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /XObject <<
-/X28 72 0 R
+/X28 70 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -12299,7 +12378,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-69 0 obj
+67 0 obj
 <<
 /Length 25292
 >>
@@ -14040,7 +14119,7 @@ Q
 
 endstream
 endobj
-70 0 obj
+68 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -14049,7 +14128,7 @@ endobj
 /Type /Font
 >>
 endobj
-71 0 obj
+69 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -14058,14 +14137,14 @@ endobj
 /Type /Font
 >>
 endobj
-72 0 obj
+70 0 obj
 <<
 /Type /XObject
 /Subtype /Image
 /Width 50
 /Height 69
-/ColorSpace [ /ICCBased 73 0 R ]
-/SMask 74 0 R
+/ColorSpace [ /ICCBased 71 0 R ]
+/SMask 72 0 R
 /BitsPerComponent 8
 /Filter /FlateDecode
 /Length 505
@@ -14077,7 +14156,7 @@ bı”¢Ù%6tË¤F;,Œ %WU¢‚´=ÖÍ7w-Oû¬¨¿›{H‹¼œ+Ÿš{€éÔ¾jsxñxpş*x=¾|›Ó0
 flNVÑÃ*zXE«èa=¬¢‡Uô°ŠVÑÃ*zXEì;ìÇæ´ı2ìšA;hØGãnzs76j¤¬¨ÛÆÆ ‰ØB`¡BrU‰õÓ(°†”æ_RäIãÒÜI€Mû~½#´kj©ı2vA©Â^h¡«aaXYR¼ÀÒ!Æi¿U^IÛ×<¬éJlÉ´ïz3 ‰ø±aa³x7W×oÙ¶ŞU‚ @ƒûQ*ş2zúkÕô“8fÌµšà÷jš¿Ái>¯¦ùlŸæÿ «èa=¬¢‡Uô°ŠVÑÃ*zXE«èa=¬¢gjg?&rNæ?ÏMíüÕgÕzõÔ_œUKö8××ëÊ²m½ºş\ß'`·p(
 endstream
 endobj
-73 0 obj
+71 0 obj
 <<
 /N 3
 /Filter /FlateDecode
@@ -14087,7 +14166,7 @@ stream
 xœ}½JÃ`†kAÅA‡\ÔşhÀ¥­X\[…V§4M‹ØŸ¦èèæàê&.Ş€èe(âà%ˆ ³o$©çğæ{xó’/ç@$†*‡N×sË¥‚Q­SïL¨‡eZ}‡ñ¥Ô÷K}^ı'7®¦vßÒù!y®.×'âÅVÀ§>×¾ğùÄs<ñµÏî^¹(¾¯´F¸>Â–ãúù7ñV§=°ÂÿfÖîîWtV¥%JôÔ-ÚØ¬Sá˜#LQ†"›ì'IB” ENîÆPyâzfISPÕY½ÏH)¶•Îùû®ìİ@ö&/C¯~ç{½eÍ6÷¡îØ1]shE¥H³	Ÿ·0Wƒ…'˜9ü]ì˜Y?³ìÒÅbM”Ô4	Ò?…ÍK½
 endstream
 endobj
-74 0 obj
+72 0 obj
 <<
 /Type /XObject
 /Subtype /Image
@@ -14103,21 +14182,21 @@ xœ«ÿ_îß?½Ëü–Òk)"€´‚‚‚‰ƒs|^ıü?ş¸¸ Ïœ‰}0 l=õÒ»Ù:¤è‰Ü»¥$jaıI’Ë€€õ?ë¨Q
 W^"Á’ıArX‘ƒ3]êÕ1ªcT5tÚn'©o@Lÿ­sie¡>Õ“Ü YC—	
 endstream
 endobj
-75 0 obj
+73 0 obj
 <<
-/Contents 76 0 R
+/Contents 74 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G14 47 0 R
-/G3 14 0 R
+/G14 45 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 77 0 R
-/F11 39 0 R
-/F2 78 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 75 0 R
+/F11 37 0 R
+/F2 76 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -14129,7 +14208,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-76 0 obj
+74 0 obj
 <<
 /Length 24459
 >>
@@ -15800,7 +15879,7 @@ Q
 
 endstream
 endobj
-77 0 obj
+75 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -15809,7 +15888,7 @@ endobj
 /Type /Font
 >>
 endobj
-78 0 obj
+76 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -15818,21 +15897,21 @@ endobj
 /Type /Font
 >>
 endobj
-79 0 obj
+77 0 obj
 <<
-/Contents 80 0 R
+/Contents 78 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G14 47 0 R
-/G3 14 0 R
+/G14 45 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 81 0 R
-/F11 39 0 R
-/F2 82 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 79 0 R
+/F11 37 0 R
+/F2 80 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -15844,7 +15923,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-80 0 obj
+78 0 obj
 <<
 /Length 22655
 >>
@@ -17357,7 +17436,7 @@ Q
 
 endstream
 endobj
-81 0 obj
+79 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -17366,7 +17445,7 @@ endobj
 /Type /Font
 >>
 endobj
-82 0 obj
+80 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -17375,21 +17454,21 @@ endobj
 /Type /Font
 >>
 endobj
-83 0 obj
+81 0 obj
 <<
-/Contents 84 0 R
+/Contents 82 0 R
 /MediaBox [ 0 0 612 792 ]
 /Resources <<
 /ExtGState <<
-/G3 14 0 R
+/G3 12 0 R
 >>
 /Font <<
-/F1 85 0 R
-/F11 39 0 R
-/F2 86 0 R
-/F36 87 0 R
-/F4 17 0 R
-/F5 22 0 R
+/F1 83 0 R
+/F11 37 0 R
+/F2 84 0 R
+/F36 85 0 R
+/F4 15 0 R
+/F5 20 0 R
 >>
 /ProcSet [ /ImageB /ImageC /ImageI /PDF /Text ]
 >>
@@ -17401,7 +17480,7 @@ endobj
 /Parent 2 0 R
 >>
 endobj
-84 0 obj
+82 0 obj
 <<
 /Length 9096
 >>
@@ -18012,7 +18091,7 @@ Q
 
 endstream
 endobj
-85 0 obj
+83 0 obj
 <<
 /BaseFont /Helvetica
 /Encoding /WinAnsiEncoding
@@ -18021,7 +18100,7 @@ endobj
 /Type /Font
 >>
 endobj
-86 0 obj
+84 0 obj
 <<
 /BaseFont /Helvetica-Bold
 /Encoding /WinAnsiEncoding
@@ -18030,20 +18109,20 @@ endobj
 /Type /Font
 >>
 endobj
-87 0 obj
+85 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /EAAAAA+Arial-BoldItalicMT
 /Encoding /Identity-H
-/DescendantFonts [ 88 0 R ]
-/ToUnicode 91 0 R
+/DescendantFonts [ 86 0 R ]
+/ToUnicode 89 0 R
 >>
 endobj
-88 0 obj
+86 0 obj
 <<
 /Type /Font
-/FontDescriptor 89 0 R
+/FontDescriptor 87 0 R
 /BaseFont /EAAAAA+Arial-BoldItalicMT
 /Subtype /CIDFontType2
 /CIDToGIDMap /Identity
@@ -18056,7 +18135,7 @@ endobj
 /DW 750
 >>
 endobj
-89 0 obj
+87 0 obj
 <<
 /Type /FontDescriptor
 /FontName /EAAAAA+Arial-BoldItalicMT
@@ -18067,10 +18146,10 @@ endobj
 /CapHeight 715.82031
 /ItalicAngle -12
 /FontBBox [ -559.57031 -376.46484 1390.13672 1017.57813 ]
-/FontFile2 90 0 R
+/FontFile2 88 0 R
 >>
 endobj
-90 0 obj
+88 0 obj
 <<
 /Length1 17964
 /Filter /FlateDecode
@@ -18117,7 +18196,7 @@ eËŒlÓ¸›œµDÆÇ‡êDD…¸Õé(ˆ†ÒbĞ× òÃ@ËAH$G›œCšY'Oõ³B)ò¥Ø)TaPsQQæâmÂ Z:ŒÒnF§
 ğÚü^ÕöÒAÑkÀÃ´ø½ü˜Ş 1ğ(½©í¡Oè-à§´O{ÑÛÀÏèàçô.ğzø%½<|•¾¢ıÀ¯éà	úøßÒAm7ı‹OÒaíú>~O #Àé(ğ'úø³§èSài:¦½Lgès`+}¡½Dšÿû1İùGLÿ¿Ó‡1}èˆéÃ˜>Üˆé#Œ˜>ò?Äô±FL/7bz…Ó+şCL¿Ìˆé—1½ÊˆéÕm1ı³_ÅôIFLŸlÄô)FLŸbÄô©ÿÓ/7búÀ+h>Ñ\é³Î‰éµFLŸcÄô:#¦×1}®ÓçÓ¯2búUFL_`Äô…FL¿ÚˆéWŸÓ¯5búum1ı##¦ô_ˆé‡˜~øœ˜~Èˆé‡Œ˜~è˜şGLÿÿ6¦ÿôGL?Ó‹˜^bÄô’ÆôÁFL/ı#¦ÿÓÿˆéÄôócúÿ ï=€
 endstream
 endobj
-91 0 obj
+89 0 obj
 <<
 /Filter /FlateDecode
 /Length 270
@@ -18126,140 +18205,120 @@ stream
 xœ]‘Íj…0…÷yŠYŞ..QQo/ˆp±-¸èµ}€˜Œ6PcˆqáÛ7?ÖB	|œs&“	mÚ‡VIôÍÌ¼CƒTÂà2¯†#ô8JEÒ„äv§pò‰iB]¸Û‹S«†™T }wêbÍ§›˜{¼#ôÕ4Rpúl:Çİªõ7N¨,$¤®Aàà*=3ıÂ&bçV8]Úíì2M#dÓØŸ.šq4LHªÄ­ª'·j‚JüÓË˜êşÅŒwgs'I~­=å÷Ê"RÔÊ¨E Ké)tT†;÷êéï]GkElEë>îî¨ûfıPIğÕ7„0ùğzÿn©ğø=kŸòûºÖŠ^
 endstream
 endobj
-92 0 obj
-<<
-/D [ 12 0 R /Fit ]
-/S /GoTo
->>
-endobj
-93 0 obj
-<<
-/A 92 0 R
-/Title (Maternity)
-/Prev 10 0 R
-/Parent 11 0 R
-/Count 0
->>
-endobj
 xref
-0 94
+0 90
 0000000000 65535 f 
 0000000015 00000 n 
-0000000123 00000 n 
-0000000260 00000 n 
-0000000326 00000 n 
-0000000515 00000 n 
-0000001272 00000 n 
-0000001313 00000 n 
-0000001420 00000 n 
-0000001532 00000 n 
-0000001580 00000 n 
-0000001663 00000 n 
-0000001721 00000 n 
-0000001996 00000 n 
-0000021676 00000 n 
-0000021716 00000 n 
-0000021824 00000 n 
-0000021937 00000 n 
-0000022086 00000 n 
-0000022935 00000 n 
-0000023180 00000 n 
-0000047823 00000 n 
-0000048214 00000 n 
-0000048358 00000 n 
-0000049272 00000 n 
-0000049512 00000 n 
-0000081429 00000 n 
-0000081824 00000 n 
-0000082110 00000 n 
-0000102587 00000 n 
-0000102695 00000 n 
-0000102808 00000 n 
-0000102955 00000 n 
-0000103170 00000 n 
-0000103409 00000 n 
-0000105364 00000 n 
-0000105666 00000 n 
-0000105953 00000 n 
-0000133443 00000 n 
-0000133551 00000 n 
-0000133702 00000 n 
-0000134359 00000 n 
-0000134615 00000 n 
-0000151987 00000 n 
-0000152390 00000 n 
-0000152503 00000 n 
-0000152802 00000 n 
-0000175434 00000 n 
-0000175523 00000 n 
-0000175631 00000 n 
-0000175744 00000 n 
-0000176082 00000 n 
-0000201116 00000 n 
-0000201224 00000 n 
-0000201337 00000 n 
-0000202034 00000 n 
-0000202408 00000 n 
-0000202778 00000 n 
-0000203468 00000 n 
-0000203842 00000 n 
-0000204203 00000 n 
-0000204502 00000 n 
-0000230017 00000 n 
-0000230125 00000 n 
-0000230238 00000 n 
-0000230536 00000 n 
-0000256592 00000 n 
-0000256700 00000 n 
-0000256813 00000 n 
-0000257127 00000 n 
-0000282473 00000 n 
-0000282581 00000 n 
-0000282694 00000 n 
-0000283391 00000 n 
-0000283765 00000 n 
-0000284135 00000 n 
-0000284434 00000 n 
-0000308947 00000 n 
-0000309055 00000 n 
-0000309168 00000 n 
-0000309467 00000 n 
-0000332176 00000 n 
-0000332284 00000 n 
-0000332397 00000 n 
-0000332696 00000 n 
-0000341845 00000 n 
-0000341953 00000 n 
-0000342066 00000 n 
-0000342221 00000 n 
-0000342557 00000 n 
-0000342818 00000 n 
-0000352067 00000 n 
-0000352410 00000 n 
-0000352460 00000 n 
+0000000054 00000 n 
+0000000191 00000 n 
+0000000240 00000 n 
+0000000485 00000 n 
+0000002063 00000 n 
+0000002170 00000 n 
+0000002277 00000 n 
+0000002389 00000 n 
+0000002494 00000 n 
+0000002769 00000 n 
+0000022449 00000 n 
+0000022489 00000 n 
+0000022597 00000 n 
+0000022710 00000 n 
+0000022859 00000 n 
+0000023708 00000 n 
+0000023953 00000 n 
+0000048596 00000 n 
+0000048987 00000 n 
+0000049131 00000 n 
+0000050045 00000 n 
+0000050285 00000 n 
+0000082202 00000 n 
+0000082597 00000 n 
+0000082883 00000 n 
+0000103360 00000 n 
+0000103468 00000 n 
+0000103581 00000 n 
+0000103728 00000 n 
+0000103943 00000 n 
+0000104182 00000 n 
+0000106137 00000 n 
+0000106439 00000 n 
+0000106726 00000 n 
+0000134216 00000 n 
+0000134324 00000 n 
+0000134475 00000 n 
+0000135132 00000 n 
+0000135388 00000 n 
+0000152760 00000 n 
+0000153163 00000 n 
+0000153276 00000 n 
+0000153575 00000 n 
+0000176207 00000 n 
+0000176296 00000 n 
+0000176404 00000 n 
+0000176517 00000 n 
+0000176855 00000 n 
+0000201889 00000 n 
+0000201997 00000 n 
+0000202110 00000 n 
+0000202807 00000 n 
+0000203181 00000 n 
+0000203551 00000 n 
+0000204241 00000 n 
+0000204615 00000 n 
+0000204976 00000 n 
+0000205275 00000 n 
+0000230790 00000 n 
+0000230898 00000 n 
+0000231011 00000 n 
+0000231309 00000 n 
+0000257365 00000 n 
+0000257473 00000 n 
+0000257586 00000 n 
+0000257900 00000 n 
+0000283246 00000 n 
+0000283354 00000 n 
+0000283467 00000 n 
+0000284164 00000 n 
+0000284538 00000 n 
+0000284908 00000 n 
+0000285207 00000 n 
+0000309720 00000 n 
+0000309828 00000 n 
+0000309941 00000 n 
+0000310240 00000 n 
+0000332949 00000 n 
+0000333057 00000 n 
+0000333170 00000 n 
+0000333469 00000 n 
+0000342618 00000 n 
+0000342726 00000 n 
+0000342839 00000 n 
+0000342994 00000 n 
+0000343330 00000 n 
+0000343591 00000 n 
+0000352840 00000 n 
 trailer
 <<
-/Size 94
+/Size 90
 /Root 3 0 R
 /Info 1 0 R
 >>
 startxref
-352548
+353183
 %%EOF
 3 1 obj
 <<
 /Type /Catalog
 /Pages 2 0 R
-/Outlines 11 0 R
- /AF [95 0 R] /Names << /EmbeddedFiles << /Names [(Content Credentials) 95 0 R] >> >> >>
+ /AF [91 0 R] /Names << /EmbeddedFiles << /Names [(Content Credentials) 91 0 R] >> >> >>
 endobj
-94 0 obj
-<< /Length 20180 /F << /Subtype (application/c2pa) /Length 20180 >> >>
+90 0 obj
+<< /Length 20174 /F << /Subtype (application/c2pa) /Length 20174 >> >>
 stream
-  NÔjumb   jumdc2pa  €  ª 8›qc2pa   N®jumb   Gjumdc2ma  €  ª 8›qurn:c2pa:13786fff-307f-453b-b743-7ce07cb74cf9   jumb   )jumdc2as  €  ª 8›qc2pa.assertions   	¹jumb   #jumd@Ë2»ŠH§*ÖôCic2pa.icon    bfdb image/svg+xml   	wbidb<svg width="716" height="716" viewBox="0 0 716 716" fill="none" xmlns="http://www.w3.org/2000/svg">
+  NÎjumb   jumdc2pa  €  ª 8›qc2pa   N¨jumb   Gjumdc2ma  €  ª 8›qurn:c2pa:e3c2c7d5-c1a0-4463-86cd-630035ad6f08   ˜jumb   )jumdc2as  €  ª 8›qc2pa.assertions   	¹jumb   #jumd@Ë2»ŠH§*ÖôCic2pa.icon    bfdb image/svg+xml   	wbidb<svg width="716" height="716" viewBox="0 0 716 716" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M508.749 317.399C516.777 287.314 508.991 253.884 485.389 230.282C461.788 206.681 428.36 198.895 398.273 206.923C376.231 184.928 343.39 174.956 311.148 183.596C278.906 192.234 255.45 217.292 247.36 247.361C217.291 255.451 192.233 278.91 183.595 311.149C174.957 343.391 184.927 376.232 206.924 398.274C198.896 428.359 206.683 461.789 230.284 485.391C253.885 508.992 287.313 516.779 317.401 508.75C339.442 530.745 372.286 540.717 404.525 532.079C436.767 523.441 460.223 498.384 468.313 468.315C498.383 460.224 523.44 436.766 532.078 404.526C540.716 372.285 530.747 339.443 508.749 317.402V317.399ZM470.899 244.776C486.892 260.77 493.488 282.601 490.687 303.412L415.577 260.046C412.411 258.218 408.509 258.218 405.345 260.046L317.401 310.82V277.526C317.401 275.191 318.652 273.005 320.676 271.837L387.644 233.174C414.178 218.353 448.346 222.223 470.901 244.776H470.899ZM357.837 311.144L398.275 334.491V381.185L357.837 404.532L317.398 381.185V334.491L357.837 311.144ZM264.776 269.693C265.207 239.305 285.644 211.649 316.453 203.393C338.3 197.54 360.505 202.744 377.127 215.573L302.014 258.937C298.848 260.764 296.898 264.144 296.898 267.798V369.346L268.065 352.699C266.043 351.531 264.776 349.353 264.776 347.017V269.691V269.693ZM203.391 316.454C209.244 294.608 224.854 277.978 244.276 269.999V356.73C244.276 360.384 246.226 363.763 249.392 365.591L337.337 416.365L308.503 433.013C306.481 434.181 303.961 434.188 301.939 433.02L234.971 394.357C208.868 378.789 195.138 347.261 203.391 316.454ZM244.775 470.9C228.781 454.906 222.186 433.075 224.986 412.264L300.096 455.63C303.263 457.457 307.164 457.457 310.328 455.63L398.273 404.856V438.149C398.273 440.485 397.022 442.671 394.997 443.839L328.029 482.502C301.495 497.322 267.327 493.452 244.772 470.9H244.775ZM450.897 445.982C450.466 476.371 430.029 504.027 399.22 512.283C377.373 518.136 355.168 512.932 338.547 500.102L413.659 456.738C416.826 454.911 418.775 451.532 418.775 447.877V346.329L447.609 362.977C449.631 364.145 450.897 366.323 450.897 368.659V445.985V445.982ZM512.282 399.221C506.429 421.068 490.819 437.697 471.397 445.676V358.946C471.397 355.292 469.448 351.912 466.281 350.085L378.336 299.311L407.17 282.663C409.192 281.495 411.712 281.487 413.734 282.655L480.702 321.318C506.805 336.887 520.536 368.415 512.282 399.221Z" fill="black"/>
 </svg>
-  jumb   )jumdcbor  €  ª 8›qc2pa.actions.v2    İcbor¡gactions¤factionlc2pa.createdqdigitalSourceTypexFhttp://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMediamsoftwareAgent¢dnamengpt-5.6-sol-wmgversionngpt-5.6-sol-wmdwhenx2026-08-26T00:31:35.375984Z   ¦jumb   (jumdcbor  €  ª 8›qc2pa.hash.data    vcbor¥jexclusions¢estart i»flengthNÔdnamenjumbf manifestcalgfsha256dhashX ¾7cX¹±}İçÈ¨¯êS^ŒiBpVäâêOƒ-Ÿaücpad@  ‰jumb   'jumdc2cl  €  ª 8›qc2pa.claim.v2   Zcbor¦jinstanceIDx,xmp:iid:cfd56859-f817-4281-836b-7d2b5331c9d8tclaim_generator_info£dnamegChatGPTdicon¢curlx$self#jumbf=c2pa.assertions/c2pa.icondhashX u>ğ=W1’³¨NëLûÁŒt·'wÖĞ6Çe6ãñkspecVersione2.2.0isignaturexMself#jumbf=/c2pa/urn:c2pa:13786fff-307f-453b-b743-7ce07cb74cf9/c2pa.signaturercreated_assertionsƒ¢curlx$self#jumbf=c2pa.assertions/c2pa.icondhashX u>ğ=W1’³¨NëLûÁŒt·'wÖĞ6Çe6ãñ¢curlx*self#jumbf=c2pa.assertions/c2pa.actions.v2dhashX T%“FÛ^mÁ¡‰^13±öl],êñµ“æî¢curlx)self#jumbf=c2pa.assertions/c2pa.hash.datadhashX í—IKµR!¹ı™ı[”ÍJ¹±)”!RºÕónÊ<´ú§hdc:titleiimage.pdfcalgfsha256  @8jumb   (jumdc2cs  €  ª 8›qc2pa.signature   @cborÒ„Yè¢8$!‚Yˆ0‚„0‚l ¥üépŒò€1îDds0	*†H†÷ 0J1!0USSL.com C2PA ICA R1 202510U
+  jumb   )jumdcbor  €  ª 8›qc2pa.actions.v2    ×cbor¡gactions¤factionlc2pa.createdqdigitalSourceTypexFhttp://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMediamsoftwareAgent¢dnamekgpt-5.6-solgversionkgpt-5.6-soldwhenx2026-08-26T01:28:11.999370Z   ¦jumb   (jumdcbor  €  ª 8›qc2pa.hash.data    vcbor¥jexclusions¢estart kÕflengthNÎdnamenjumbf manifestcalgfsha256dhashX eaÊ_üdyÔòñâ¨¬ç@ Ô»$I°ü.€;ëŒ5,cpad@  ‰jumb   'jumdc2cl  €  ª 8›qc2pa.claim.v2   Zcbor¦jinstanceIDx,xmp:iid:ecc95b72-990d-4afb-94b2-206c18e935b7tclaim_generator_info£dnamegChatGPTdicon¢curlx$self#jumbf=c2pa.assertions/c2pa.icondhashX u>ğ=W1’³¨NëLûÁŒt·'wÖĞ6Çe6ãñkspecVersione2.2.0isignaturexMself#jumbf=/c2pa/urn:c2pa:e3c2c7d5-c1a0-4463-86cd-630035ad6f08/c2pa.signaturercreated_assertionsƒ¢curlx$self#jumbf=c2pa.assertions/c2pa.icondhashX u>ğ=W1’³¨NëLûÁŒt·'wÖĞ6Çe6ãñ¢curlx*self#jumbf=c2pa.assertions/c2pa.actions.v2dhashX Ñ › DRqUMk¯ô¨­m‰gµÆˆ˜ãßv~¢curlx)self#jumbf=c2pa.assertions/c2pa.hash.datadhashX ¦—öHl5ßG¥ÄN¬F$_Y©6ûYßY<şr[hdc:titleiimage.pdfcalgfsha256  @8jumb   (jumdc2cs  €  ª 8›qc2pa.signature   @cborÒ„Yè¢8$!‚Yˆ0‚„0‚l ¥üépŒò€1îDds0	*†H†÷ 0J1!0USSL.com C2PA ICA R1 202510U
 SSL Corporation10	UUS0260422155105Z270423155104Z0G10	UUS10U
 OpenAI OpCo, LLC10UOpenAI Media Service0‚"0	*†H†÷ ‚ 0‚
 ‚ ºjLM—ê‰¶Ñ¾^XNr¡™ßiq|å!#Ó¢5œL£J<ïn+¿æd®×„Ki$ZcÏêv
@@ -18278,21 +18337,20 @@ m=I°ËÇ†XÌÜî.éÆ9¸3\ Úî W3T.p(J%)O’|.Òúİg.zèPx9Qºƒ:Úˆ~#’õbXšåÂ¨s†ÅØqéï\
 iˆ-íÃF¢*äŒÔœWF-XbÕÊ¨ú~øÂÙajË5] “£²e¨/íï˜çü~ºHôª¡qü“¯ê§NsˆiÕBÀù„’…OËT³=:øİ)eyÊC–¸‡X–!ïÑ‘{ £‚&0‚"0Uÿ0ÿ 0Uÿ0)U%"0 ++$
 +ƒè^0U9=GÜ—¯ˆ{MsÍåî¤¥*0U 00
 +ƒè^0U#0€ü*Ju:€ú™c“ğsWì¾“°}Ã{0x+l0j0$+0†http://ocsp-c2pa.ssl.com0B+0†6http://crt-c2pa.ssl.com/SSL.com-C2PA-Root-2025-RSA.cer0	*†H†÷ ‚ Î6ú>ï–6-¯Ufÿ{+ kVõË­½*­¥¦ĞM£>“ä“iÕäŒ¨næ7Tâ%œìef(<3=¢š¢»ÍgdJç¾t!¡nÃ«&Ä;,ÚU¹ıGNàx›7ƒÄt;ÅGaïmAr¤Û]CSÉ–Nåà:ß¨İ.Ñ¯X—Öçô_r#<kÏ½9«Œ“¨§vY>á’õ÷ÙûFb«nnÔˆF ³/*j_¥NÚøÔüÌÙ£<©wE
-Áù˜¹9ËÌ¡qÀ*‚qÓäö%âQ!mÖßäSoJ}^ÀºÕwy!zÎí÷›¶²ŠBVkA*şkœ‹î£(Ï_óéĞdÖîÂ‰Kë’Ïõ¯Â'M¸‘¡7%™æı€Üô¼Ç7{¾´-gXğ/çÃ³‹qåDz0¶¥²u>[#~;ÓT¦:¹ÇÌ3Õj5zv/şWÚiø>?ïT‹{FÃcúíÄ/p„+öV‚ô§Ë$×l^${:½©X;i³œÒptÿ‹n&»Ã«EÇS–œGµÆF«^õüˆ‹h£5å|j•eµ«ë¹ÿº¸à›JG²Îì/‰}î¯œMÄÉÎõ2=÷&4ş"‹zíù^^g_Q[Û$VûÑY¡·Şšf	¶Ñ†.ú}~•y›Df|6…öõ¡cpadY3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       öY ƒTºJ	{(ı=^ª˜®Éšø¸ÆŞB˜ß4Ğ´d3ïy—R¨Š¹Íá>ÙÇzoí”>µ_aåÛ=
->Ùöu¬WÍ‹´]œŠ‚v¾,ô®Ü­.åÇĞÌ/¶‚8ƒ‡èl(&´<Ø79o“$ğ“†îø)Å¤(‹a¦—¸œ;ÎËDc.{‘ÎÚêÏ[ıI9e³;G}¨UÆØk‹+v¯’§GQ:<XÍ¥¤tƒG“ËNX†Ì‹jóc)–håÿ2 -_Qv?ĞAó€Ì'Ÿ¿Vİy}<™Åİİ_š6ªKd¢dŸ^ËÚ²êj»¾Qé¬h¬²2_*“
+Áù˜¹9ËÌ¡qÀ*‚qÓäö%âQ!mÖßäSoJ}^ÀºÕwy!zÎí÷›¶²ŠBVkA*şkœ‹î£(Ï_óéĞdÖîÂ‰Kë’Ïõ¯Â'M¸‘¡7%™æı€Üô¼Ç7{¾´-gXğ/çÃ³‹qåDz0¶¥²u>[#~;ÓT¦:¹ÇÌ3Õj5zv/şWÚiø>?ïT‹{FÃcúíÄ/p„+öV‚ô§Ë$×l^${:½©X;i³œÒptÿ‹n&»Ã«EÇS–œGµÆF«^õüˆ‹h£5å|j•eµ«ë¹ÿº¸à›JG²Îì/‰}î¯œMÄÉÎõ2=÷&4ş"‹zíù^^g_Q[Û$VûÑY¡·Şšf	¶Ñ†.ú}~•y›Df|6…öõ¡cpadY3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       öY ‘Ê,A©Xª’ Q¹-×Jå~×à¨dŸ¸Î¯ŸôƒS:2Fõ»¥İ`NyÔÖîbZ•ÈãàZäº‹Dí®›J?…o•umBXìÿ£‰˜4Å—qFö)3ÏºŞaK½dcšûNUDJ€ 9–İBËvMN/Ø¿ÆI’êÅâSãoFÉ#Ä…Îù•¤Gª¡´æ>fmqÙÃİCá%W%‹µ%–dhœş‡Ñ"$„ò˜,áç°)IÃšJÎ]„Šê½ñ!A4Kà“£=`‘Eh¼é’Û6‹ŞÉCŒ5º/Q25'Î8·5³¤´“|ênüÒoİ›å¢
 endstream
 endobj
-95 0 obj
-<< /AFRelationship /C2PA_Manifest /Desc (Content Credentials) /F (Content Credentials) /EF << /F 94 0 R >> /Subtype (application/c2pa) /Type /FileSpec /UF (Content Credentials) >>
+91 0 obj
+<< /AFRelationship /C2PA_Manifest /Desc (Content Credentials) /F (Content Credentials) /EF << /F 90 0 R >> /Subtype (application/c2pa) /Type /FileSpec /UF (Content Credentials) >>
 endobj
 xref
 3 1
-0000354508 00001 n 
-94 2
-0000354660 00000 n 
-0000374945 00000 n 
+0000355063 00001 n 
+90 2
+0000355198 00000 n 
+0000375477 00000 n 
 trailer
-<< /Size 96 /Root 3 1 R /Prev 352548 >>
+<< /Size 92 /Root 3 1 R /Prev 353183 >>
 startxref
-375141
+375673
 %%EOF
