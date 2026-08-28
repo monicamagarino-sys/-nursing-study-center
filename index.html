@@ -3193,7 +3193,7 @@ function renderProgress(){
  ${renderMfaSecurityCard()}${renderProgressBackup()}${renderExamHistory()}${renderNotesOverview()}
  <div class="card"><h3>📅 ${en?'Daily plan':'Plan diario'}</h3><p>${en?'10 questions prioritized from your errors and weak modules.':'10 preguntas priorizadas según tus errores y módulos débiles.'}</p><button class="goodbtn" onclick="startDailyPractice()">${appState.daily.completedDate===dailyDateKey()?(en?'Repeat today’s plan':'Repetir plan de hoy'):(en?'Start today’s study':'Comenzar estudio de hoy')}</button></div>
  <div class="card"><h3>🎯 ${en?'Smart reinforcement':'Refuerzo inteligente'}</h3><p>${weak.length?(en?'Practice up to 30 questions from the three lowest-scoring modules in your latest exam.':'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.'):(en?'Complete an exam so the app can identify your three weakest topics automatically.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.')}</p><button class="warnbtn" onclick="startWeakPractice()" ${weak.length?'':'disabled'}>${en?'Practice weak topics':'Practicar temas débiles'}</button></div>
- <div class="card"><h3>☁️ ${en?'Synchronization':'Sincronización'}</h3><p id="syncStatus" class="muted">${en?'Checking your account…':'Comprobando tu cuenta…'}</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">${en?'Load from my account':'Cargar desde mi cuenta'}</button><button class="primary" onclick="if(confirm('${en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?'}'))syncCloudProgress(true,true)">${en?'Save this device':'Guardar este dispositivo'}</button></div></div>
+ <div class="card"><h3>☁️ ${en?'Synchronization':'Sincronización'}</h3><p id="syncStatus" class="muted">${en?'Checking your account…':'Comprobando tu cuenta…'}</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">${en?'Load from my account':'Cargar desde mi cuenta'}</button><button class="primary" onclick="if(confirm('${en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?'}'))syncCloudProgress(true,true)">${en?'Save this device':'Guardar este dispositivo'}</button><button class="warnbtn" onclick="restoreProgressRecovery()">${en?'Restore protected copy':'Restaurar copia protegida'}</button></div></div>
  <div class="card"><h3>${en?'Completed modules':'Módulos completados'}</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(k,en).replace(/^(Clase|Class) \\d+ — /,''))}</p>`).join('')}
  <button class="secondary" onclick="if(confirm('${en?'Delete all saved progress?':'¿Borrar todo el progreso guardado?'}')){localStorage.removeItem(STORE_KEY);location.reload()}">${en?'Reset progress':'Reiniciar progreso'}</button></div>`;
  setTimeout(()=>{if(typeof refreshMfaStatus==='function')refreshMfaStatus()},0);
@@ -3236,6 +3236,27 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, 
 const CLOUD_STATE_KEY='nursing_study_center_v1';
 const SYNC_POLICY_KEY='mnsc_sync_policy_v2';
 let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false;
+
+function progressActivity(state){
+ const s=state||{},historyTotal=(s.history||[]).reduce((n,x)=>n+Math.max(0,Number(x?.total||0)),0);
+ return Math.max(
+   Number(s.lifetime?.questions||0),
+   Number(s.practice?.attempts||0)+Number(s.medCalc?.attempts||0)+Number(s.medPharm?.attempts||0),
+   historyTotal
+ );
+}
+function preserveRecoverySnapshot(state,label){
+ try{if(state&&progressActivity(state)>0)localStorage.setItem(`${STORE_KEY}_recovery`,JSON.stringify({savedAt:Date.now(),label,state}))}catch(e){}
+}
+window.restoreProgressRecovery=function(){
+ const en=appState?.planLang==='en';let snap=null;
+ try{snap=JSON.parse(localStorage.getItem(`${STORE_KEY}_recovery`)||'null')}catch(e){}
+ if(!snap?.state){alert(en?'No recovery copy is available on this device.':'No hay una copia de recuperación disponible en este dispositivo.');return}
+ if(!confirm(en?'Restore the protected progress copy saved before the last synchronization?':'¿Restaurar la copia protegida antes de la última sincronización?'))return;
+ preserveRecoverySnapshot(appState,'before-recovery-restore');normalizeLoadedState(snap.state);appState.updatedAt=Date.now();
+ localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.setItem('mnsc_sync_pending','1');refreshStateUI();
+ alert(en?'Recovery copy restored. Review it before saving to your account.':'Copia de recuperación restaurada. Revísala antes de guardarla en tu cuenta.');
+};
 
 function setSyncStatus(text){const el=document.getElementById('syncStatus');if(el)el.textContent=text}
 function normalizeLoadedState(raw){
@@ -3308,24 +3329,30 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
    if(userError||!user)throw userError||new Error('NO_USER');
    const profileResult=await authTimeout(sb.from('profiles').select('preferences').eq('user_id',user.id).maybeSingle(),10000);
    if(profileResult.error)throw profileResult.error;
-   const cloud=profileResult.data?.preferences?.[CLOUD_STATE_KEY]||user.user_metadata?.[CLOUD_STATE_KEY]||null;
+   const existingPreferences=profileResult.data?.preferences||{};
+   const cloud=existingPreferences[CLOUD_STATE_KEY]||user.user_metadata?.[CLOUD_STATE_KEY]||null;
    const pending=localStorage.getItem('mnsc_sync_pending')==='1';
-   if(cloud&&!pending&&!manual&&!localStorage.getItem(SYNC_POLICY_KEY)){
+   const localActivity=progressActivity(appState),cloudActivity=progressActivity(cloud);
+   // Never let an empty or less complete device overwrite a richer cloud copy.
+   if(cloud&&uploadLocal&&localActivity<cloudActivity){
      cloudSyncReady=true;
-     setSyncStatus('Elige una vez: guarda este dispositivo si tiene los porcentajes correctos, o carga desde tu cuenta.');
+     setSyncStatus(`Protección activa: la cuenta tiene más progreso (${cloudActivity}) que este dispositivo (${localActivity}). Carga desde tu cuenta.`);
+     alert(appState?.planLang==='en'?'Protected: this device has less progress and cannot overwrite your account. Load from your account instead.':'Protección activa: este dispositivo tiene menos progreso y no puede reemplazar tu cuenta. Usa Cargar desde mi cuenta.');
      return;
    }
-   if(cloud&&!uploadLocal&&!pending){
+   const shouldLoad=cloud&&!uploadLocal&&(manual||cloudActivity>=localActivity);
+   if(shouldLoad){
+     preserveRecoverySnapshot(appState,'before-cloud-load');
      normalizeLoadedState(cloud);
      localStorage.setItem(STORE_KEY,JSON.stringify(appState));
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      refreshStateUI();
      setSyncStatus('Progreso actualizado desde Supabase.');
-   }else if(!cloud||uploadLocal||pending){
+   }else if(!cloud||uploadLocal||pending||localActivity>cloudActivity){
      const stateCopy=JSON.parse(JSON.stringify(appState));
      const {error}=await authTimeout(sb.from('profiles').upsert({
-       user_id:user.id,preferences:{[CLOUD_STATE_KEY]:stateCopy},updated_at:new Date().toISOString()
+       user_id:user.id,preferences:{...existingPreferences,[CLOUD_STATE_KEY]:stateCopy},updated_at:new Date().toISOString()
      },{onConflict:'user_id'}),12000);
      if(error)throw error;
      await authTimeout(syncNormalizedTables(user.id),15000);
@@ -3701,7 +3728,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
    '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
-   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button></div></div>'+
+   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
  window.setInterfaceLanguage=function(lang){ setGlobalLanguage(lang); };
