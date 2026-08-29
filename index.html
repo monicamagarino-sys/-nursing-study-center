@@ -4846,6 +4846,10 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
       .mn-guide-toolbar strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       .mn-guide-close{flex:0 0 auto;border:2px solid #fff;background:#fff;color:#0b4f47;border-radius:12px;padding:11px 16px;font-size:16px;font-weight:900;cursor:pointer}
       .mn-guide-frame{display:block;width:100%;flex:1 1 auto;border:0;background:#fff;min-height:0}
+      #studyGuidesBox .grid{align-items:stretch}
+      #studyGuidesBox .card{display:flex;flex-direction:column;height:100%}
+      #studyGuidesBox .card .actions{margin-top:auto;padding-top:12px}
+      #studyGuidesBox .card .primary{width:100%;text-align:center}
     `;
     document.head.appendChild(style);
     const viewer=document.createElement('div');
