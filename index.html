@@ -4824,16 +4824,16 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 /* MNSC V5.2 — Study Guides / Guías de estudio */
 (function(){
   const studyGuides=[
-    {icon:'📚',es:'Guía principal NCLEX',en:'Principal NCLEX Study Guide',file:'guides/Principal_NCLEX_Study_Guide.pdf',type:'pdf'},
-    {icon:'🧠',es:'Salud mental',en:'Mental Health',file:'guides/Mental_Health.pdf',type:'pdf'},
-    {icon:'👥',es:'Desarrollo psicosocial',en:'Psychosocial Development',file:'guides/Psychosocial_Development.pdf',type:'pdf'},
-    {icon:'🩺',es:'Sistema renal',en:'Renal System',file:'guides/Renal_System.pdf',type:'pdf'},
-    {icon:'🍽️',es:'Sistema gastrointestinal',en:'Gastrointestinal System',file:'guides/Gastrointestinal_System.pdf',type:'pdf'},
-    {icon:'⚕️',es:'Sistema endocrino',en:'Endocrine System',file:'guides/Endocrine_System.pdf',type:'pdf'},
-    {icon:'🛡️',es:'Control de infecciones',en:'Infection Control',file:'guides/Infection_Control.pdf',type:'pdf'},
-    {icon:'🫁',es:'Sistema respiratorio',en:'Respiratory System',file:'guides/Respiratory_System.pdf',type:'pdf'},
-    {icon:'🚨',es:'Priorización',en:'Prioritization',file:'guides/Prioritization.pdf',type:'pdf'},
-    {icon:'💊',es:'Farmacología',en:'Pharmacology',file:'guides/Pharmacology.pdf',type:'pdf'}
+    {icon:'📚',es:'Guía principal NCLEX',en:'Principal NCLEX Study Guide',file:'guides/Principal_NCLEX_Study_Guide.pdf?v=20260829c',type:'pdf'},
+    {icon:'🧠',es:'Salud mental',en:'Mental Health',file:'guides/Mental_Health.pdf?v=20260829c',type:'pdf'},
+    {icon:'👥',es:'Desarrollo psicosocial',en:'Psychosocial Development',file:'guides/Psychosocial_Development.pdf?v=20260829c',type:'pdf'},
+    {icon:'🩺',es:'Sistema renal',en:'Renal System',file:'guides/Renal_System.pdf?v=20260829c',type:'pdf'},
+    {icon:'🍽️',es:'Sistema gastrointestinal',en:'Gastrointestinal System',file:'guides/Gastrointestinal_System.pdf?v=20260829c',type:'pdf'},
+    {icon:'⚕️',es:'Sistema endocrino',en:'Endocrine System',file:'guides/Endocrine_System.pdf?v=20260829c',type:'pdf'},
+    {icon:'🛡️',es:'Control de infecciones',en:'Infection Control',file:'guides/Infection_Control.pdf?v=20260829c',type:'pdf'},
+    {icon:'🫁',es:'Sistema respiratorio',en:'Respiratory System',file:'guides/Respiratory_System.pdf?v=20260829c',type:'pdf'},
+    {icon:'🚨',es:'Priorización',en:'Prioritization',file:'guides/Prioritization.pdf?v=20260829c',type:'pdf'},
+    {icon:'💊',es:'Farmacología',en:'Pharmacology',file:'guides/Pharmacology.pdf?v=20260829c',type:'pdf'}
   ];
 
   function ensureGuideViewer(){
@@ -4855,6 +4855,13 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   }
 
   window.openStudyGuide=function(file,title){
+    const appleMobile=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(appleMobile){
+      const link=document.createElement('a');
+      link.href=file;link.target='_blank';link.rel='noopener';
+      document.body.appendChild(link);link.click();link.remove();
+      return;
+    }
     ensureGuideViewer();
     const viewer=document.getElementById('mnGuideViewer');
     document.getElementById('mnGuideTitle').textContent=title||'';
@@ -4916,7 +4923,7 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   }
 
   setTimeout(()=>window.renderStudyGuides(),0);
-  window.mnStudyGuidesVersion='V5.2';
+  window.mnStudyGuidesVersion='V5.3-mobile-pdf-cache-fix';
 })();
 </script>
 
