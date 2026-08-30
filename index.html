@@ -5243,3 +5243,32 @@ addEventListener('load',function(){
   window.mnInstantFlashcardLanguageVersion='V5.4.1';
 })();
 </script>
+
+<script>
+/* MNSC V5.4.2 — always resolve visible flashcard content from active language */
+(function(){
+  window.renderFlashcardStudy=function(){
+    const box=document.getElementById('flashcardsBox');
+    if(!box)return;
+    if(flashPos>=flashDeck.length){finishFlashcards();return}
+    const en=appState?.planLang==='en';
+    const stored=flashDeck[flashPos];
+    const parts=String(stored?.id||'').split(':');
+    const key=parts[0];
+    const itemIndex=Number(parts[1]);
+    const source=(en&&lessonsEn?.[key])?lessonsEn[key]:lessons[key];
+    const item=source?.items?.[itemIndex];
+    const c={
+      ...stored,
+      key,
+      moduleTitle:(source?.title||stored?.moduleTitle||key).replace(/^(Clase|Class) \d+ — /,''),
+      front:item?.[0]||stored?.front||'',
+      back:item?.[1]||stored?.back||''
+    };
+    flashDeck[flashPos]=c;
+    const p=appState.flashcards[c.id]||{};
+    box.innerHTML=`<div class="flashcard-stage"><div class="exam-meta"><b>${en?'Card':'Tarjeta'} ${flashPos+1}/${flashDeck.length}</b><span>${flashKnown} ${en?'know':'sé'} · ${flashReview} ${en?'review':'repasar'}</span></div><div class="flashcard" onclick="flipFlashcard()"><span class="pill">${en?'MODULE':'MÓDULO'} ${c.moduleIndex+1} · ${esc(c.moduleTitle)}</span><h2>${esc(c.front)}</h2><p id="flashPrompt" class="muted ${flashFlipped?'flash-hidden':''}">${en?'Tap to show the answer':'Toca para mostrar la respuesta'}</p><div id="flashAnswer" class="flash-answer ${flashFlipped?'':'flash-hidden'}"><p>${esc(c.back)}</p>${p.interval?`<small class="muted">${en?'Current interval':'Intervalo actual'}: ${p.interval} ${en?(p.interval===1?'day':'days'):(p.interval===1?'día':'días')}</small>`:''}</div></div><div class="flash-controls ${flashFlipped?'':'flash-hidden'}"><button class="warnbtn" onclick="rateFlashcard(false)">${en?'I need to review it':'Necesito repasarlo'}</button><button class="goodbtn" onclick="rateFlashcard(true)">${en?'I know it':'Lo sé'}</button><button class="secondary" onclick="readTextAloud(flashDeck[flashPos].back)">🔊 ${en?'Listen':'Escuchar'}</button></div></div>`;
+  };
+  window.mnFlashcardContentLanguageVersion='V5.4.2';
+})();
+</script>
