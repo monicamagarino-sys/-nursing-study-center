@@ -1620,6 +1620,7 @@ renderTopics();
 
 </script>
 
+
 <script>
 /* FINAL EXPERIENCE OVERRIDES */
 const CORE_MODULES=[
@@ -5204,4 +5205,41 @@ addEventListener('load',function(){
   window.mnQuestionBankCounts={es:qs.length,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
   setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();refreshClinicalCounts()}catch(e){console.warn('Clinical Signs refresh:',e)}},0);
 });
+</script>
+
+<script>
+/* MNSC V5.4.1 — instant bilingual flashcard refresh */
+(function(){
+  const fullLanguageRefresh=window.setGlobalLanguage;
+  if(typeof fullLanguageRefresh!=='function')return;
+  window.setGlobalLanguage=function(lang){
+    const active=document.querySelector('section.active')?.id||'inicio';
+    if(active!=='tarjetas')return fullLanguageRefresh.apply(this,arguments);
+    lang=lang==='en'?'en':'es';
+    const hadDeck=Array.isArray(flashDeck)&&flashDeck.length>0;
+    const deckIds=hadDeck?flashDeck.map(card=>card.id):[];
+    const savedPos=flashPos;
+    const savedFlipped=flashFlipped;
+    appState.planLang=lang;
+    ['mnsc_global_lang','mnsc_user_lang_choice','mnsc_interface_lang','mnsc_lang'].forEach(key=>localStorage.setItem(key,lang));
+    if(typeof setProLang==='function')setProLang(lang);
+    const selector=document.getElementById('planLang');if(selector)selector.value=lang;
+    document.querySelectorAll('[data-lang-option]').forEach(el=>el.classList.toggle('active',el.getAttribute('data-lang-option')===lang));
+    const rebuildVisibleCards=function(){
+      const localized=new Map(allFlashcards().map(card=>[card.id,card]));
+      flashDeck=hadDeck?deckIds.map(id=>localized.get(id)).filter(Boolean):[];
+      flashPos=Math.min(savedPos,Math.max(0,flashDeck.length-1));
+      flashFlipped=savedFlipped;
+      if(hadDeck)renderFlashcardStudy();else renderFlashcards();
+    };
+    rebuildVisibleCards();
+    setTimeout(function(){
+      fullLanguageRefresh.call(window,lang);
+      appState.planLang=lang;
+      rebuildVisibleCards();
+    },0);
+    return lang;
+  };
+  window.mnInstantFlashcardLanguageVersion='V5.4.1';
+})();
 </script>
