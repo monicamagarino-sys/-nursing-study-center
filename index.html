@@ -4840,15 +4840,15 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
     if(document.getElementById('mnGuideViewer'))return;
     const style=document.createElement('style');
     style.textContent=`
-      #mnGuideViewer{position:fixed;inset:0;z-index:2147483000;background:#eef3f2;display:flex;flex-direction:column}
+      #mnGuideViewer{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;z-index:2147483000;background:#eef3f2;display:flex;flex-direction:column;overflow:hidden}
       #mnGuideViewer[hidden]{display:none!important}
       .mn-guide-toolbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:max(10px,env(safe-area-inset-top)) 10px 10px;background:#0b4f47;color:#fff;box-shadow:0 3px 14px #0003}
       .mn-guide-toolbar strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       .mn-guide-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
       .mn-guide-external{border:1px solid #fff;background:transparent;color:#fff;border-radius:10px;padding:10px 11px;font-size:14px;font-weight:800;cursor:pointer}
       .mn-guide-close{flex:0 0 auto;border:2px solid #fff;background:#fff;color:#0b4f47;border-radius:12px;padding:11px 16px;font-size:16px;font-weight:900;cursor:pointer}
-      .mn-guide-frame{display:block;width:100%;flex:1 1 auto;border:0;background:#fff;min-height:0}
-      @media(max-width:520px){.mn-guide-toolbar strong{font-size:13px}.mn-guide-external{padding:9px 8px;font-size:12px}.mn-guide-close{padding:10px 11px;font-size:14px}}
+      .mn-guide-frame{display:block;width:100vw;max-width:100vw;flex:1 1 auto;align-self:center;margin:0 auto;border:0;background:#fff;min-height:0;overflow:hidden}
+      @media(max-width:520px){.mn-guide-toolbar{width:100%;box-sizing:border-box}.mn-guide-toolbar strong{font-size:13px;min-width:0}.mn-guide-external{padding:9px 8px;font-size:12px}.mn-guide-close{padding:10px 11px;font-size:14px}.mn-guide-frame{width:100vw!important;max-width:100vw!important;margin:0!important}}
       #studyGuidesBox .grid{align-items:stretch}
       #studyGuidesBox .card{display:flex;flex-direction:column;height:100%}
       #studyGuidesBox .card .actions{margin-top:auto;padding-top:12px}
@@ -4868,7 +4868,7 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
     document.getElementById('mnGuideTitle').textContent=title||'';
     document.getElementById('mnGuideCloseText').textContent=appState?.planLang==='en'?'Close guide':'Cerrar guía';
     document.getElementById('mnGuideExternalText').textContent=appState?.planLang==='en'?'Open in Safari':'Abrir en Safari';
-    document.getElementById('mnGuideFrame').src=file;
+    document.getElementById('mnGuideFrame').src=file+'#view=FitH&zoom=page-width';
     viewer.hidden=false;document.body.style.overflow='hidden';
   };
   window.openCurrentGuideInSafari=function(){
@@ -4931,7 +4931,7 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
   }
 
   setTimeout(()=>window.renderStudyGuides(),0);
-  window.mnStudyGuidesVersion='V5.4-mobile-close-button';
+  window.mnStudyGuidesVersion='V5.5-mobile-pdf-centered';
 })();
 </script>
 
