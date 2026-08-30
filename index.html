@@ -116,7 +116,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 /* Pantalla de bienvenida al abrir la app */
 #mnSplash{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;z-index:2147483647;display:grid;place-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
-#mnSplash img{width:min(42vw,180px);height:min(42vw,180px);display:block;object-fit:cover;object-position:center;border-radius:24%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.25));animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
+#mnSplash img{width:min(42vw,180px);height:min(42vw,180px);display:block;object-fit:cover;object-position:center;border-radius:24%;filter:none;box-shadow:none;animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){#mnSplash,#mnSplash img{animation:none;transition:none}}
 
