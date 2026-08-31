@@ -3236,7 +3236,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, 
 });
 const CLOUD_STATE_KEY='nursing_study_center_v1';
 const SYNC_POLICY_KEY='mnsc_sync_policy_v2';
-let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false;
+let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false,cloudManualRetryTimer=null;
 
 function progressActivity(state){
  const s=state||{},historyTotal=(s.history||[]).reduce((n,x)=>n+Math.max(0,Number(x?.total||0)),0);
@@ -3259,7 +3259,18 @@ window.restoreProgressRecovery=function(){
  alert(en?'Recovery copy restored. Review it before saving to your account.':'Copia de recuperación restaurada. Revísala antes de guardarla en tu cuenta.');
 };
 
-function setSyncStatus(text){const el=document.getElementById('syncStatus');if(el)el.textContent=text}
+function setSyncStatus(text){
+ const en=appState?.planLang==='en';
+ const translations={
+  'Sincronizando…':'Synchronizing…',
+  'Progreso actualizado desde Supabase.':'Progress loaded from your account.',
+  'Progreso guardado y organizado en Supabase.':'Progress saved to your account.',
+  'Tu progreso ya está sincronizado.':'Your progress is already synchronized.',
+  'Sin conexión: el progreso continúa guardado en este dispositivo.':'No connection: progress remains saved on this device.'
+ };
+ const value=en?(translations[text]||text):text;
+ ['syncStatus','syncStatusAccount'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=value});
+}
 function normalizeLoadedState(raw){
  appState=Object.assign(appState,raw||{});
  appState.completed=appState.completed||[];appState.favorites=appState.favorites||[];appState.mistakes=appState.mistakes||[];appState.history=appState.history||[];appState.notes=appState.notes||{};
@@ -3324,7 +3335,14 @@ async function syncNormalizedTables(userId){
 }
 
 async function syncCloudProgress(uploadLocal=false,manual=false){
- if(cloudSyncBusy)return;cloudSyncBusy=true;setSyncStatus('Sincronizando…');
+ if(cloudSyncBusy){
+   if(manual){
+     setSyncStatus(appState?.planLang==='en'?'A synchronization is already running. Your request will start next.':'Ya hay una sincronización en curso. Tu solicitud comenzará después.');
+     clearTimeout(cloudManualRetryTimer);cloudManualRetryTimer=setTimeout(()=>syncCloudProgress(uploadLocal,true),700);
+   }
+   return;
+ }
+ cloudSyncBusy=true;setSyncStatus('Sincronizando…');
  try{
    const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);
    if(userError||!user)throw userError||new Error('NO_USER');
@@ -3350,6 +3368,7 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      refreshStateUI();
      setSyncStatus('Progreso actualizado desde Supabase.');
+     if(manual)alert(appState?.planLang==='en'?'Progress was loaded successfully from your account.':'El progreso se cargó correctamente desde tu cuenta.');
    }else if(!cloud||uploadLocal||pending||localActivity>cloudActivity){
      const stateCopy=JSON.parse(JSON.stringify(appState));
      const {error}=await authTimeout(sb.from('profiles').upsert({
@@ -3360,11 +3379,16 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      setSyncStatus('Progreso guardado y organizado en Supabase.');
-   }else setSyncStatus('Tu progreso ya está sincronizado.');
+     if(manual)alert(appState?.planLang==='en'?'This device progress was saved successfully to your account.':'El progreso de este dispositivo se guardó correctamente en tu cuenta.');
+   }else{
+     setSyncStatus('Tu progreso ya está sincronizado.');
+     if(manual)alert(appState?.planLang==='en'?'Your progress is already synchronized.':'Tu progreso ya está sincronizado.');
+   }
    cloudSyncReady=true;
  }catch(e){
    console.error('Supabase sync error',e);
    setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');
+   if(manual)alert(appState?.planLang==='en'?'The account could not be reached. Your progress remains saved on this device.':'No se pudo conectar con la cuenta. Tu progreso continúa guardado en este dispositivo.');
  }finally{cloudSyncBusy=false}
 }
 
