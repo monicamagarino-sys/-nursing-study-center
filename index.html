@@ -5403,9 +5403,135 @@ addEventListener('load',function(){
 </script>
 
 <script>
+/* MNSC V5.7 — reviewed Spanish/English alignment, questions 1–21 */
+(function(){
+ const es=[
+  ["¿Qué principio ético se refiere al derecho del paciente a recibir información y ejercer su autodeterminación?",["Autonomía","Justicia","Fidelidad","Veracidad"],0,"La autonomía es el derecho del paciente a recibir información y tomar sus propias decisiones.","etica"],
+  ["¿Qué tipo de prevención busca detectar y tratar tempranamente una enfermedad que ya existe?",["Primaria","Secundaria","Terciaria","Ninguna"],1,"La prevención secundaria se enfoca en la identificación y el tratamiento tempranos.","prev"],
+  ["En una emergencia, ¿qué marco de prioridades destaca el resumen?",["ADL","ABC","I&O","CQI"],1,"El marco ABC —vía aérea, respiración y circulación— establece las prioridades en una emergencia.","etica"],
+  ["¿Qué precaución requiere una habitación con presión negativa y un respirador N95?",["Contacto","Gotas","Aérea","Estándar"],2,"Las precauciones aéreas requieren una habitación con presión negativa y el uso de un respirador N95.","prev"],
+  ["¿Qué vitamina se relaciona con la coagulación?",["Vitamina A","Vitamina C","Vitamina K","Vitamina B12"],2,"La vitamina K participa en la coagulación sanguínea.","nutri"],
+  ["¿Qué principio ético significa «hacer el bien»?",["No maleficencia","Beneficencia","Justicia","Autonomía"],1,"La beneficencia consiste en actuar para hacer el bien.","etica"],
+  ["¿Qué indica el resumen sobre la palpación abdominal?",["Palpar primero el cuadrante sintomático","Palpar al final el cuadrante sintomático","Nunca palpar","Realizar solamente percusión"],1,"El cuadrante sintomático debe palparse al final para evitar aumentar el dolor y alterar la valoración.","fisico"],
+  ["¿Qué intervalo de IMC se considera normal?",["10–15","15–18","18.5–24.9","25–30"],2,"Un IMC de 18.5 a 24.9 se considera normal.","nutri"],
+  ["¿Qué vitamina se relaciona con la visión nocturna?",["Vitamina A","Vitamina D","Vitamina K","Vitamina C"],0,"La deficiencia de vitamina A se asocia con ceguera nocturna.","nutri"],
+  ["¿Qué intervención es un ejemplo de prevención primaria?",["Rehabilitación después de un accidente cerebrovascular","Prueba de detección de cáncer","Inmunización","Tratamiento de una enfermedad crónica"],2,"La inmunización previene la enfermedad antes de que aparezca y es prevención primaria.","prev"],
+  ["¿Qué integrante del equipo es responsable de la valoración, el diagnóstico, la planificación de cuidados, la enseñanza y la evaluación?",["UAP","RN","Visitante","Familia"],1,"Estas responsabilidades corresponden a la enfermera registrada (RN).","etica"],
+  ["¿Qué vitamina favorece la cicatrización junto con el zinc?",["Vitamina A","Vitamina B1","Vitamina C","Vitamina K"],2,"La vitamina C, junto con el zinc, favorece la cicatrización.","nutri"],
+  ["¿Cuáles son los seis eslabones de la cadena de infección?",["Agente, reservorio, puerta de salida, modo de transmisión, puerta de entrada y huésped susceptible","Paciente, familia, hospital, médico, medicamento y dieta","Agente, antibiótico, fiebre, dolor, tos y erupción","Reservorio, vacuna, oxígeno, dieta, dolor y alta"],0,"Los seis eslabones son: agente, reservorio, puerta de salida, modo de transmisión, puerta de entrada y huésped susceptible.","prev"],
+  ["¿Qué precaución se relaciona con C. difficile?",["Precauciones de contacto entérico y lavado de manos con agua y jabón","Solamente precauciones de gotas","Solamente respirador N95","Solamente protección ocular"],0,"C. difficile requiere contacto entérico y lavado con agua y jabón; el desinfectante de manos con alcohol no sustituye ese lavado.","prev"],
+  ["¿Qué hallazgo se relaciona con la epiglotitis?",["Solamente tos perruna","Babeo, estridor y posición de olfateo","Solamente rinorrea","Dolor lumbar"],1,"La epiglotitis puede presentarse con babeo, estridor y posición de olfateo.","resp"],
+  ["¿Qué hallazgo puede indicar la ruptura de un aneurisma aórtico?",["Hipotensión y shock","Bradicardia aislada","Hiperglucemia","Estreñimiento"],0,"La ruptura puede producir taquicardia, hipotensión y shock.","cardio"],
+  ["¿Qué debe vigilarse después de una cirugía por aneurisma aórtico?",["Solamente la temperatura","Pulsos distales, función renal, diuresis y creatinina","Solamente el apetito","Solamente el dolor"],1,"Se deben vigilar los pulsos distales, la función renal, la diuresis y la creatinina.","cardio"],
+  ["Según el resumen, ¿con qué medicamento tiene la nitroglicerina una interacción potencialmente mortal?",["Sildenafil","Acetaminofén","Amoxicilina","Insulina"],0,"Los inhibidores de la PDE-5, como sildenafil, tadalafil y vardenafil, pueden causar hipotensión grave cuando se combinan con nitroglicerina.","cardio"],
+  ["¿Qué patrón de laboratorio corresponde al hipotiroidismo?",["T3/T4 altas y TSH baja","T3/T4 bajas y TSH alta","T3/T4 altas y TSH alta","T3/T4 normales y TSH en cero"],1,"En el hipotiroidismo primario disminuyen T3 y T4 y aumenta la TSH.","endo"],
+  ["¿Qué caracteriza a la diverticulitis?",["Dolor en el cuadrante inferior izquierdo y fiebre","Siempre es asintomática","Solamente dolor de hombro","Hipotermia"],0,"La diverticulitis puede causar dolor en el cuadrante inferior izquierdo, fiebre y una masa dolorosa.","gi"],
+  ["En una ileostomía, ¿cómo se describe el efluente?",["Sólido","Líquido","Siempre ausente","Negro"],1,"El efluente de una ileostomía es líquido, por lo que existe riesgo de desequilibrio de líquidos y electrolitos.","gi"]
+ ];
+ const modules=['etica','prev','etica','prev','nutri','etica','fisico','nutri','nutri','prev','etica','nutri','prev','prev','resp','cardio','cardio','cardio','endo','gi','gi'];
+ es.forEach((row,i)=>{qs[i]=row;if(Array.isArray(window.qsEn)&&window.qsEn[i])window.qsEn[i][4]=modules[i]});
+ window.mnBilingualAlignmentProgress={reviewed:21,total:84};
+})();
+</script>
+
+<script>
+/* MNSC V5.7.1 — reviewed alignment, questions 22–46 */
+(function(){
+ const es=[
+  ["Según el resumen, ¿cuál es el valor normal de los reflejos tendinosos profundos (DTR)?",["0","1+","2+","4+"],2,"Un reflejo tendinoso profundo normal se registra como 2+.","fisico"],
+  ["¿Qué prueba se utiliza para evaluar la función cerebelosa?",["Romberg","Allen","Brudzinski","Tinel"],0,"La prueba de Romberg se utiliza en la valoración cerebelosa y del equilibrio.","fisico"],
+  ["¿Cómo se recomienda palpar la tiroides?",["Desde el frente mientras el paciente tose","Desde atrás mientras el paciente traga","Con el paciente en decúbito prono","Solamente mediante auscultación"],1,"La tiroides se palpa desde atrás mientras se pide al paciente que trague.","fisico"],
+  ["Durante la valoración de un déficit de pulso apical-radial, ¿cómo se realiza el conteo?",["Una persona cuenta ambos pulsos durante 15 segundos","Dos personas cuentan simultáneamente durante 1 minuto","Se cuenta solamente el pulso radial","Se cuenta solamente el pulso carotídeo"],1,"Dos personas cuentan durante un minuto: una el pulso apical y otra el radial.","fisico"],
+  ["Según el resumen, una diferencia entre los pulsos apical y radial requiere:",["Radiografía","EKG","Colonoscopia","Espirometría"],1,"Una diferencia entre ambos pulsos requiere un EKG y puede relacionarse con disritmias como la fibrilación auricular.","fisico"],
+  ["Un paciente tiene una presión arterial de 130/80 mmHg. ¿Cuál es la presión de pulso?",["30 mmHg","40 mmHg","50 mmHg","80 mmHg"],2,"La presión de pulso es la presión sistólica menos la diastólica: 130 − 80 = 50 mmHg.","fisico"],
+  ["¿En qué posición se valora la distensión de las venas del cuello?",["Cabecera a 0°","Cabecera a 10°","Cabecera a 30–45°","Decúbito prono"],2,"La cabecera se eleva entre 30 y 45 grados para valorar la distensión venosa yugular.","fisico"],
+  ["Al valorar hipotensión ortostática, ¿cuánto debe esperarse antes de cada cambio de posición?",["10 segundos","30 segundos","1 minuto","3–5 minutos"],3,"Se esperan de 3 a 5 minutos antes de cada cambio entre acostado, sentado y de pie.","fisico"],
+  ["¿Qué disminución de la presión sistólica se considera criterio de hipotensión ortostática?",["5 mmHg","10 mmHg","20 mmHg","40 mmHg"],2,"Una disminución sistólica de 20 mmHg, acompañada por aumento de la frecuencia cardíaca, apoya el diagnóstico.","fisico"],
+  ["¿Cuál es la diferencia entre un soplo (bruit) y un frémito (thrill)?",["El soplo se palpa y el frémito se ausculta","Ambos solamente se observan","El soplo se ausculta y el frémito se palpa","No existe diferencia"],2,"El soplo es un sonido turbulento que se ausculta; el frémito es una vibración que se palpa.","fisico"],
+  ["¿Cuál es el orden de la valoración física abdominal presentado en el resumen?",["Inspección, palpación, percusión, auscultación","Entrevista, inspección, auscultación, percusión, palpación","Auscultación, entrevista, palpación, inspección","Palpación, percusión, auscultación, inspección"],1,"El orden es entrevista, inspección, auscultación, percusión y palpación.","fisico"],
+  ["Durante la palpación abdominal, ¿cuándo debe palparse el cuadrante sintomático?",["Primero","Segundo","Al final","No debe palparse"],2,"El cuadrante sintomático debe palparse al final.","fisico"],
+  ["¿Qué sonido pulmonar se relaciona con líquido en los alvéolos?",["Sibilancias","Estertores o crepitantes","Estridor","Soplo"],1,"Los estertores o crepitantes se relacionan con líquido en los alvéolos.","fisico"],
+  ["Si un paciente inconsciente o intubado tiene secreciones bronquiales, ¿qué intervención corresponde?",["Aspiración de secreciones","Caminar","Administrar alimentos","Trendelenburg"],0,"En un paciente inconsciente o intubado se utiliza aspiración para retirar las secreciones.","fisico"],
+  ["¿Cuándo se duplica normalmente el peso de nacimiento de un lactante?",["3 meses","6 meses","9 meses","12 meses"],1,"El peso de nacimiento se duplica a los 6 meses y se triplica a los 12 meses.","fisico"],
+  ["¿A qué edad se alcanza un control estable de la cabeza sin retraso cefálico?",["1 mes","3 meses","6 meses","12 meses"],1,"El control estable de la cabeza se alcanza aproximadamente a los 3 meses.","fisico"],
+  ["¿A qué edad un lactante gatea y utiliza la pinza entre el pulgar y el índice?",["4 meses","6 meses","9 meses","15 meses"],2,"El gateo y la pinza fina aparecen aproximadamente a los 9 meses.","fisico"],
+  ["Según el resumen, ¿qué puntuación FLACC-R requiere manejo del dolor?",["≥1","≥2","≥3","≥8"],2,"Una puntuación FLACC-R de 3 o más requiere intervención para el dolor.","fisico"],
+  ["¿Qué escala de dolor es más apropiada después de los 8 años?",["CRIES","FLACC-R","Escala numérica","Apgar"],2,"La escala numérica es la más apropiada después de los 8 años.","fisico"],
+  ["¿Qué tipo de juego se relaciona con un niño pequeño de 1 a 2 años?",["Solitario","Paralelo","Asociativo","Competitivo"],1,"El juego paralelo es característico de los niños pequeños de 1 a 2 años.","fisico"],
+  ["¿Qué hito aparece alrededor de los 24 meses?",["Frases de dos palabras","Inicio de la pinza fina","Control de la cabeza","Copiar un círculo"],0,"A los 24 meses se esperan frases de dos palabras.","fisico"],
+  ["¿Qué tipo de juego se relaciona con el preescolar?",["Paralelo","Asociativo","Exclusivamente solitario","Ninguno"],1,"El juego asociativo es característico de los preescolares de 3 a 5 años.","fisico"],
+  ["En las niñas, ¿qué cambio marca la entrada en la etapa 2 de Tanner?",["Menarquia","Telarquia o desarrollo del botón mamario","Solamente pubarquia","Amenorrea"],1,"La telarquia, o desarrollo del botón mamario, marca la entrada en Tanner 2.","fisico"],
+  ["¿Cuál de los siguientes NO es un cambio esperado del envejecimiento?",["Presbicia","Presbiacusia","Disminución de la sed","Incontinencia"],3,"La incontinencia no se considera un cambio normal ni esperado del envejecimiento.","fisico"],
+  ["¿Qué respuesta atípica puede presentar un adulto mayor con una infección?",["Hipotermia y confusión","Siempre fiebre alta","Aumento marcado de la sed","Solamente erupción cutánea"],0,"Los adultos mayores pueden presentar hipotermia y alteración del estado mental o confusión ante una infección.","fisico"]
+ ];
+ es.forEach((row,n)=>{const i=21+n;qs[i]=row;if(Array.isArray(window.qsEn)&&window.qsEn[i])window.qsEn[i][4]='fisico'});
+ window.mnBilingualAlignmentProgress={reviewed:46,total:84};
+})();
+</script>
+
+<script>
+/* MNSC V5.7.2 — reviewed alignment, questions 47–67 */
+(function(){
+ const es=[
+  ["¿Qué indicador identifica el resumen como el más sensible para valorar el estado nutricional?",["Albúmina","Prealbúmina","Hemoglobina","Creatinina"],1,"La prealbúmina es más sensible debido a su vida media más corta.","nutri"],
+  ["¿Qué intervalo normal de IMC presenta el resumen?",["15–18.4","18.5–24.9","25–29.9","30–35"],1,"El intervalo normal de IMC es 18.5–24.9.","nutri"],
+  ["¿La deficiencia de qué vitamina se relaciona con la ceguera nocturna?",["Vitamina A","Vitamina B1","Vitamina D","Vitamina K"],0,"La deficiencia de vitamina A se relaciona con ceguera nocturna.","nutri"],
+  ["¿Qué vitamina favorece la absorción del calcio?",["Vitamina C","Vitamina D","Vitamina E","Vitamina B12"],1,"La vitamina D favorece la absorción intestinal del calcio.","nutri"],
+  ["La toxicidad por vitamina D se relaciona con:",["Hipocalcemia","Hipercalcemia","Hiponatremia","Hipoglucemia"],1,"La toxicidad por vitamina D puede causar hipercalcemia.","nutri"],
+  ["¿Qué vitamina se relaciona con el síndrome de Wernicke-Korsakoff en el alcoholismo?",["B1/tiamina","B3/niacina","B6/piridoxina","B12"],0,"La deficiencia de vitamina B1 o tiamina se relaciona con el síndrome de Wernicke-Korsakoff.","nutri"],
+  ["¿Qué efecto puede causar el ácido nicotínico o la niacina?",["Rubor","Bradicardia","Hipotermia","Estreñimiento"],0,"El ácido nicotínico puede producir rubor cutáneo.","nutri"],
+  ["¿Qué vitamina es necesaria para producir varios factores de coagulación?",["Vitamina A","Vitamina K","Vitamina C","Vitamina B1"],1,"La vitamina K participa en la síntesis de varios factores de coagulación.","nutri"],
+  ["¿Qué deficiencia se relaciona con la anemia perniciosa?",["Vitamina B12","Vitamina C","Vitamina D","Vitamina E"],0,"La anemia perniciosa se relaciona con deficiencia de vitamina B12.","nutri"],
+  ["¿Qué vitamina contribuye a la formación de colágeno y favorece la cicatrización junto con el zinc?",["Vitamina C","Vitamina K","Vitamina B3","Vitamina D"],0,"La vitamina C contribuye a la formación de colágeno y, junto con el zinc, favorece la cicatrización.","nutri"],
+  ["¿Qué alimento pertenece a una dieta de líquidos claros?",["Pudín","Yogur","Gelatina","Puré de papas"],2,"La gelatina está permitida en una dieta de líquidos claros.","nutri"],
+  ["¿Qué alimento pertenece a una dieta de líquidos completos?",["Yogur","Carne asada","Ensalada","Pan integral"],0,"Una dieta de líquidos completos puede incluir yogur, pudín, helado y sopas.","nutri"],
+  ["En la enfermedad celíaca, ¿qué grupo representa el mnemónico BROWN?",["Cebada, centeno, avena y trigo","Frijoles, arroz, naranja, nueces y agua","Carne de res, rábano, cebolla y nuez","Caldo, arroz, aceite y néctar"],0,"BROWN representa Barley, Rye, Oats y Wheat: cebada, centeno, avena y trigo.","nutri"],
+  ["¿Qué debe evitarse en una dieta baja en potasio?",["Manzana","Bayas","Sustitutos de sal que contienen KCl","Repollo"],2,"Los sustitutos de sal con cloruro de potasio deben evitarse.","nutri"],
+  ["¿Qué alimento debe evitarse en una dieta restringida en tiramina?",["Queso añejo","Manzana fresca","Arroz blanco","Huevo hervido"],0,"Los quesos añejos, el vino tinto, la cerveza, las carnes curadas y los alimentos fermentados contienen tiramina y deben evitarse.","nutri"],
+  ["¿Qué afirmación sobre el jugo de naranja y el hierro coincide con el resumen?",["Contiene una gran cantidad de hierro","No contiene hierro, pero ayuda a absorberlo","Bloquea completamente la absorción de hierro","Debe evitarse al tomar hierro"],1,"El jugo de naranja no aporta hierro, pero su vitamina C favorece la absorción del hierro.","nutri"],
+  ["¿Qué deficiencia destaca el resumen en las personas veganas?",["Vitamina B12","Vitamina C","Sodio","Vitamina K"],0,"Las personas veganas tienen riesgo de deficiencia de B12 porque esta vitamina se encuentra principalmente en alimentos de origen animal.","nutri"],
+  ["Según el resumen, ¿cuál es el aumento de peso normal durante el embarazo?",["5–10 lb","10–15 lb","25–35 lb","45–55 lb"],2,"El aumento de peso normal indicado es de 25 a 35 libras.","nutri"],
+  ["¿Cuántas calorías adicionales por día recomienda el resumen durante la lactancia?",["100","300","500","1000"],2,"Durante la lactancia se recomiendan aproximadamente 500 kcal adicionales por día.","nutri"],
+  ["¿Qué alimento debe evitarse durante el primer año por el riesgo de botulismo?",["Miel","Cereal de arroz","Fórmula infantil","Leche materna"],0,"La miel debe evitarse durante el primer año porque puede contener esporas de botulismo.","nutri"],
+  ["¿Cuándo se introducen alimentos sólidos como el cereal de arroz?",["Al nacer","Al mes o dos meses","Entre los 4 y 6 meses","Después de los 18 meses"],2,"Los sólidos se introducen aproximadamente entre los 4 y 6 meses, uno a la vez.","nutri"]
+ ];
+ es.forEach((row,n)=>{const i=46+n;qs[i]=row;if(Array.isArray(window.qsEn)&&window.qsEn[i])window.qsEn[i][4]='nutri'});
+ window.mnBilingualAlignmentProgress={reviewed:67,total:84};
+})();
+</script>
+
+<script>
+/* MNSC V5.7.3 — reviewed alignment, questions 68–84 */
+(function(){
+ const es=[
+  ["¿Qué tipo de alimentación se relaciona con una sonda PEG?",["Solamente alimentación continua","Alimentación en bolo","Solamente TPN","Ninguna alimentación"],1,"Las sondas de gastrostomía o PEG se relacionan con alimentación en bolo.","nutri"],
+  ["¿Qué tipo de alimentación se relaciona con una sonda PEJ?",["Alimentación continua","Alimentación en bolo","Solamente vía oral","Líquidos claros"],0,"Las sondas de yeyunostomía o PEJ se relacionan con alimentación continua.","nutri"],
+  ["Según el resumen, un residuo enteral mayor de 500 mL requiere:",["Aumentar la alimentación","Suspender la alimentación","Añadir azúcar","Retirar permanentemente la sonda"],1,"Un residuo mayor de 500 mL requiere suspender la alimentación.","nutri"],
+  ["¿Qué método confirma la colocación de la sonda antes de comenzar la alimentación?",["Inyectar aire y auscultar","Radiografía","Solamente observar al paciente","Percusión abdominal"],1,"La colocación se confirma mediante radiografía; no debe comprobarse inyectando aire y auscultando.","nutri"],
+  ["Durante la alimentación enteral, la cabecera de la cama debe mantenerse aproximadamente a:",["0°","10°","30°","Trendelenburg"],2,"La cabecera se mantiene elevada aproximadamente 30 grados para disminuir el riesgo de aspiración.","nutri"],
+  ["¿Cuál es una indicación para la nutrición parenteral total (TPN)?",["Intestino no funcional","Paciente que tolera una dieta regular","Solamente hipertensión","Estreñimiento leve"],0,"La TPN está indicada cuando el intestino no funciona o cuando la absorción o ingesta es inadecuada.","nutri"],
+  ["¿Por qué vía se administra la TPN?",["Catéter central","Intramuscular","Subcutánea","Solamente por PEG"],0,"La TPN se administra mediante un catéter venoso central.","nutri"],
+  ["¿Qué debe vigilarse durante la TPN?",["Solamente la temperatura","Hiperglucemia, infección, peso, ingesta y eliminación, y electrolitos","Solamente el dolor","Solamente la presión arterial"],1,"Se vigilan hiperglucemia, signos de infección, peso, ingesta y eliminación, y electrolitos, entre otros parámetros.","nutri"],
+  ["¿Qué práctica ayuda a prevenir enfermedades transmitidas por alimentos?",["Descongelar la carne a temperatura ambiente","Lavar las frutas y los vegetales","Dejar las sobras calientes fuera toda la noche","No refrigerar los alimentos"],1,"Se deben lavar frutas y vegetales y descongelar los alimentos en el refrigerador.","nutri"],
+  ["¿Qué hierba puede potenciar los SSRI y los MAOI?",["Hierba de San Juan","Jengibre","Saw palmetto","Equinácea"],0,"La hierba de San Juan puede potenciar los SSRI y los MAOI y aumentar el riesgo de síndrome serotoninérgico.","nutri"],
+  ["¿Qué hierba debe evitarse en enfermedades autoinmunes?",["Equinácea","Jengibre","Valeriana","Saw palmetto"],0,"La equinácea estimula el sistema inmunitario y debe evitarse en enfermedades autoinmunes como SLE, RA o MS.","nutri"],
+  ["¿Qué suplemento o producto herbal se relaciona con la hiperplasia prostática benigna (BPH)?",["Saw palmetto","Ginkgo","Jengibre","Cohosh negro"],0,"Saw palmetto se relaciona con el manejo de la BPH.","nutri"],
+  ["¿Qué restricción alimentaria se menciona para los musulmanes árabes?",["No consumir cerdo ni alcohol","Nunca consumir productos lácteos","No consumir frutas","No consumir arroz"],0,"Se evita el cerdo y el alcohol; durante Ramadán también se ayuna desde el amanecer hasta la puesta del sol.","nutri"],
+  ["¿Qué combinación se evita en una dieta judía ortodoxa?",["Carne de res y productos lácteos","Frutas y cereales","Pescado y arroz","Huevo y pan"],0,"En una dieta kosher se evita combinar carne de res con productos lácteos.","nutri"],
+  ["¿Qué estimulante del apetito se describe como similar a la progesterona?",["Megestrol","Fentermina","Metilfenidato","Efedra"],0,"Megestrol o Megace tiene actividad semejante a la progesterona y puede causar sangrado vaginal.","nutri"],
+  ["¿Qué hallazgo sugiere edema pulmonar por exceso de volumen de líquidos?",["Tos seca","Esputo rosado y espumoso","Oliguria aislada","Bradicardia"],1,"La tos con esputo rosado y espumoso se relaciona con edema pulmonar.","ivblood"],
+  ["Aproximadamente, ¿a cuánto peso equivale 1 litro de líquido?",["0.5 lb","1 lb","2.2 lb","5 lb"],2,"Un litro de líquido equivale aproximadamente a 1 kg o 2.2 lb.","ivblood"]
+ ];
+ es.forEach((row,n)=>{const i=67+n;qs[i]=row;if(Array.isArray(window.qsEn)&&window.qsEn[i])window.qsEn[i][4]=row[4]});
+ if(Array.isArray(window.qsEn)&&window.qsEn[60])window.qsEn[60][0]='Which food should be avoided on a tyramine-restricted diet?';
+ window.mnBilingualAlignmentProgress={reviewed:84,total:84,complete:true};
+})();
+</script>
+
+<script>
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.08.31.4';
+  const MNSC_APP_BUILD='2026.08.31.5';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
