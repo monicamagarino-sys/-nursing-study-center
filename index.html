@@ -3335,9 +3335,11 @@ async function syncNormalizedTables(userId){
 }
 
 async function syncCloudProgress(uploadLocal=false,manual=false){
+ const interfaceLang=appState?.planLang==='en'?'en':'es';
+ const interfaceEn=interfaceLang==='en';
  if(cloudSyncBusy){
    if(manual){
-     setSyncStatus(appState?.planLang==='en'?'A synchronization is already running. Your request will start next.':'Ya hay una sincronización en curso. Tu solicitud comenzará después.');
+     setSyncStatus(interfaceEn?'A synchronization is already running. Your request will start next.':'Ya hay una sincronización en curso. Tu solicitud comenzará después.');
      clearTimeout(cloudManualRetryTimer);cloudManualRetryTimer=setTimeout(()=>syncCloudProgress(uploadLocal,true),700);
    }
    return;
@@ -3356,19 +3358,22 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
    if(cloud&&uploadLocal&&localActivity<cloudActivity){
      cloudSyncReady=true;
      setSyncStatus(`Protección activa: la cuenta tiene más progreso (${cloudActivity}) que este dispositivo (${localActivity}). Carga desde tu cuenta.`);
-     alert(appState?.planLang==='en'?'Protected: this device has less progress and cannot overwrite your account. Load from your account instead.':'Protección activa: este dispositivo tiene menos progreso y no puede reemplazar tu cuenta. Usa Cargar desde mi cuenta.');
+     alert(interfaceEn?'Protected: this device has less progress and cannot overwrite your account. Load from your account instead.':'Protección activa: este dispositivo tiene menos progreso y no puede reemplazar tu cuenta. Usa Cargar desde mi cuenta.');
      return;
    }
    const shouldLoad=cloud&&!uploadLocal&&(manual||cloudActivity>=localActivity);
    if(shouldLoad){
      preserveRecoverySnapshot(appState,'before-cloud-load');
      normalizeLoadedState(cloud);
+     // Progress can be shared across devices, but each device keeps its chosen interface language.
+     appState.planLang=interfaceLang;
+     ['mnsc_global_lang','mnsc_user_lang_choice','mnsc_interface_lang','mnsc_lang'].forEach(key=>localStorage.setItem(key,interfaceLang));
      localStorage.setItem(STORE_KEY,JSON.stringify(appState));
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      refreshStateUI();
      setSyncStatus('Progreso actualizado desde Supabase.');
-     if(manual)alert(appState?.planLang==='en'?'Progress was loaded successfully from your account.':'El progreso se cargó correctamente desde tu cuenta.');
+     if(manual)alert(interfaceEn?'Progress was loaded successfully from your account.':'El progreso se cargó correctamente desde tu cuenta.');
    }else if(!cloud||uploadLocal||pending||localActivity>cloudActivity){
      const stateCopy=JSON.parse(JSON.stringify(appState));
      const {error}=await authTimeout(sb.from('profiles').upsert({
@@ -3379,16 +3384,16 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
      localStorage.removeItem('mnsc_sync_pending');
      localStorage.setItem(SYNC_POLICY_KEY,'cloud');
      setSyncStatus('Progreso guardado y organizado en Supabase.');
-     if(manual)alert(appState?.planLang==='en'?'This device progress was saved successfully to your account.':'El progreso de este dispositivo se guardó correctamente en tu cuenta.');
+     if(manual)alert(interfaceEn?'This device progress was saved successfully to your account.':'El progreso de este dispositivo se guardó correctamente en tu cuenta.');
    }else{
      setSyncStatus('Tu progreso ya está sincronizado.');
-     if(manual)alert(appState?.planLang==='en'?'Your progress is already synchronized.':'Tu progreso ya está sincronizado.');
+     if(manual)alert(interfaceEn?'Your progress is already synchronized.':'Tu progreso ya está sincronizado.');
    }
    cloudSyncReady=true;
  }catch(e){
    console.error('Supabase sync error',e);
    setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');
-   if(manual)alert(appState?.planLang==='en'?'The account could not be reached. Your progress remains saved on this device.':'No se pudo conectar con la cuenta. Tu progreso continúa guardado en este dispositivo.');
+   if(manual)alert(interfaceEn?'The account could not be reached. Your progress remains saved on this device.':'No se pudo conectar con la cuenta. Tu progreso continúa guardado en este dispositivo.');
  }finally{cloudSyncBusy=false}
 }
 
