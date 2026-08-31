@@ -5367,9 +5367,45 @@ addEventListener('load',function(){
 </script>
 
 <script>
+/* MNSC V5.6 — reliable answer shuffling + unique question 312 */
+(function(){
+  const replacementEs=["Un paciente que recibe heparina presenta una disminución marcada del recuento de plaquetas. ¿Qué complicación debe sospechar la enfermera?",["Trombocitopenia inducida por heparina (HIT)","Anemia perniciosa","Púrpura trombocitopénica inmune crónica","Deficiencia de vitamina K"],0,"Una disminución marcada de plaquetas durante el tratamiento con heparina puede indicar trombocitopenia inducida por heparina (HIT); se debe suspender la heparina y notificar al proveedor según el protocolo.","cardio"];
+  const replacementEn=["A patient receiving heparin develops a marked decrease in the platelet count. Which complication should the nurse suspect?",["Heparin-induced thrombocytopenia (HIT)","Pernicious anemia","Chronic immune thrombocytopenic purpura","Vitamin K deficiency"],0,"A marked platelet decrease during heparin therapy can indicate heparin-induced thrombocytopenia (HIT); heparin should be stopped and the provider notified according to protocol.","cardio"];
+  if(Array.isArray(qs)&&qs.length>311)qs[311]=replacementEs;
+  if(Array.isArray(window.qsEn)&&window.qsEn.length>311)window.qsEn[311]=replacementEn;
+
+  function shuffledQuestionView(idx){
+    const x=questionForLang(idx),order=x[1].map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+    return {order,correct:order.indexOf(x[2])};
+  }
+  window.mnQuestionView=shuffledQuestionView;
+
+  window.renderPractice=function(){
+    answeredFinal=false;const en=appState.planLang==='en',idx=practiceOrder[practicePos]??0,x=questionForLang(idx);mnPracticeView=shuffledQuestionView(idx);document.getElementById('score').textContent=practiceSessionCorrect;const total=practiceOrder.length;
+    const baseLabel=practiceLabel||(practiceModule?((en&&lessonsEn[practiceModule])?lessonsEn[practiceModule].title:lessons[practiceModule]?.title):(en?'General practice':'Práctica general'));
+    document.getElementById('quizBox').innerHTML=`<div class="exam-meta"><span><b>${esc(baseLabel)}</b><br>${en?'Question':'Pregunta'} ${practicePos+1} ${en?'of':'de'} ${total}</span><span>${practiceSessionCorrect}/${practiceSessionAnswered} ${en?'this session':'en esta sesión'}</span></div><button class="star" onclick="toggleFavorite(${idx});renderPractice()" title="${en?'Favorite':'Favorito'}">${appState.favorites.includes(idx)?'★':'☆'}</button><p class="question">${esc(x[0])}</p>`+mnPracticeView.order.map((orig,n)=>`<button class="option" onclick="answerPractice(${idx},${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')+`<div id="feedback"></div>`;document.getElementById('next').style.display='none';
+  };
+  window.answerPractice=function(idx,n){
+    if(answeredFinal)return;answeredFinal=true;const en=appState.planLang==='en',x=questionForLang(idx),view=mnPracticeView||shuffledQuestionView(idx),ops=document.querySelectorAll('#quizBox .option');ops[view.correct].classList.add('correct');if(n!==view.correct)ops[n].classList.add('wrong');appState.practice.attempts++;practiceSessionAnswered++;addWeekly('questions');if(n===view.correct){appState.practice.correct++;practiceSessionCorrect++;if(dailyPractice)dailyCorrect++;if(mistakePractice)appState.mistakes=appState.mistakes.filter(i=>i!==idx)}else if(!appState.mistakes.includes(idx))appState.mistakes.push(idx);saveState();document.getElementById('score').textContent=practiceSessionCorrect;document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${n===view.correct?(en?'✅ Correct':'✅ Correcto'):(en?'❌ Incorrect':'❌ Incorrecto')}</b><br>${esc(x[3])}<div class="actions"><button class="secondary" onclick="readTextAloud(questionForLang(${idx})[3])">🔊 ${en?'Listen to explanation':'Escuchar explicación'}</button></div></div>`;document.getElementById('next').style.display='inline-block';
+  };
+  window.renderExam=function(){
+    const box=document.getElementById('examBox');if(!box)return;if(examPos>=examOrder.length){finishExam(false);return}examAnswered=false;const en=appState.planLang==='en',idx=examOrder[examPos],x=questionForLang(idx);mnExamView=shuffledQuestionView(idx);box.innerHTML=`<div class="exam-meta"><b>${en?'Question':'Pregunta'} ${examPos+1}/${NCLEX_EXAM_SIZE}</b><span id="examTimer" class="exam-timer">⏱ ${formatExamTime(examSecondsLeft())}</span></div><p class="question">${esc(x[0])}</p>${mnExamView.order.map((orig,n)=>`<button class="option" onclick="answerExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<p class="muted">${en?'Select one answer to continue. You cannot go back.':'Selecciona una respuesta para continuar. No podrás regresar.'}</p>`;
+  };
+  window.renderCustomExam=function(){
+    const box=document.getElementById('examBox');if(!box)return;if(customPos>=customOrder.length){finishCustomExam(false);return}customAnswered=false;const idx=customOrder[customPos],x=questionForLang(idx);mnCustomView=shuffledQuestionView(idx);box.innerHTML=`<div class="exam-meta"><b>${customConfig.mode==='practice'?(appState.planLang==='en'?'Custom practice':'Práctica personalizada'):(appState.planLang==='en'?'Custom exam':'Examen personalizado')} · ${appState.planLang==='en'?'Question':'Pregunta'} ${customPos+1}/${customConfig.size}</b><span id="customTimer" class="exam-timer">${customConfig.timeSeconds?'⏱ '+formatExamTime(customSecondsLeft()):(appState.planLang==='en'?'No time limit':'Sin límite de tiempo')}</span></div><p class="question">${esc(x[0])}</p>${mnCustomView.order.map((orig,n)=>`<button class="option" onclick="answerCustomExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<div id="customFeedback"></div>`;
+  };
+  window.renderAdaptiveExam=function(){
+    const box=document.getElementById('examBox');if(!box)return;if(adaptivePos>=ADAPTIVE_SIZE){finishAdaptiveExam();return}adaptiveCurrent=pickAdaptiveQuestion();if(adaptiveCurrent<0){finishAdaptiveExam();return}const x=questionForLang(adaptiveCurrent);mnAdaptiveView=shuffledQuestionView(adaptiveCurrent);box.innerHTML=`<div class="exam-meta"><b>${adaptiveText('Simulacro adaptativo','Adaptive exam')} · ${adaptiveText('Pregunta','Question')} ${adaptivePos+1}/${ADAPTIVE_SIZE}</b><span class="pill">${adaptiveText('Nivel','Level')}: ${adaptiveLevelLabel(adaptiveLevel)}</span></div><div class="progressbar"><span style="width:${Math.round(adaptivePos/ADAPTIVE_SIZE*100)}%"></span></div><p class="question">${esc(x[0])}</p>${mnAdaptiveView.order.map((orig,n)=>`<button class="option" onclick="answerAdaptiveExam(${n})">${String.fromCharCode(65+n)}. ${esc(x[1][orig])}</button>`).join('')}<p class="muted">${adaptiveText('La siguiente pregunta se ajustará según esta respuesta. No podrás regresar.','The next question will adjust based on this answer. You cannot go back.')}</p>`;
+  };
+  window.mnQuestionQualityVersion='V5.6-SHUFFLE-1320';
+})();
+</script>
+
+<script>
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.08.31.3';
+  const MNSC_APP_BUILD='2026.08.31.4';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
