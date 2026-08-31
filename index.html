@@ -5272,3 +5272,54 @@ addEventListener('load',function(){
   window.mnFlashcardContentLanguageVersion='V5.4.2';
 })();
 </script>
+
+<script>
+/* MNSC V5.4.3 — preserve medication activity during language changes */
+(function(){
+  let pharmRenderedKey='';
+  window.renderPharmQuestion=function(){
+    const box=document.getElementById('medCalcBox'),en=medCalcEn(),i=en?1:0;
+    if(!box)return;
+    if(pharmPos>=pharmOrder.length){finishPharmQuiz();return}
+    const id=pharmOrder[pharmPos],x=PHARM_Q[id],key=`${pharmPos}:${id}`;
+    if(pharmRenderedKey!==key||!Array.isArray(pharmOptionMap)||pharmOptionMap.length!==x.o[i].length){
+      pharmOptionMap=shuffled(x.o[i].map((_,n)=>n));
+      pharmRenderedKey=key;
+    }
+    box.innerHTML=`<div class="card"><div class="exam-meta"><b>${pharmMode==='exam'?(en?'Pharmacology exam':'Examen de farmacología'):(en?'Pharmacology practice':'Práctica de farmacología')} · ${pharmPos+1}/${pharmOrder.length}</b><span>${pharmCorrect} ${en?'correct':'correctas'}</span></div><span class="pill">${esc(pharmCategories()[x.cat])}</span><h2>${esc(x.q[i])}</h2><div id="pharmOptions">${pharmOptionMap.map((original,n)=>`<button class="option" onclick="answerPharm(${n})">${String.fromCharCode(65+n)}. ${esc(x.o[i][original])}</button>`).join('')}</div><div id="pharmFeedback"></div></div>`;
+  };
+
+  const previousLanguageRefresh=window.setGlobalLanguage;
+  if(typeof previousLanguageRefresh!=='function')return;
+  window.setGlobalLanguage=function(lang){
+    const active=document.querySelector('section.active')?.id||'inicio';
+    const medBox=document.getElementById('medCalcBox');
+    const medView=active==='medcalc'?(medBox?.querySelector('#pharmOptions')?'pharm':medBox?.querySelector('#calcAnswer')?'calc':medBox?.querySelector('#medSearch')?'cards':'home'):'none';
+    const medSearch=document.getElementById('medSearch')?.value||'';
+    const calcInput=document.getElementById('calcAnswer');
+    const calcValue=calcInput?.value||'';
+    const calcAnswered=!!calcInput?.disabled;
+    const result=previousLanguageRefresh.apply(this,arguments);
+
+    if(active==='medcalc'){
+      if(medView==='pharm'&&pharmOrder.length&&pharmPos<pharmOrder.length){
+        renderPharmQuestion();
+      }else if(medView==='calc'&&calcOrder.length&&calcPos<calcOrder.length){
+        renderCalcQuestion();
+        const input=document.getElementById('calcAnswer');if(input)input.value=calcValue;
+        if(calcAnswered&&input){
+          const en=medCalcEn(),i=en?1:0,id=calcOrder[calcPos],x=CALC_STUDY[id],value=Number(calcValue),correct=Number.isFinite(value)&&Math.abs(value-x.a)<0.011;
+          input.disabled=true;
+          const submit=document.getElementById('calcSubmit');if(submit)submit.style.display='none';
+          const feedback=document.getElementById('calcFeedback');if(feedback)feedback.innerHTML=`<div class="feedback"><b>${correct?'✅ '+(en?'Correct':'Correcto'):'❌ '+(en?'Incorrect':'Incorrecto')}</b><p><b>${en?'Correct answer':'Respuesta correcta'}:</b> ${x.a} ${esc(x.unit[i])}</p><p>${esc(x.e[i])}</p><button class="primary" onclick="calcPos++;renderCalcQuestion()">${en?'Next':'Siguiente'} →</button></div>`;
+        }
+      }else if(medView==='cards'){
+        renderMedicationCards();
+        const search=document.getElementById('medSearch');if(search){search.value=medSearch;filterMedicationCards(medSearch)}
+      }else renderMedCalc();
+    }
+    return result;
+  };
+  window.mnMedicationLanguageContinuityVersion='V5.4.3';
+})();
+</script>
