@@ -3220,7 +3220,6 @@ show=function(id){
  if(id==='ngn')renderNGN();
 }
 
-if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 document.addEventListener('DOMContentLoaded',ensureFinalUI);
 if(document.readyState!=='loading')ensureFinalUI();
 </script>
@@ -5350,5 +5349,64 @@ addEventListener('load',function(){
     return result;
   };
   window.mnMedicationLanguageContinuityVersion='V5.4.3';
+})();
+</script>
+
+<script>
+/* MNSC V5.5 — visible, non-destructive app updates */
+(function(){
+  const MNSC_APP_BUILD='2026.08.31.1';
+  window.mnAppBuild=MNSC_APP_BUILD;
+  let updateRegistration=null,remoteBuild='',reloading=false;
+
+  function updateEnglish(){return appState?.planLang==='en'}
+  function ensureUpdateBanner(){
+    let banner=document.getElementById('mnUpdateBanner');
+    if(banner)return banner;
+    banner=document.createElement('div');
+    banner.id='mnUpdateBanner';
+    banner.setAttribute('role','status');
+    banner.style.cssText='position:fixed;left:14px;right:14px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:2147483000;max-width:680px;margin:auto;padding:14px 16px;border-radius:16px;background:#083f39;color:#fff;box-shadow:0 14px 38px rgba(0,0,0,.3);display:none;align-items:center;justify-content:space-between;gap:12px;font-family:system-ui,-apple-system,Segoe UI,sans-serif';
+    document.body.appendChild(banner);
+    return banner;
+  }
+  function showUpdateAvailable(reg,build=''){
+    updateRegistration=reg||updateRegistration;remoteBuild=build||remoteBuild;
+    const en=updateEnglish(),banner=ensureUpdateBanner();
+    banner.innerHTML=`<div><b>✨ ${en?'New update available':'Nueva actualización disponible'}</b><br><small>${en?'Your progress and sign-in will be preserved.':'Tu progreso y tu sesión se conservarán.'}</small></div><button id="mnUpdateNow" type="button" style="border:0;border-radius:11px;padding:11px 14px;background:#fff;color:#0b4f47;font-weight:900;white-space:nowrap">${en?'Update now':'Actualizar ahora'}</button>`;
+    banner.style.display='flex';
+    document.getElementById('mnUpdateNow').onclick=applyAvailableUpdate;
+  }
+  function applyAvailableUpdate(){
+    const button=document.getElementById('mnUpdateNow'),en=updateEnglish();
+    if(button){button.disabled=true;button.textContent=en?'Updating…':'Actualizando…'}
+    localStorage.setItem('mnsc_last_requested_build',remoteBuild||MNSC_APP_BUILD);
+    if(updateRegistration?.waiting){updateRegistration.waiting.postMessage({type:'SKIP_WAITING'});return}
+    const url=new URL(location.href);url.searchParams.set('mnsc_update',remoteBuild||Date.now());location.replace(url.href);
+  }
+  async function checkPublishedBuild(reg){
+    try{
+      const response=await fetch(`./index.html?mnsc_check=${Date.now()}`,{cache:'no-store'});if(!response.ok)return;
+      const text=await response.text(),match=text.match(/const MNSC_APP_BUILD='([^']+)'/),published=match?.[1]||'';
+      if(published&&published!==MNSC_APP_BUILD)showUpdateAvailable(reg,published);
+    }catch(e){}
+  }
+  async function startUpdateSystem(){
+    if(!('serviceWorker' in navigator)||location.protocol==='file:')return;
+    try{
+      const reg=await navigator.serviceWorker.register(`sw.js?v=${MNSC_APP_BUILD}`,{updateViaCache:'none'});updateRegistration=reg;
+      if(reg.waiting&&navigator.serviceWorker.controller)showUpdateAvailable(reg);
+      reg.addEventListener('updatefound',()=>{
+        const worker=reg.installing;if(!worker)return;
+        worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showUpdateAvailable(reg)});
+      });
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload()});
+      reg.update().catch(()=>{});
+      setTimeout(()=>checkPublishedBuild(reg),1800);
+      setInterval(()=>checkPublishedBuild(reg),5*60*1000);
+    }catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
+  window.mnUpdateSystemVersion='V5.5';
 })();
 </script>
