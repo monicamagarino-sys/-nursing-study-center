@@ -3236,6 +3236,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, 
 });
 const CLOUD_STATE_KEY='nursing_study_center_v1';
 const SYNC_POLICY_KEY='mnsc_sync_policy_v2';
+const LAST_SYNC_SUCCESS_KEY='mnsc_last_sync_success';
 let cloudSyncReady=false,cloudSyncTimer=null,cloudSyncBusy=false,cloudManualRetryTimer=null;
 
 function progressActivity(state){
@@ -3259,6 +3260,9 @@ window.restoreProgressRecovery=function(){
  alert(en?'Recovery copy restored. Review it before saving to your account.':'Copia de recuperación restaurada. Revísala antes de guardarla en tu cuenta.');
 };
 
+function syncLastSuccessText(){const en=appState?.planLang==='en',stamp=Number(localStorage.getItem(LAST_SYNC_SUCCESS_KEY)||0);if(!stamp)return en?'No successful synchronization recorded yet.':'Todavía no se ha registrado una sincronización correcta.';const formatted=new Date(stamp).toLocaleString(en?'en-US':'es-US',{dateStyle:'medium',timeStyle:'short'});return (en?'Last successful synchronization: ':'Última sincronización correcta: ')+formatted}
+function updateSyncLastSuccessUI(){['syncLastSuccess','syncLastSuccessAccount'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=syncLastSuccessText()})}
+function setSyncBusyUI(busy){document.querySelectorAll('[data-sync-action]').forEach(button=>{button.disabled=busy;button.setAttribute('aria-busy',busy?'true':'false')});['syncStatus','syncStatusAccount'].forEach(id=>{const el=document.getElementById(id);if(el)el.setAttribute('aria-live','polite')})}
 function setSyncStatus(text){
  const en=appState?.planLang==='en';
  const translations={
@@ -3269,7 +3273,10 @@ function setSyncStatus(text){
   'Sin conexión: el progreso continúa guardado en este dispositivo.':'No connection: progress remains saved on this device.'
  };
  const value=en?(translations[text]||text):text;
- ['syncStatus','syncStatusAccount'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=value});
+ const success=['Progreso actualizado desde Supabase.','Progreso guardado y organizado en Supabase.','Tu progreso ya está sincronizado.'].includes(text),failure=text.startsWith('Sin conexión:');
+ if(success)localStorage.setItem(LAST_SYNC_SUCCESS_KEY,String(Date.now()));
+ ['syncStatus','syncStatusAccount'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=value;el.style.color=success?'#087f5b':failure?'#b42318':'';el.style.fontWeight=success||failure?'700':''}});
+ if(success)updateSyncLastSuccessUI();
 }
 function normalizeLoadedState(raw){
  appState=Object.assign(appState,raw||{});
@@ -3344,7 +3351,7 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
    }
    return;
  }
- cloudSyncBusy=true;setSyncStatus('Sincronizando…');
+ cloudSyncBusy=true;setSyncBusyUI(true);setSyncStatus('Sincronizando…');
  try{
    const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);
    if(userError||!user)throw userError||new Error('NO_USER');
@@ -3394,7 +3401,7 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
    console.error('Supabase sync error',e);
    setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');
    if(manual)alert(interfaceEn?'The account could not be reached. Your progress remains saved on this device.':'No se pudo conectar con la cuenta. Tu progreso continúa guardado en este dispositivo.');
- }finally{cloudSyncBusy=false}
+ }finally{cloudSyncBusy=false;setSyncBusyUI(false);updateSyncLastSuccessUI()}
 }
 
 function setProLang(lang){
@@ -3759,7 +3766,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
    '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
-   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
+   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
  window.setInterfaceLanguage=function(lang){ setGlobalLanguage(lang); };
@@ -3837,6 +3844,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(id==='cuenta'){
    const el=document.getElementById('cuenta'),lang=appState.planLang==='en'?'en':'es';
    if(el&&(!el.dataset.accountReady||el.dataset.accountLang!==lang)){el.innerHTML=accountHTML();el.dataset.accountReady='1';el.dataset.accountLang=lang}
+   if(typeof setSyncBusyUI==='function')setSyncBusyUI(cloudSyncBusy);
+   if(typeof updateSyncLastSuccessUI==='function')updateSyncLastSuccessUI();
    setTimeout(()=>{if(typeof refreshMfaStatus==='function')refreshMfaStatus()},0);
   }
  };
@@ -5360,7 +5369,7 @@ addEventListener('load',function(){
 <script>
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.08.31.2';
+  const MNSC_APP_BUILD='2026.08.31.3';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
