@@ -114,8 +114,8 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
 /* Pantalla de bienvenida al abrir la app */
-#mnSplash{position:fixed;inset:-2px;width:auto;min-height:calc(100vh + 4px);min-height:calc(100dvh + 4px);z-index:2147483647;display:grid;place-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 2px) calc(env(safe-area-inset-right) + 2px) calc(env(safe-area-inset-bottom) + 2px) calc(env(safe-area-inset-left) + 2px);background:#0e6e63;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
-#mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
+#mnSplash{position:fixed;inset:-2px;width:auto;min-height:calc(100vh + 4px);min-height:calc(100dvh + 4px);z-index:2147483647;display:grid;place-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 2px) calc(env(safe-area-inset-right) + 2px) calc(env(safe-area-inset-bottom) + 2px) calc(env(safe-area-inset-left) + 2px);background:#0e6e63;opacity:1;visibility:visible}
+#mnSplash.mn-splash-hide{display:none;pointer-events:none}
 #mnSplash img{width:min(42vw,180px);height:min(42vw,180px);display:block;object-fit:cover;object-position:center;border-radius:24%;filter:none;box-shadow:none;animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 body.mn-content-loading>:not(#mnSplash):not(script){visibility:hidden!important}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
@@ -4243,13 +4243,14 @@ answerAdaptiveExam=function(n){
     setTimeout(function(){
       const fontsReady=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
       Promise.race([fontsReady,new Promise(function(resolve){setTimeout(resolve,500);})]).then(function(){
-        requestAnimationFrame(function(){
-          document.body.classList.remove('mn-content-loading');
+        setTimeout(function(){
           requestAnimationFrame(function(){
-            splash.classList.add('mn-splash-hide');
-            setTimeout(function(){splash.remove();document.body.classList.remove('mn-splash-active');document.documentElement.classList.remove('mn-splash-active');},650);
+            document.body.classList.remove('mn-content-loading');
+            splash.remove();
+            document.body.classList.remove('mn-splash-active');
+            document.documentElement.classList.remove('mn-splash-active');
           });
-        });
+        },350);
       });
     },remaining);
   }
