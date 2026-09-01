@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Monica Nursing Study Center</title>
-<meta name="theme-color" content="#0b4f47">
+<meta name="theme-color" content="#0e6e63">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Monica Nursing">
@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=600">
 <style>
 :root{--bg:#f4f7f6;--card:#fff;--ink:#132A2E;--muted:#5c7278;--brand:#0e6e63;--brand-dark:#0b4f47;--brand2:#e3f1ed;--accent:#e2793d;--accent2:#fdece0;--good:#15865b;--bad:#c83d4a}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}html.mn-splash-active,body.mn-splash-active{background:#117f70}html,body{overflow-x:hidden}body{min-height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:linear-gradient(135deg,var(--brand-dark),var(--brand) 65%,#1c9c8a);color:#fff;padding:calc(28px + env(safe-area-inset-top)) 18px 28px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px;letter-spacing:-.01em}.tag{opacity:.85;margin-top:6px;letter-spacing:.06em;font-size:12px;font-weight:700}.mn-brand-title{display:flex;align-items:center;gap:10px}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:22%;padding:0;object-fit:cover;display:block;background:transparent;box-shadow:0 7px 20px #08302a4d}@media(min-width:651px){header .mn-brandmark{transform:translateY(10px)}}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}html.mn-splash-active,body.mn-splash-active{background:#0e6e63}html,body{overflow-x:hidden}body{min-height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(135deg,var(--brand-dark),var(--brand) 65%,#1c9c8a);color:#fff;padding:calc(28px + env(safe-area-inset-top)) 18px 28px}.wrap{max-width:1120px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:center}h1{margin:0;font-size:32px;letter-spacing:-.01em}.tag{opacity:.85;margin-top:6px;letter-spacing:.06em;font-size:12px;font-weight:700}.mn-header-brand{display:flex;align-items:center;gap:10px}.mn-brand-title{display:block}.mn-brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:22%;padding:0;object-fit:cover;display:block;background:transparent;box-shadow:0 7px 20px #08302a4d}
 nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0}.tab{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:12px;padding:11px 16px;background:#fff;cursor:pointer;font-weight:700;color:var(--ink);box-shadow:0 1px 0 #1c28520d;transition:background .15s,color .15s}.tab .ic{stroke:var(--muted)}.tab:hover{background:var(--brand2)}.tab.active{background:var(--brand);color:#fff}.tab.active .ic{stroke:#fff}
 .ic{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 h2 .ic,h3 .ic{width:19px;height:19px;vertical-align:-4px;margin-right:5px;stroke:var(--brand)}
@@ -114,7 +114,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 @media(max-width:820px){.pro-grid{grid-template-columns:1fr}.pro-hero{min-height:auto;padding:28px}.pro-hero h2{font-size:34px}.pro-feature-row{grid-template-columns:1fr}}
 
 /* Pantalla de bienvenida al abrir la app */
-#mnSplash{position:fixed;inset:-2px;width:auto;min-height:calc(100vh + 4px);min-height:calc(100dvh + 4px);z-index:2147483647;display:grid;place-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 2px) calc(env(safe-area-inset-right) + 2px) calc(env(safe-area-inset-bottom) + 2px) calc(env(safe-area-inset-left) + 2px);background:linear-gradient(145deg,#063f39 0%,#0b695e 52%,#128878 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#mnSplash{position:fixed;inset:-2px;width:auto;min-height:calc(100vh + 4px);min-height:calc(100dvh + 4px);z-index:2147483647;display:grid;place-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 2px) calc(env(safe-area-inset-right) + 2px) calc(env(safe-area-inset-bottom) + 2px) calc(env(safe-area-inset-left) + 2px);background:#0e6e63;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
 #mnSplash.mn-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
 #mnSplash img{width:min(42vw,180px);height:min(42vw,180px);display:block;object-fit:cover;object-position:center;border-radius:24%;filter:none;box-shadow:none;animation:mnSplashArrive .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnSplashArrive{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
@@ -173,7 +173,7 @@ button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-r
 </div>
 </div>
 
-<header><div class="wrap head"><div><h1 class="mn-brand-title"><img class="mn-brandmark" src="icon-512.png?v=600" alt="" aria-hidden="true"><span>Monica Nursing Study Center</span></h1><div class="tag">LEARN • PRACTICE • PASS</div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
+<header><div class="wrap head"><div class="mn-header-brand"><img class="mn-brandmark" src="icon-512.png?v=600" alt="" aria-hidden="true"><div><h1 class="mn-brand-title">Monica Nursing Study Center</h1><div class="tag">LEARN • PRACTICE • PASS</div></div></div><div><b id="scoreTop">0/0</b><div class="tag">preguntas correctas</div></div></div></header>
 
 <main class="wrap">
 <nav>
