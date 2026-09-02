@@ -1950,9 +1950,9 @@ function ensureFinalUI(){
  }
  document.querySelector('#inicio').innerHTML=`
   <div class="card mn-home-summary">
-   <span class="pill">${en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA'}</span>
-   <h2>Monica Nursing Study Center</h2>
-   <p>${en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.'}</p>
+   <span class="pill">${en?'YOUR STUDY CENTER':'TU CENTRO DE ESTUDIO'}</span>
+   <h2>${en?'Hello, Monica! What will we study today?':'¡Hola, Mónica! ¿Qué estudiaremos hoy?'}</h2>
+   <p>${en?'Your progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.'}</p>
   </div>
   <div id="dailyPlan"></div>
   <div id="homeStats"></div>`;
@@ -3873,9 +3873,10 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   if(homeCard){
    let language=homeCard.querySelector('.mn-home-lang');if(!language){language=document.createElement('div');language.className='mn-home-lang';homeCard.insertBefore(language,homeCard.firstChild)}
    language.innerHTML='<b>🌐 '+(en?'Language':'Idioma')+'</b><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">ES</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">EN</button></div>';
-   const pill=homeCard.querySelector('.pill'),paragraph=homeCard.querySelector('p');
-   if(pill)pill.textContent=en?'NURSING STUDY CENTER':'CENTRO DE ESTUDIO DE ENFERMERÍA';
-   if(paragraph)paragraph.textContent=en?'Your study progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
+   const pill=homeCard.querySelector('.pill'),title=homeCard.querySelector('h2'),paragraph=homeCard.querySelector('p');
+   if(pill)pill.textContent=en?'YOUR STUDY CENTER':'TU CENTRO DE ESTUDIO';
+   if(title)title.textContent=en?'Hello, Monica! What will we study today?':'¡Hola, Mónica! ¿Qué estudiaremos hoy?';
+   if(paragraph)paragraph.textContent=en?'Your progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
   }
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
