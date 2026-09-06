@@ -4522,7 +4522,6 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
    '<button class="mn-launch" onclick="startPractice(true)"><span class="mn-icon">'+windowIcon('questions')+'</span><b>'+(en?'Questions':'Preguntas')+'</b><small>'+(en?'All '+qs.length+' questions with answers and explanations.':qs.length+' preguntas con respuestas y explicaciones.')+'</small></button>',
-   `<button class="mn-launch" onclick="startNewQuestionsPractice()"><span class="mn-icon">🆕</span><b>${en?'New questions':'Preguntas nuevas'}</b><small>${qs.filter(q=>String(q[0]||'').trim().startsWith('🆕')).length} ${en?'recently added questions.':'preguntas recién añadidas.'}</small></button>`,
    launcher('exam',en?'Exams':'Exámenes',en?'Simulations and custom exams.':'Simulacros y exámenes personalizados.','exam'),
    launcher('medicine',en?'Medications':'Medicamentos',en?'Drugs, pharmacology, and calculations.':'Fármacos, farmacología y cálculos.','medcalc'),
    launcher('ngn',en?'NGN Cases':'Casos NGN',en?'Train with next-generation clinical questions.':'Entrena preguntas clínicas de nueva generación.','ngn')
@@ -4760,21 +4759,6 @@ answerAdaptiveExam=function(n){
  else{adaptiveStreak=adaptiveStreak<=0?adaptiveStreak-1:-1;if(adaptiveStreak<=-2&&adaptiveLevel>1){adaptiveLevel--;adaptiveStreak=0}if(!appState.mistakes.includes(idx))appState.mistakes.push(idx)}
  saveState();adaptivePos++;setTimeout(renderAdaptiveExam,180);
 }
-
-/* Añade acceso directo dentro de Practicar */
-(function mnAddNewQuestionsButton(){
- const oldRender=renderAppShell;
- renderAppShell=function(){
-   oldRender();
-   const hub=document.getElementById('practicar');
-   if(hub&&!hub.querySelector('#mnNewQuestionsBtn')){
-     const actions=hub.querySelector('.hub-grid,.grid,.actions')||hub;
-     const b=document.createElement('button');b.id='mnNewQuestionsBtn';b.className='launcher-card secondary';
-     b.innerHTML=appState.planLang==='en'?'<b>🆕 New questions</b><br><small>Practice only the recently added questions.</small>':'<b>🆕 Preguntas nuevas</b><br><small>Practica solo las preguntas recién añadidas.</small>';
-     b.onclick=startNewQuestionsPractice;actions.appendChild(b);
-   }
- }
-})();
 
 </script>
 
