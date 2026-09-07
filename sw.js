@@ -1,4 +1,4 @@
-const CACHE_NAME='mnsc-shell-v20260907-49';
+const CACHE_NAME='mnsc-shell-v20260907-50';
 const APP_SHELL=['./','./index.html'];
 
 self.addEventListener('install',event=>{
