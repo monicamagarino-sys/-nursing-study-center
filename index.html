@@ -8249,7 +8249,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.07.8';
+  const MNSC_APP_BUILD='2026.09.07.9';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8302,6 +8302,28 @@ addEventListener('load',function(){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
   window.mnUpdateSystemVersion='V5.5';
+})();
+</script>
+
+<script>
+/* MNSC V9.5 — Replace two confirmed duplicate concepts with guide-backed content */
+(function(){
+  const replacements={
+    183:{
+      es:["¿Qué sistema regula lentamente la concentración de HCO3 en el equilibrio ácido-base?",["Los pulmones","Los riñones","El corazón","El hígado"],1,"La guía de ABG indica que los riñones controlan lentamente el HCO3, mientras los pulmones controlan el CO2 en minutos.","abg"],
+      en:["Which system slowly regulates HCO3 concentration in acid-base balance?",["The lungs","The kidneys","The heart","The liver"],1,"The ABG guide states that the kidneys slowly control HCO3, while the lungs control CO2 within minutes.","abg"]
+    },
+    1309:{
+      es:["Según la guía, ¿qué describe el ballottement como signo probable de embarazo?",["El reblandecimiento del cuello uterino","La frecuencia cardíaca fetal detectada por Doppler","El rebote del feto contra los dedos del examinador durante la palpación","La ausencia de menstruación"],2,"La guía describe el ballottement, aproximadamente entre las 16 y 20 semanas, como el rebote del feto contra los dedos del examinador durante la palpación; se clasifica como signo probable de embarazo.","maternity"],
+      en:["According to the guide, what does ballottement describe as a probable sign of pregnancy?",["Softening of the cervix","Fetal heart rate detected by Doppler","Rebounding of the fetus against the examiner's fingers during palpation","Absence of menstruation"],2,"The guide describes ballottement, at approximately 16 to 20 weeks, as the fetus rebounding against the examiner's fingers during palpation; it is classified as a probable sign of pregnancy.","maternity"]
+    }
+  };
+  Object.entries(replacements).forEach(([index,row])=>{
+    const i=Number(index);
+    if(Array.isArray(qs)&&qs[i])qs[i]=row.es;
+    if(Array.isArray(window.qsEn)&&window.qsEn[i])window.qsEn[i]=row.en;
+  });
+  window.mnDuplicateReplacementVersion='V9.5-GUIDE-BACKED';
 })();
 </script>
 
