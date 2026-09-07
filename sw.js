@@ -1,4 +1,4 @@
-const CACHE_NAME='mnsc-shell-v20260907-51';
+const CACHE_NAME='mnsc-shell-v20260907-52';
 const APP_SHELL=['./','./index.html','./media/audio/9979_TV.mp3','./media/audio/13918_TV.mp3','./media/audio/14241_PV.mp3','./media/audio/29045_TV.mp3','./media/audio/33151_TV.mp3','./media/audio/2530_MV.mp3','./media/audio/14998_MV.mp3','./media/audio/23625_MV.mp3','./media/audio/24160_MV.mp3','./media/audio/31737_MV.mp3'];
 
 self.addEventListener('install',event=>{
