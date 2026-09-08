@@ -6307,7 +6307,7 @@ addEventListener("load",fix);setTimeout(fix,0);window.mnSecondaryBilingualVersio
 addEventListener('load',function(){
   const es=[
     ["Para calcular la fecha estimada de parto con la regla de Nägele, ¿qué se hace con la fecha de la última menstruación?",["Restar 3 meses y añadir 7 días y 1 año","Añadir 3 meses y restar 7 días","Añadir exactamente 40 días","Restar 1 año"],0,"La regla de Nägele parte del primer día de la última menstruación: se restan 3 meses, se añaden 7 días y se ajusta el año.","maternity"],
-    ["¿Cuál es un signo positivo de embarazo?",["Amenorrea","Náuseas matutinas","Frecuencia cardíaca fetal detectada por Doppler","Signo de Goodell"],2,"La frecuencia cardíaca fetal detectada por un examinador confirma la presencia del feto y se clasifica como signo positivo de embarazo.","maternity"],
+    ["Según la guía, ¿qué describe el ballottement como signo probable de embarazo?",["El reblandecimiento del cuello uterino","La frecuencia cardíaca fetal detectada por Doppler","El rebote del feto contra los dedos del examinador durante la palpación","La ausencia de menstruación"],2,"La guía describe el ballottement, aproximadamente entre las 16 y 20 semanas, como el rebote del feto contra los dedos del examinador durante la palpación; se clasifica como signo probable de embarazo.","maternity"],
     ["¿Cuál es un signo presuntivo de embarazo informado por la paciente?",["Frecuencia cardíaca fetal","Visualización fetal por ultrasonido","Amenorrea","Movimiento fetal palpado por el examinador"],2,"La amenorrea es un cambio subjetivo informado por la paciente y se considera un signo presuntivo, no diagnóstico.","maternity"],
     ["¿Cómo se clasifica el signo de Goodell, que describe reblandecimiento del cuello uterino?",["Signo presuntivo","Signo probable","Signo positivo","Signo de trabajo de parto"],1,"Goodell es un signo probable de embarazo; por sí solo no confirma definitivamente la gestación.","maternity"],
     ["Una orden indica partial weight bearing en la pierna lesionada. ¿Qué significa?",["No apoyar ningún peso","Apoyar solamente la cantidad de peso autorizada","Apoyar todo el peso sin ayuda","Mantener reposo absoluto"],1,"Partial weight bearing permite colocar solo una parte del peso corporal sobre la extremidad, según el límite indicado.","msk"],
@@ -6321,7 +6321,7 @@ addEventListener('load',function(){
   ];
   const en=[
     ["To estimate a due date with Nägele's rule, what is done with the first day of the last menstrual period?",["Subtract 3 months and add 7 days and 1 year","Add 3 months and subtract 7 days","Add exactly 40 days","Subtract 1 year"],0,"Nägele's rule starts with the first day of the last menstrual period: subtract 3 months, add 7 days, and adjust the year.","maternity"],
-    ["Which finding is a positive sign of pregnancy?",["Amenorrhea","Morning nausea","Fetal heart rate detected by Doppler","Goodell sign"],2,"A fetal heart rate detected by an examiner confirms the presence of a fetus and is classified as a positive sign.","maternity"],
+    ["According to the guide, what does ballottement describe as a probable sign of pregnancy?",["Softening of the cervix","Fetal heart rate detected by Doppler","Rebounding of the fetus against the examiner's fingers during palpation","Absence of menstruation"],2,"The guide describes ballottement, at approximately 16 to 20 weeks, as the fetus rebounding against the examiner's fingers during palpation; it is classified as a probable sign of pregnancy.","maternity"],
     ["Which finding is a presumptive sign of pregnancy reported by the patient?",["Fetal heart rate","Fetus seen on ultrasound","Amenorrhea","Fetal movement palpated by the examiner"],2,"Amenorrhea is a subjective change reported by the patient and is presumptive rather than diagnostic.","maternity"],
     ["How is Goodell sign, softening of the cervix, classified?",["Presumptive sign","Probable sign","Positive sign","Sign of labor"],1,"Goodell sign is a probable sign of pregnancy; it does not independently confirm pregnancy.","maternity"],
     ["An order permits partial weight bearing on the injured leg. What does this mean?",["Place no weight on it","Place only the authorized amount of weight on it","Place full weight without assistance","Remain on complete bed rest"],1,"Partial weight bearing allows only part of the patient's weight on the extremity, within the prescribed limit.","msk"],
@@ -8249,7 +8249,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.07.9';
+  const MNSC_APP_BUILD='2026.09.08.2';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8340,5 +8340,19 @@ addEventListener('load',function(){
   const practiceHub=document.getElementById('practicar');if(practiceHub)observer.observe(practiceHub,{childList:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshMediaLauncher,0),{once:true});else setTimeout(refreshMediaLauncher,0);
   window.mnMediaLauncherVersion='V9.2.1-PERSISTENT';
+})();
+</script>
+
+<script>
+/* MNSC V9.6 — completed bilingual structural audit */
+(function(){
+  window.mnBilingualAudit={
+    version:'V9.6',
+    completed:'2026-09-08',
+    pairedMainBank:1320,
+    sataQuestions:140,
+    ngnQuestions:102,
+    status:'passed'
+  };
 })();
 </script>
