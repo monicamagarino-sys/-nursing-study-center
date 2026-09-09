@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.8';
+  const MNSC_APP_BUILD='2026.09.09.9';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8409,7 +8409,7 @@ window.mnBilingualAudit={
     if(!box)return;
     box.innerHTML=`<div class="card ngn-case"><div class="exam-meta"><b>${en?'SATA Practice':'Práctica SATA'}</b><span>${total} ${en?'available':'disponibles'}</span></div><span class="pill">SELECT ALL THAT APPLY</span><h2>${en?'Choose your session length':'Elige la duración de la sesión'}</h2><p>${en?'Select one option and then press Start practice. Questions are chosen randomly from the complete SATA bank.':'Selecciona una opción y después presiona Comenzar práctica. Las preguntas se eligen al azar del banco SATA completo.'}</p><div class="grid" id="sataSizeChoices"><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="10" onchange="selectSATASessionSize(this)"> <b>${en?'Quick practice':'Práctica rápida'}</b><br><small style="margin-left:28px">10 ${en?'questions':'preguntas'}</small></label><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="25" onchange="selectSATASessionSize(this)"> <b>${en?'Intermediate practice':'Práctica intermedia'}</b><br><small style="margin-left:28px">25 ${en?'questions':'preguntas'}</small></label><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="${total}" onchange="selectSATASessionSize(this)"> <b>${en?'Full bank':'Banco completo'}</b><br><small style="margin-left:28px">${total} ${en?'questions':'preguntas'}</small></label></div><div class="actions"><button id="sataStartButton" class="primary" type="button" disabled onclick="startSelectedSATASession()">${en?'Start practice':'Comenzar práctica'}</button><button class="secondary" type="button" onclick="show('practicar')">${en?'Back to Practice':'Volver a Practicar'}</button></div></div>`;
   }
-  window.mnOpenSataSelector=function(){show('sata');renderSataSelector()};
+  window.mnOpenSataSelector=function(){ensureSataSection();show('sata');renderSataSelector()};
   window.startSATAEthics=window.mnOpenSataSelector;
   window.startSATASession=function(count){
     const bank=sataBank(),size=Math.max(1,Math.min(Number(count)||bank.length,bank.length));
