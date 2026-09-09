@@ -8249,7 +8249,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.08.2';
+  const MNSC_APP_BUILD='2026.09.09.1';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8302,6 +8302,18 @@ addEventListener('load',function(){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
   window.mnUpdateSystemVersion='V5.5';
+})();
+</script>
+
+<script>
+/* MNSC V9.7 — professional bilingual wording: tonsillectomy care */
+(function(){
+  const index=477;
+  const es=["Después de una amigdalectomía, ¿qué elemento debe evitar el paciente?",["Pajillas","Collar de hielo","Paletas heladas","Yogur"],0,"Después de una amigdalectomía deben evitarse las pajillas, porque la succión puede irritar el área quirúrgica y aumentar el riesgo de sangrado.","eyesent"];
+  const en=["After a tonsillectomy, which item should the patient avoid?",["Straws","Ice collar","Popsicles","Yogurt"],0,"After a tonsillectomy, straws should be avoided because suction can irritate the surgical area and increase the risk of bleeding.","eyesent"];
+  if(Array.isArray(qs)&&qs[index])qs[index]=es;
+  if(Array.isArray(window.qsEn)&&window.qsEn[index])window.qsEn[index]=en;
+  window.mnTonsillectomyWordingVersion='V9.7-BILINGUAL';
 })();
 </script>
 
