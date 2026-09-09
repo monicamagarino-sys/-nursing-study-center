@@ -3003,7 +3003,7 @@ function smartWeeklyPlanItems(){
   {icon:'⚠️',title:en?'Error review':'Repaso de errores',detail:hasErrors?`${appState.mistakes.length} ${en?'questions pending':'preguntas pendientes'}`:(en?'No pending errors; use daily practice.':'Sin errores pendientes; usa la práctica diaria.'),action:hasErrors?'startMistakePractice()':'startDailyPractice()',button:en?'Review':'Repasar'},
   {icon:'🧠',title:en?'Smart flashcards':'Tarjetas inteligentes',detail:`${due} ${en?'cards ready to review':'tarjetas listas para repasar'}`,action:`show('tarjetas')`,button:en?'Open cards':'Abrir tarjetas'},
   {icon:'🎯',title:en?'Weak topics':'Temas débiles',detail:weak.length?weak.map(x=>x.title.replace(/^Clase \d+ — /,'')).join(' · '):(en?'Complete an exam to identify them.':'Completa un examen para identificarlos.'),action:weak.length?'startWeakPractice()':`show('exam')`,button:en?(weak.length?'Practice topics':'Take exam'):(weak.length?'Practicar temas':'Hacer examen')},
-  {icon:'🧩',title:en?'NGN clinical judgment':'Juicio clínico NGN',detail:hasNGNErrors?`${appState.ngn.mistakes.length} ${en?'NGN items pending':'ejercicios NGN pendientes'}`:(en?'Mixed practice from the six clinical cases.':'Práctica mixta de los seis casos clínicos.'),action:hasNGNErrors?'startNGNErrors()':'startNGNMixed()',button:en?'Practice NGN':'Practicar NGN'},
+  {icon:'🧩',title:en?'NGN clinical judgment':'Juicio clínico NGN',detail:hasNGNErrors?`${appState.ngn.mistakes.length} ${en?'NGN items pending':'ejercicios NGN pendientes'}`:(en?'Mixed practice from 34 clinical cases and 102 NGN items.':'Práctica mixta de 34 casos clínicos y 102 ejercicios NGN.'),action:hasNGNErrors?'startNGNErrors()':'startNGNMixed()',button:en?'Practice NGN':'Practicar NGN'},
   {icon:'🏁',title:en?'Weekly exam':'Examen semanal',detail:en?'Measure progress and refresh weak topics.':'Mide tu avance y actualiza los temas débiles.',action:`show('exam')`,button:en?'Open exam':'Abrir examen'}
  ];
 }
@@ -4303,7 +4303,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.medCalc?.best||0}%</b>${en?'Dosage calculations':'Cálculos de dosis'}<br><small>${appState.medCalc?.correct||0}/${appState.medCalc?.attempts||0} ${en?'correct':'correctos'}</small></div>
  <div class="stat"><b>${fs.mastered}</b>${en?'Mastered cards':'Tarjetas dominadas'}</div>
  <div class="stat"><b>${appState.daily.streak}</b>${en?'Daily streak':'Racha diaria'}<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} ${en?'today':'hoy'}`:(en?'Goal pending today':'Meta pendiente hoy')}</small></div></div>
- <div class="card"><h3>🧩 ${en?'NGN clinical cases':'Casos clínicos NGN'}</h3><p>${en?'Best result':'Mejor resultado'}: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} ${en?'cases completed':'casos completados'} · ${(appState.ngn.mistakes||[]).length} ${en?'exercises to review':'ejercicios por repasar'}.</p><button class="goodbtn" onclick="show('ngn')">${en?'Open NGN cases':'Abrir casos NGN'}</button></div>
+ <div class="card"><h3>🧩 ${en?'NGN clinical cases':'Casos clínicos NGN'}</h3><p><b>34</b> ${en?'clinical cases':'casos clínicos'} · <b>102</b> ${en?'NGN items':'ejercicios NGN'}.</p><p>${en?'Best result':'Mejor resultado'}: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} ${en?'sessions completed':'sesiones completadas'} · ${(appState.ngn.mistakes||[]).length} ${en?'exercises to review':'ejercicios por repasar'}.</p><button class="goodbtn" onclick="show('ngn')">${en?'Open NGN cases':'Abrir casos NGN'}</button></div>
  <div class="card"><h3>💊 ${en?'Medications and calculations':'Medicamentos y cálculos'}</h3><p><b>${MEDICATION_STUDY.length}</b> ${en?'drug cards':'fichas'} · <b>${PHARM_Q.length}</b> ${en?'pharmacology questions':'preguntas farmacológicas'} · <b>${CALC_STUDY.length}</b> ${en?'calculations':'cálculos'}. ${en?'Best pharmacology exam':'Mejor examen farmacológico'}: <b>${appState.medPharm?.best||0}%</b> · ${en?'best calculation':'mejor cálculo'}: <b>${appState.medCalc?.best||0}%</b>.</p><button class="primary" onclick="show('medcalc')">${en?'Open medications and calculations':'Abrir medicamentos y cálculos'}</button></div>
  ${renderNclexReadiness()}${renderSmartWeeklyPlan()}${renderStudyReminder()}${renderExamPlan()}${renderStudyRecommendation()}${renderWeeklyGoals()}${renderActivityCalendar()}${renderModuleMasteryOverview()}
  <div class="card"><h3>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div>
@@ -8249,7 +8249,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.1';
+  const MNSC_APP_BUILD='2026.09.09.2';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
