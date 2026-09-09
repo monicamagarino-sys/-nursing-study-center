@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.12';
+  const MNSC_APP_BUILD='2026.09.09.13';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8397,14 +8397,18 @@ window.mnBilingualAudit={
     const current=document.querySelector('[data-sata-launch]');
     if(!current)return;
     const en=english(),total=totalSata(),icon=current.querySelector('.mn-icon')?.outerHTML||'';
-    const card=document.createElement('div');
-    card.className='mn-launch';card.dataset.sataLaunch='1';card.style.position='relative';card.style.pointerEvents='auto';
-    card.innerHTML=`${icon}<b>${en?'SATA Practice':'Práctica SATA'}</b><small>${en?'Choose a session to begin.':'Elige una sesión para comenzar.'}</small><div class="actions" style="margin-top:14px;position:relative;z-index:2;pointer-events:auto"><button class="secondary" type="button" data-sata-size="10">10</button><button class="secondary" type="button" data-sata-size="25">25</button><button class="primary" type="button" data-sata-size="${total}">${total}</button></div>`;
-    card.querySelectorAll('[data-sata-size]').forEach(control=>{
-      control.style.pointerEvents='auto';
-      control.addEventListener('click',function(){window.startSATASession(Number(this.dataset.sataSize))});
+    const wrapper=document.createElement('div');wrapper.dataset.sataLaunch='1';wrapper.style.display='contents';
+    [
+      [10,'SATA 10',en?'Quick 10-question session.':'Sesión rápida de 10 preguntas.'],
+      [25,'SATA 25',en?'Intermediate 25-question session.':'Sesión intermedia de 25 preguntas.'],
+      [total,'SATA '+total,en?'Complete SATA question bank.':'Banco completo de preguntas SATA.']
+    ].forEach(function(item){
+      const control=document.createElement('button');control.type='button';control.className='mn-launch';control.dataset.sataSize=String(item[0]);
+      control.innerHTML=icon+'<b>'+item[1]+'</b><small>'+item[2]+'</small>';
+      control.onclick=function(){window.startSATASession(Number(this.dataset.sataSize))};
+      wrapper.appendChild(control);
     });
-    current.replaceWith(card);
+    current.replaceWith(wrapper);
   }
   function renderSataSelector(){
     ensureSataSection();
