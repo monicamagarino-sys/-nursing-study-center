@@ -231,6 +231,10 @@ body.mn-content-loading>:not(#mnSplash):not(script){visibility:hidden!important}
   <div id="studyGuidesBox"></div>
 </section>
 
+<section id="about">
+  <div id="aboutBox"></div>
+</section>
+
 <footer>Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.</footer>
 </main>
 
@@ -4788,6 +4792,8 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 #dailyPlan>*:not(.continue-card){display:none!important}
 .mn-home-lang{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:#f6f7ff;border:1px solid #e0e2f5}
 .mn-home-lang b{font-size:14px}.mn-home-lang .pro-lang{flex:0 0 auto}
+.mn-about-teaser{border:1px solid #cfe5df;background:linear-gradient(135deg,#fff,#f0f8f6)}
+.mn-about-story{max-width:820px;margin:0 auto}.mn-about-story p{font-size:16px;line-height:1.7}.mn-about-story .about-note{padding:14px 16px;border-radius:13px;background:var(--brand2);color:var(--brand-dark)}
 @media(max-width:650px){
  main.wrap{padding:0 12px 86px}
  .mn-group-nav{position:fixed;left:0;right:0;bottom:0;top:auto;padding:7px max(6px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:3px;background:#fff;border-top:1px solid #dfe3ed;box-shadow:0 -7px 24px #18203318}
@@ -4821,7 +4827,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   inicio:'inicio',estudio:'estudio',temas:'estudio',buscar:'estudio',tarjetas:'estudio',guias:'estudio',
   practicar:'practicar',quiz:'practicar',exam:'practicar',medcalc:'practicar',ngn:'practicar',
   miprogreso:'miprogreso',favoritos:'miprogreso',errores:'miprogreso',logros:'miprogreso',progreso:'miprogreso',
-  cuenta:'cuenta'
+  cuenta:'cuenta',about:'inicio'
  };
  const iconPaths={
   home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
@@ -4877,6 +4883,12 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  }
  window.mnBuildGroupedUI=buildGroupedUI;
  window.mnApplyGlobalLanguageUI=applyGlobalLanguageUI;
+ function aboutHTML(){
+  const en=appState.planLang==='en';
+  if(en)return '<div class="card mn-about-story"><span class="pill">OUR STORY</span><h2>About Nursing Study Center</h2><p>Nursing Study Center grew from my own experience as a nursing student. Since graduating in 2016, I have continued preparing through classes, courses, and private tutoring. Over the years, I have collected study guides, notes, and learning materials that helped me understand and review essential nursing concepts.</p><p>I decided to organize that content and transform it into this application to help others who, like me, are looking for a simpler, clearer, and more organized way to prepare for the NCLEX.</p><p>The application provides support in both Spanish and English, especially for nurses who studied in Spanish-speaking countries and must now prepare for an examination administered in English. The interface, questions, and explanations are available in both languages to support understanding while strengthening clinical English vocabulary.</p><p>The study guides remain in English because the NCLEX is administered in English. This helps students gradually become familiar with the terminology, instructions, and concepts they will encounter on the examination.</p><p>This project was created with dedication, persistence, and the desire to transform years of studying into a resource that can make the journey easier for future nursing professionals.</p><p class="about-note"><b>Educational purpose:</b> This content is intended for educational and exam-preparation purposes. It does not replace accredited academic programs, official NCLEX guidance, or professional clinical advice.</p><button class="secondary" onclick="show(\'inicio\')">← Back to Home</button></div>';
+  return '<div class="card mn-about-story"><span class="pill">NUESTRA HISTORIA</span><h2>Sobre Nursing Study Center</h2><p>Nursing Study Center nació de mi propia experiencia como estudiante de enfermería. Desde que me gradué en 2016, he continuado preparándome mediante clases, cursos y tutorías con profesores particulares. Durante todos estos años he recopilado guías, apuntes y materiales de estudio que me han ayudado a comprender y repasar los temas esenciales de enfermería.</p><p>Decidí organizar ese contenido y convertirlo en esta aplicación para ayudar a otras personas que, como yo, buscan una manera más sencilla, clara y organizada de prepararse para el NCLEX.</p><p>La aplicación ofrece apoyo en español e inglés, especialmente para quienes estudiaron enfermería en países de habla hispana y ahora deben prepararse para un examen presentado en inglés. La interfaz, las preguntas y las explicaciones están disponibles en ambos idiomas para facilitar la comprensión y, al mismo tiempo, fortalecer el vocabulario clínico en inglés.</p><p>Las guías de estudio se mantienen en inglés porque el NCLEX se presenta en ese idioma. De esta manera, los estudiantes pueden familiarizarse progresivamente con los términos, instrucciones y conceptos que encontrarán durante el examen.</p><p>Este proyecto fue creado con dedicación, constancia y el deseo de convertir años de estudio en una herramienta que pueda hacer más sencillo el camino de otros futuros profesionales de enfermería.</p><p class="about-note"><b>Propósito educativo:</b> Este contenido tiene fines educativos y de preparación. No sustituye programas académicos acreditados, instrucciones oficiales del NCLEX ni asesoramiento clínico profesional.</p><button class="secondary" onclick="show(\'inicio\')">← Volver al Inicio</button></div>';
+ }
+ function renderAboutPage(){const box=document.getElementById('aboutBox');if(box)box.innerHTML=aboutHTML()}
  function accountHTML(){
   const en=appState.planLang==='en';
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
@@ -4884,6 +4896,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
    '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
    '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
+   '<div class="card"><h3>ℹ️ '+(en?'About this app':'Sobre la aplicación')+'</h3><p class="muted">'+(en?'Learn the story and purpose behind Nursing Study Center.':'Conoce la historia y el propósito de Nursing Study Center.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button></div>'+
    '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
  window.setInterfaceLanguage=function(lang){ setGlobalLanguage(lang); };
@@ -4901,6 +4914,10 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    if(title)title.textContent=en?'Hello, Monica! What will we study today?':'¡Hola, Mónica! ¿Qué estudiaremos hoy?';
    if(paragraph)paragraph.textContent=en?'Your progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
   }
+  let aboutTeaser=document.getElementById('mnAboutTeaser');
+  if(!aboutTeaser){aboutTeaser=document.createElement('div');aboutTeaser.id='mnAboutTeaser';aboutTeaser.className='card mn-about-teaser';const homeGrid=document.querySelector('#inicio>.grid');if(homeGrid)homeGrid.parentNode.insertBefore(aboutTeaser,homeGrid);else document.getElementById('inicio')?.appendChild(aboutTeaser)}
+  if(aboutTeaser)aboutTeaser.innerHTML='<span class="pill">'+(en?'OUR STORY':'NUESTRA HISTORIA')+'</span><h3>'+(en?'Why this app exists':'Por qué nació esta aplicación')+'</h3><p>'+(en?'Discover how years of nursing study became a bilingual resource designed to make NCLEX preparation clearer and more accessible.':'Conoce cómo años de estudio de enfermería se convirtieron en un recurso bilingüe para hacer más clara y accesible la preparación del NCLEX.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button>';
+  renderAboutPage();
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
   nav.className='mn-group-nav';
@@ -4956,6 +4973,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
  const previousShow=window.show;
  window.show=function(id){
   if(typeof previousShow==='function')previousShow(id);
+  if(id==='about')renderAboutPage();
   markGroup(id);addBackButton(id);
   if(id==='progreso')removeAccountDuplicates();
   if(id==='cuenta'){
@@ -8250,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.3';
+  const MNSC_APP_BUILD='2026.09.09.4';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
