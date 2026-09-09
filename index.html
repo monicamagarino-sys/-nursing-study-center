@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.11';
+  const MNSC_APP_BUILD='2026.09.09.12';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8398,8 +8398,12 @@ window.mnBilingualAudit={
     if(!current)return;
     const en=english(),total=totalSata(),icon=current.querySelector('.mn-icon')?.outerHTML||'';
     const card=document.createElement('div');
-    card.className='mn-launch';card.dataset.sataLaunch='1';
-    card.innerHTML=`${icon}<b>${en?'SATA Practice':'Práctica SATA'}</b><small>${en?'Choose a session to begin.':'Elige una sesión para comenzar.'}</small><div class="actions" style="margin-top:14px"><button class="secondary" type="button" onclick="startSATASession(10)">10</button><button class="secondary" type="button" onclick="startSATASession(25)">25</button><button class="primary" type="button" onclick="startSATASession(${total})">${total}</button></div>`;
+    card.className='mn-launch';card.dataset.sataLaunch='1';card.style.position='relative';card.style.pointerEvents='auto';
+    card.innerHTML=`${icon}<b>${en?'SATA Practice':'Práctica SATA'}</b><small>${en?'Choose a session to begin.':'Elige una sesión para comenzar.'}</small><div class="actions" style="margin-top:14px;position:relative;z-index:2;pointer-events:auto"><button class="secondary" type="button" data-sata-size="10">10</button><button class="secondary" type="button" data-sata-size="25">25</button><button class="primary" type="button" data-sata-size="${total}">${total}</button></div>`;
+    card.querySelectorAll('[data-sata-size]').forEach(control=>{
+      control.style.pointerEvents='auto';
+      control.addEventListener('click',function(){window.startSATASession(Number(this.dataset.sataSize))});
+    });
     current.replaceWith(card);
   }
   function renderSataSelector(){
