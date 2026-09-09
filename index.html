@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.4';
+  const MNSC_APP_BUILD='2026.09.09.5';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8377,7 +8377,7 @@ addEventListener('load',function(){
 <script>
 /* MNSC V9.6 — completed bilingual structural audit */
 (function(){
-  window.mnBilingualAudit={
+window.mnBilingualAudit={
     version:'V9.6',
     completed:'2026-09-08',
     pairedMainBank:1320,
@@ -8385,5 +8385,43 @@ addEventListener('load',function(){
     ngnQuestions:102,
     status:'passed'
   };
+})();
+</script>
+
+<script>
+/* MNSC V9.8 — selectable SATA session length */
+(function(){
+  function english(){return appState?.planLang==='en'}
+  function totalSata(){return window.mnSataBanks?.es?.length||sataBank().length}
+  function updateSataLauncher(){
+    const button=document.querySelector('[data-sata-launch]');
+    if(!button)return;
+    const small=button.querySelector('small'),en=english(),total=totalSata();
+    if(small)small.textContent=en
+      ?`Choose 10, 25, or all ${total} questions.`
+      :`Elige 10, 25 o las ${total} preguntas.`;
+  }
+  function renderSataSelector(){
+    ensureSataSection();
+    sataOrder=[];sataPos=0;sataEarned=0;sataPossible=0;sataAnswered=false;
+    const box=document.getElementById('sataBox'),en=english(),total=totalSata();
+    if(!box)return;
+    box.innerHTML=`<div class="card ngn-case"><div class="exam-meta"><b>${en?'SATA Practice':'Práctica SATA'}</b><span>${total} ${en?'available':'disponibles'}</span></div><span class="pill">SELECT ALL THAT APPLY</span><h2>${en?'Choose your session length':'Elige la duración de la sesión'}</h2><p>${en?'Questions are selected randomly from the complete SATA bank. Your best score is saved whenever you finish the selected session.':'Las preguntas se seleccionan al azar del banco SATA completo. Tu mejor puntuación se guarda cada vez que terminas la sesión elegida.'}</p><div class="grid"><button class="option" onclick="startSATASession(10)"><b>${en?'Quick practice':'Práctica rápida'}</b><br><small>10 ${en?'questions':'preguntas'}</small></button><button class="option" onclick="startSATASession(25)"><b>${en?'Intermediate practice':'Práctica intermedia'}</b><br><small>25 ${en?'questions':'preguntas'}</small></button><button class="option" onclick="startSATASession(${total})"><b>${en?'Full bank':'Banco completo'}</b><br><small>${total} ${en?'questions':'preguntas'}</small></button></div><div class="actions"><button class="secondary" onclick="show('practicar')">${en?'Back to Practice':'Volver a Practicar'}</button></div></div>`;
+  }
+  window.startSATAEthics=function(){show('sata');renderSataSelector()};
+  window.startSATASession=function(count){
+    const bank=sataBank(),size=Math.max(1,Math.min(Number(count)||bank.length,bank.length));
+    sataOrder=bank.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,size);
+    sataPos=0;sataEarned=0;sataPossible=0;sataAnswered=false;
+    show('sata');renderSATAQuestion();
+  };
+  const previousBuild=window.mnBuildGroupedUI;
+  if(typeof previousBuild==='function')window.mnBuildGroupedUI=function(){const result=previousBuild.apply(this,arguments);setTimeout(updateSataLauncher,0);return result};
+  const previousShow=window.show;
+  if(typeof previousShow==='function')window.show=function(id){const result=previousShow.apply(this,arguments);if(id==='practicar')setTimeout(updateSataLauncher,0);return result};
+  const previousLanguage=window.setGlobalLanguage;
+  if(typeof previousLanguage==='function')window.setGlobalLanguage=function(lang){const result=previousLanguage.apply(this,arguments);setTimeout(()=>{updateSataLauncher();if(document.querySelector('section.active')?.id==='sata'&&!sataOrder.length)renderSataSelector()},0);return result};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(updateSataLauncher,0),{once:true});else setTimeout(updateSataLauncher,0);
+  window.mnSataSessionSelectorVersion='V9.8';
 })();
 </script>
