@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.9';
+  const MNSC_APP_BUILD='2026.09.09.10';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8394,13 +8394,13 @@ window.mnBilingualAudit={
   function english(){return appState?.planLang==='en'}
   function totalSata(){return window.mnSataBanks?.es?.length||sataBank().length}
   function updateSataLauncher(){
-    const button=document.querySelector('[data-sata-launch]');
-    if(!button)return;
-    button.onclick=function(event){event.preventDefault();window.startSATAEthics()};
-    const small=button.querySelector('small'),en=english(),total=totalSata();
-    if(small)small.textContent=en
-      ?`Choose 10, 25, or all ${total} questions.`
-      :`Elige 10, 25 o las ${total} preguntas.`;
+    const current=document.querySelector('[data-sata-launch]');
+    if(!current)return;
+    const en=english(),total=totalSata(),icon=current.querySelector('.mn-icon')?.outerHTML||'';
+    const card=document.createElement('div');
+    card.className='mn-launch';card.dataset.sataLaunch='1';
+    card.innerHTML=`${icon}<b>${en?'SATA Practice':'Práctica SATA'}</b><small>${en?'Choose a session to begin.':'Elige una sesión para comenzar.'}</small><div class="actions" style="margin-top:14px"><button class="secondary" type="button" onclick="event.stopPropagation();startSATASession(10)">10</button><button class="secondary" type="button" onclick="event.stopPropagation();startSATASession(25)">25</button><button class="primary" type="button" onclick="event.stopPropagation();startSATASession(${total})">${total}</button></div>`;
+    current.replaceWith(card);
   }
   function renderSataSelector(){
     ensureSataSection();
@@ -8415,7 +8415,7 @@ window.mnBilingualAudit={
     const bank=sataBank(),size=Math.max(1,Math.min(Number(count)||bank.length,bank.length));
     sataOrder=bank.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,size);
     sataPos=0;sataEarned=0;sataPossible=0;sataAnswered=false;
-    show('sata');renderSATAQuestion();
+    ensureSataSection();show('sata');renderSATAQuestion();
   };
   window.selectSATASessionSize=function(input){
     document.querySelectorAll('#sataSizeChoices label').forEach(label=>{label.style.borderColor='';label.style.background=''});
