@@ -8268,7 +8268,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.5';
+  const MNSC_APP_BUILD='2026.09.09.6';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8406,7 +8406,7 @@ window.mnBilingualAudit={
     sataOrder=[];sataPos=0;sataEarned=0;sataPossible=0;sataAnswered=false;
     const box=document.getElementById('sataBox'),en=english(),total=totalSata();
     if(!box)return;
-    box.innerHTML=`<div class="card ngn-case"><div class="exam-meta"><b>${en?'SATA Practice':'Práctica SATA'}</b><span>${total} ${en?'available':'disponibles'}</span></div><span class="pill">SELECT ALL THAT APPLY</span><h2>${en?'Choose your session length':'Elige la duración de la sesión'}</h2><p>${en?'Questions are selected randomly from the complete SATA bank. Your best score is saved whenever you finish the selected session.':'Las preguntas se seleccionan al azar del banco SATA completo. Tu mejor puntuación se guarda cada vez que terminas la sesión elegida.'}</p><div class="grid"><button class="option" onclick="startSATASession(10)"><b>${en?'Quick practice':'Práctica rápida'}</b><br><small>10 ${en?'questions':'preguntas'}</small></button><button class="option" onclick="startSATASession(25)"><b>${en?'Intermediate practice':'Práctica intermedia'}</b><br><small>25 ${en?'questions':'preguntas'}</small></button><button class="option" onclick="startSATASession(${total})"><b>${en?'Full bank':'Banco completo'}</b><br><small>${total} ${en?'questions':'preguntas'}</small></button></div><div class="actions"><button class="secondary" onclick="show('practicar')">${en?'Back to Practice':'Volver a Practicar'}</button></div></div>`;
+    box.innerHTML=`<div class="card ngn-case"><div class="exam-meta"><b>${en?'SATA Practice':'Práctica SATA'}</b><span>${total} ${en?'available':'disponibles'}</span></div><span class="pill">SELECT ALL THAT APPLY</span><h2>${en?'Choose your session length':'Elige la duración de la sesión'}</h2><p>${en?'Select one option and then press Start practice. Questions are chosen randomly from the complete SATA bank.':'Selecciona una opción y después presiona Comenzar práctica. Las preguntas se eligen al azar del banco SATA completo.'}</p><div class="grid" id="sataSizeChoices"><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="10" onchange="selectSATASessionSize(this)"> <b>${en?'Quick practice':'Práctica rápida'}</b><br><small style="margin-left:28px">10 ${en?'questions':'preguntas'}</small></label><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="25" onchange="selectSATASessionSize(this)"> <b>${en?'Intermediate practice':'Práctica intermedia'}</b><br><small style="margin-left:28px">25 ${en?'questions':'preguntas'}</small></label><label class="option" style="display:block;cursor:pointer"><input type="radio" name="sataSessionSize" value="${total}" onchange="selectSATASessionSize(this)"> <b>${en?'Full bank':'Banco completo'}</b><br><small style="margin-left:28px">${total} ${en?'questions':'preguntas'}</small></label></div><div class="actions"><button id="sataStartButton" class="primary" type="button" disabled onclick="startSelectedSATASession()">${en?'Start practice':'Comenzar práctica'}</button><button class="secondary" type="button" onclick="show('practicar')">${en?'Back to Practice':'Volver a Practicar'}</button></div></div>`;
   }
   window.startSATAEthics=function(){show('sata');renderSataSelector()};
   window.startSATASession=function(count){
@@ -8414,6 +8414,15 @@ window.mnBilingualAudit={
     sataOrder=bank.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,size);
     sataPos=0;sataEarned=0;sataPossible=0;sataAnswered=false;
     show('sata');renderSATAQuestion();
+  };
+  window.selectSATASessionSize=function(input){
+    document.querySelectorAll('#sataSizeChoices label').forEach(label=>{label.style.borderColor='';label.style.background=''});
+    const label=input?.closest('label');if(label){label.style.borderColor='var(--brand)';label.style.background='var(--brand2)'}
+    const start=document.getElementById('sataStartButton');if(start)start.disabled=!input?.checked;
+  };
+  window.startSelectedSATASession=function(){
+    const selected=document.querySelector('input[name="sataSessionSize"]:checked');
+    if(selected)startSATASession(Number(selected.value));
   };
   const previousBuild=window.mnBuildGroupedUI;
   if(typeof previousBuild==='function')window.mnBuildGroupedUI=function(){const result=previousBuild.apply(this,arguments);setTimeout(updateSataLauncher,0);return result};
