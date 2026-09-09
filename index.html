@@ -4301,6 +4301,7 @@ function renderProgress(){
  <div class="stat"><b>${appState.customExam.best}%</b>${en?'Best custom':'Mejor personalizado'}<br><small>${appState.customExam.taken} ${en?'completed':'realizados'}</small></div>
  <div class="stat"><b>${appState.adaptive?.best||0}%</b>${en?'Best adaptive':'Mejor adaptativo'}<br><small>${appState.adaptive?.taken||0} ${en?'completed · level':'realizados · nivel'} ${adaptiveLevelLabel(appState.adaptive?.level||2)}</small></div>
  <div class="stat"><b>${appState.medCalc?.best||0}%</b>${en?'Dosage calculations':'Cálculos de dosis'}<br><small>${appState.medCalc?.correct||0}/${appState.medCalc?.attempts||0} ${en?'correct':'correctos'}</small></div>
+ <div class="stat"><b>${appState.sata?.best||0}%</b>${en?'Best SATA':'Mejor SATA'}<br><small><b>140</b> ${en?'available':'disponibles'} · ${appState.sata?.attempts||0} ${en?'answered':'respondidas'}</small></div>
  <div class="stat"><b>${fs.mastered}</b>${en?'Mastered cards':'Tarjetas dominadas'}</div>
  <div class="stat"><b>${appState.daily.streak}</b>${en?'Daily streak':'Racha diaria'}<br><small>${appState.daily.completedDate===dailyDateKey()?`${appState.daily.correct}/${appState.daily.total} ${en?'today':'hoy'}`:(en?'Goal pending today':'Meta pendiente hoy')}</small></div></div>
  <div class="card"><h3>🧩 ${en?'NGN clinical cases':'Casos clínicos NGN'}</h3><p><b>34</b> ${en?'clinical cases':'casos clínicos'} · <b>102</b> ${en?'NGN items':'ejercicios NGN'}.</p><p>${en?'Best result':'Mejor resultado'}: <b>${appState.ngn.best||0}%</b> · ${appState.ngn.taken||0} ${en?'sessions completed':'sesiones completadas'} · ${(appState.ngn.mistakes||[]).length} ${en?'exercises to review':'ejercicios por repasar'}.</p><button class="goodbtn" onclick="show('ngn')">${en?'Open NGN cases':'Abrir casos NGN'}</button></div>
@@ -8249,7 +8250,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.2';
+  const MNSC_APP_BUILD='2026.09.09.3';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
