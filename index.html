@@ -4842,6 +4842,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   user:'<circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/>',
   search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
   cards:'<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M2 8v10a2 2 0 0 0 2 2"/>',
+  guides:'<path d="M7 3h9l4 4v14H7Z"/><path d="M16 3v5h4M10 12h7M10 16h7"/><path d="M4 7v14h12"/>',
   questions:'<path d="M5 3h14v18H5z"/><path d="M9 9a3 3 0 1 1 4.8 2.4c-1 .7-1.8 1.2-1.8 2.6"/><path d="M12 17h.01"/>',
   exam:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M21 12h-3M12 21v-3M3 12h3"/>',
   medicine:'<path d="M8 3a5 5 0 0 0-3.5 8.5l8 8a5 5 0 0 0 7-7l-8-8A5 5 0 0 0 8 3Z"/><path d="m7 15 8-8"/>',
@@ -4936,7 +4937,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    launcher('book',en?'Modules':'Módulos',en?'All classes organized by topic.':'Todas las clases organizadas por tema.','temas'),
    launcher('search',en?'Search':'Buscar',en?'Quickly find any content.':'Encuentra rápidamente cualquier contenido.','buscar'),
    launcher('cards',en?'Flashcards':'Tarjetas',en?'Review with smart flashcards.':'Repasa con tarjetas inteligentes.','tarjetas'),
-   launcher('book',en?'Study Guides':'Guías de estudio',en?'Open and print the cleaned original study guides.':'Abre e imprime las guías originales limpias.','guias')
+   launcher('guides',en?'Study Guides':'Guías de estudio',en?'Open and print the cleaned original study guides.':'Abre e imprime las guías originales limpias.','guias')
   ]);
   ensureHub('practicar',titleIcon('practice',en?'Practice':'Practicar'),[
    '<button class="mn-launch" onclick="startPractice(true)"><span class="mn-icon">'+windowIcon('questions')+'</span><b>'+(en?'Questions':'Preguntas')+'</b><small>'+(en?'All '+qs.length+' questions with answers and explanations.':qs.length+' preguntas con respuestas y explicaciones.')+'</small></button>',
@@ -8275,7 +8276,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.11.01';
+  const MNSC_APP_BUILD='2026.09.11.02';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
