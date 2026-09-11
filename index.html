@@ -8275,7 +8275,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.10.20';
+  const MNSC_APP_BUILD='2026.09.10.21';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8360,9 +8360,10 @@ addEventListener('load',function(){
   }
   function compactProgress(){
     const box=document.getElementById('progressBox');if(!box)return;
+    const legacyInsights=document.getElementById('statisticsInsights');if(legacyInsights&&!box.contains(legacyInsights))legacyInsights.remove();
     const en=progressEnglish(),done=appState.completed.length,fs=flashcardStats(),practiceScore=pct(appState.practice.correct,appState.practice.attempts),ngnBest=appState.ngn?.best||0,sataBest=appState.sata?.best||0,medBest=appState.medPharm?.best||0,calcBest=appState.medCalc?.best||0;
-    const learningDetails=`${renderNclexReadiness()}${renderSmartWeeklyPlan()}${renderStudyReminder()}${renderExamPlan()}${renderStudyRecommendation()}${renderWeeklyGoals()}${renderActivityCalendar()}${renderModuleMasteryOverview()}`;
-    const historyDetails=`<div class="card"><h3>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div><div class="card"><h3>🏆 ${en?'My achievements':'Mis logros'}</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned':'medallas conseguidas'}.</p><button class="warnbtn" onclick="show('logros')">${en?'View achievements':'Ver logros'}</button></div><div class="card"><h3>📄 ${en?'Progress and notes report':'Informe de progreso y notas'}</h3><button class="primary" onclick="exportProgressReport()">${en?'Export PDF report':'Exportar informe PDF'}</button></div>${renderExamHistory()}${renderNotesOverview()}`;
+    const learningDetails=`${renderSmartWeeklyPlan()}${renderStudyReminder()}${renderExamPlan()}${renderStudyRecommendation()}${renderWeeklyGoals()}${renderActivityCalendar()}${renderModuleMasteryOverview()}`;
+    const historyDetails=`<div id="statisticsInsights"></div><div class="card"><h3>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div><div class="card"><h3>🏆 ${en?'My achievements':'Mis logros'}</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned':'medallas conseguidas'}.</p><button class="warnbtn" onclick="show('logros')">${en?'View achievements':'Ver logros'}</button></div><div class="card"><h3>📄 ${en?'Progress and notes report':'Informe de progreso y notas'}</h3><button class="primary" onclick="exportProgressReport()">${en?'Export PDF report':'Exportar informe PDF'}</button></div>${renderExamHistory()}${renderNotesOverview()}`;
     const completedDetails=`<p>${en?'Review the status of all 20 modules.':'Revisa el estado de los 20 módulos.'}</p>${CORE_MODULES.map(([key],i)=>`<p>${appState.completed.includes(key)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(key,en).replace(/^(Clase|Class) \d+ — /,''))}</p>`).join('')}<button class="secondary" onclick="if(confirm('${en?'Delete all saved progress?':'¿Borrar todo el progreso guardado?'}')){localStorage.removeItem(STORE_KEY);location.reload()}">${en?'Reset progress':'Reiniciar progreso'}</button>`;
     box.innerHTML=`<div class="final-stats">
       <div class="stat"><b>${done}/20</b>${en?'Modules':'Módulos'}<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -8375,6 +8376,7 @@ addEventListener('load',function(){
     <details class="card progress-detail"><summary>📅 ${en?'Study plan and activity':'Plan de estudio y actividad'}</summary><div class="progress-detail-body">${learningDetails}</div></details>
     <details class="card progress-detail"><summary>📊 ${en?'History, reports, and achievements':'Historial, informes y logros'}</summary><div class="progress-detail-body">${historyDetails}</div></details>
     <details class="card progress-detail"><summary>📚 ${en?'Completed modules':'Módulos completados'}</summary><div class="progress-detail-body">${completedDetails}</div></details>`;
+    if(typeof window.renderStatisticsInsights==='function')window.renderStatisticsInsights();
   }
   window.renderProgress=compactProgress;
   try{renderProgress=compactProgress}catch(e){}
