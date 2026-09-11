@@ -8270,7 +8270,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.09.15';
+  const MNSC_APP_BUILD='2026.09.10.16';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8323,6 +8323,67 @@ addEventListener('load',function(){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
   window.mnUpdateSystemVersion='V5.5';
+})();
+</script>
+
+<script>
+/* MNSC V9.9 — selectable NGN case sessions */
+(function(){
+  let ngnSessionCases=3;
+  const originalRenderNGN=window.renderNGN;
+
+  function ngnSessionEnglish(){return (appState?.planLang||ngnLang)==='en'}
+  function ngnSessionTotal(){return ngnCases().length}
+  function ngnSessionExercises(caseCount){
+    return ngnCases().slice(0,Number(caseCount)||0).reduce((total,c)=>total+c.items.length,0);
+  }
+  function ngnSessionCard(){
+    const en=ngnSessionEnglish(),total=ngnSessionTotal();
+    return `<div class="card ngn-case" data-ngn-session-selector style="border-left-color:#8b5cf6">
+      <span class="pill">NEXT GENERATION NCLEX</span>
+      <h2>🎯 ${en?'Mixed NGN practice':'Práctica mixta NGN'}</h2>
+      <p>${en?'Choose how many complete clinical cases you want to practice. The three exercises in each case stay together.':'Elige cuántos casos clínicos completos deseas practicar. Los tres ejercicios de cada caso permanecen juntos.'}</p>
+      <div class="exam-config">
+        <label>${en?'Clinical cases':'Casos clínicos'}
+          <select id="ngnCaseCount">
+            <option value="3">3 ${en?'cases · 9 exercises':'casos · 9 ejercicios'}</option>
+            <option value="5">5 ${en?'cases · 15 exercises':'casos · 15 ejercicios'}</option>
+            <option value="${total}">${total} ${en?'cases · 102 exercises':'casos · 102 ejercicios'}</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary" type="button" onclick="startNGNCaseSession(Number(document.getElementById('ngnCaseCount').value))">${en?'Start NGN practice':'Comenzar práctica NGN'}</button>
+    </div>`;
+  }
+  function patchNGNSessionSelector(){
+    if(ngnCase)return;
+    const box=document.getElementById('ngnBox');if(!box)return;
+    const oldButton=[...box.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('startNGNMixed'));
+    const oldCard=oldButton?.closest('.card');
+    if(oldCard)oldCard.outerHTML=ngnSessionCard();
+    else if(!box.querySelector('[data-ngn-session-selector]')){
+      const summary=box.querySelector('.card');
+      if(summary)summary.insertAdjacentHTML('afterend',ngnSessionCard());
+    }
+  }
+  window.renderNGN=function(){
+    const result=originalRenderNGN.apply(this,arguments);
+    patchNGNSessionSelector();
+    return result;
+  };
+  window.startNGNCaseSession=function(caseCount){
+    const cases=ngnCases(),size=Math.max(1,Math.min(Number(caseCount)||3,cases.length));
+    ngnSessionCases=size;
+    const selected=[...cases].sort(()=>Math.random()-.5).slice(0,size);
+    const items=selected.flatMap(c=>c.items.map((item,index)=>({...item,sourceId:c.id,sourceTitle:c.title,sourceScenario:c.scenario,sourceIndex:index})));
+    ngnShuffleSeed=Math.floor(Math.random()*2147483647);
+    ngnCase=ngnPrepareCase({id:'mixed',title:ngnSessionEnglish()?`${size} NGN clinical cases`:`${size} casos clínicos NGN`,scenario:'',items});
+    ngnMode='exam';ngnPos=0;ngnEarned=0;ngnPossible=0;ngnResults=[];
+    rememberStudy('ngn','mixed',ngnCase.title);show('ngn');renderNGNItem();
+  };
+  window.startNGNMixed=function(){window.startNGNCaseSession(ngnSessionCases)};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{if(!ngnCase)window.renderNGN()},0),{once:true});
+  window.mnNgnSessionSelectorVersion='V9.9';
 })();
 </script>
 
