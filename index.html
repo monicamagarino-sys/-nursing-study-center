@@ -8275,7 +8275,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.10.22';
+  const MNSC_APP_BUILD='2026.09.11.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8355,7 +8355,7 @@ addEventListener('load',function(){
     const old=[...grid.querySelectorAll('.mn-launch')].find(button=>(button.getAttribute('onclick')||'').includes("show('medcalc')"));
     if(old)old.remove();
     const en=progressEnglish(),ngn=[...grid.querySelectorAll('.mn-launch')].find(button=>(button.getAttribute('onclick')||'').includes("show('ngn')"));
-    const medCalcIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.8 14.2 10.2 7.8a4.2 4.2 0 0 1 6 6l-6.4 6.4a4.2 4.2 0 0 1-6-6Z"/><path d="m7 11 6 6"/><rect x="15.5" y="3" width="6" height="8" rx="1"/><path d="M17.2 5.3h2.6M17.3 8h.01M19.8 8h.01"/></svg>';
+    const medCalcIcon='<svg viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(-45 7.5 13)"><rect x="3.5" y="7" width="8" height="12" rx="4"/><path d="M3.5 13h8"/></g><rect x="15" y="3" width="9" height="18" rx="1.8"/><path d="M17.5 6h4M17.5 10h.1M21.5 10h.1M17.5 14h.1M21.5 14h.1M17.5 18h.1M21.5 18h.1"/></svg>';
     const cards=`<button class="mn-launch" data-medcalc-practice type="button" onclick="show('medcalc');renderMedCalc()"><span class="mn-icon">${medCalcIcon}</span><b>${en?'Medications and calculations':'Medicamentos y cálculos'}</b><small>${en?'Study drug cards or practice 10, 25, or 56 dosage calculations.':'Estudia las fichas o practica 10, 25 o 56 cálculos de dosis.'}</small></button>`;
     if(ngn)ngn.insertAdjacentHTML('beforebegin',cards);else grid.insertAdjacentHTML('beforeend',cards);
   }
