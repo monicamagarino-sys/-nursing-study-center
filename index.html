@@ -4798,7 +4798,6 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 #dailyPlan>*:not(.continue-card){display:none!important}
 .mn-home-lang{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:#f6f7ff;border:1px solid #e0e2f5}
 .mn-home-lang b{font-size:14px}.mn-home-lang .pro-lang{flex:0 0 auto}
-.mn-about-teaser{border:1px solid #cfe5df;background:linear-gradient(135deg,#fff,#f0f8f6)}
 .mn-about-story{max-width:820px;margin:0 auto}.mn-about-story p{font-size:16px;line-height:1.7}.mn-about-story .about-note{padding:14px 16px;border-radius:13px;background:var(--brand2);color:var(--brand-dark)}
 @media(max-width:650px){
  main.wrap{padding:0 12px 86px}
@@ -4925,9 +4924,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
    if(title)title.textContent=en?'Hello, Monica! What will we study today?':'¡Hola, Mónica! ¿Qué estudiaremos hoy?';
    if(paragraph)paragraph.textContent=en?'Your progress, next step, and daily plan in one place.':'Tu progreso, próximo paso y plan diario en un solo lugar.';
   }
-  let aboutTeaser=document.getElementById('mnAboutTeaser');
-  if(!aboutTeaser){aboutTeaser=document.createElement('div');aboutTeaser.id='mnAboutTeaser';aboutTeaser.className='card mn-about-teaser';const homeGrid=document.querySelector('#inicio>.grid');if(homeGrid)homeGrid.parentNode.insertBefore(aboutTeaser,homeGrid);else document.getElementById('inicio')?.appendChild(aboutTeaser)}
-  if(aboutTeaser)aboutTeaser.innerHTML='<span class="pill">'+(en?'OUR STORY':'NUESTRA HISTORIA')+'</span><h3>'+(en?'Why this app exists':'Por qué nació esta aplicación')+'</h3><p>'+(en?'Discover how years of nursing study became a bilingual resource designed to make NCLEX preparation clearer and more accessible.':'Conoce cómo años de estudio de enfermería se convirtieron en un recurso bilingüe para hacer más clara y accesible la preparación del NCLEX.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button>';
+  document.getElementById('mnAboutTeaser')?.remove();
   renderAboutPage();
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const nav=document.querySelector('main>nav, main nav'); if(!nav)return;
@@ -8281,7 +8278,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.12.01';
+  const MNSC_APP_BUILD='2026.09.12.02';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
