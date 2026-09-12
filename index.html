@@ -4666,7 +4666,7 @@ const MN_ACHIEVEMENT_I18N={
 };
 renderAchievements=function(){
  updateAchievements();const box=document.getElementById('achievementsBox');if(!box)return;const en=appState.planLang==='en',earned=ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length;
- box.innerHTML=`<div class="card"><h2>🏆 ${en?'My achievements':'Mis logros'}</h2><p><b>${earned}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned. Every step counts.':'medallas conseguidas. Cada avance cuenta.'}</p><div class="progressbar"><span style="width:${pct(earned,ACHIEVEMENT_DEFS.length)}%"></span></div></div><div class="achievement-grid">${ACHIEVEMENT_DEFS.map(a=>{const date=appState.achievements[a.id],t=MN_ACHIEVEMENT_I18N[a.id],title=t?(en?t[2]:t[0]):a.title,desc=t?(en?t[3]:t[1]):a.desc;return `<div class="card achievement ${date?'earned':'locked'}"><span class="medal">${date?a.icon:'🔒'}</span><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="status">${date?`${en?'EARNED':'CONSEGUIDO'} · ${esc(new Date(date).toLocaleDateString(en?'en-US':'es-US'))}`:(en?'LOCKED':'BLOQUEADO')}</span></div>`}).join('')}</div>`;
+ box.innerHTML=`<div class="card"><h2 class="mn-hub-title"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0ZM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></svg>${en?'My achievements':'Mis logros'}</h2><p><b>${earned}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned. Every step counts.':'medallas conseguidas. Cada avance cuenta.'}</p><div class="progressbar"><span style="width:${pct(earned,ACHIEVEMENT_DEFS.length)}%"></span></div></div><div class="achievement-grid">${ACHIEVEMENT_DEFS.map(a=>{const date=appState.achievements[a.id],t=MN_ACHIEVEMENT_I18N[a.id],title=t?(en?t[2]:t[0]):a.title,desc=t?(en?t[3]:t[1]):a.desc;return `<div class="card achievement ${date?'earned':'locked'}"><span class="medal">${date?a.icon:'🔒'}</span><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="status">${date?`${en?'EARNED':'CONSEGUIDO'} · ${esc(new Date(date).toLocaleDateString(en?'en-US':'es-US'))}`:(en?'LOCKED':'BLOQUEADO')}</span></div>`}).join('')}</div>`;
 }
 function restoreGlobalLanguage(){
  const lang=localStorage.getItem('mnsc_user_lang_choice')
@@ -4915,12 +4915,12 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   set('#exam h2',en?'🎯 NCLEX Simulation':'🎯 Simulacro NCLEX');
   const examP=document.querySelector('#exam .card>p');if(examP)examP.textContent=en?'85 randomized questions from all modules · 5 hours · practice goal: 76 correct.':'85 preguntas aleatorias de todos los módulos · 5 horas · meta de práctica: 76 correctas.';
   set('#medcalc>h2',en?'💊 Medications and calculations':'💊 Medicamentos y cálculos');
-  set('#favoritos>h2',en?'⭐ Favorite questions':'⭐ Preguntas favoritas');
+  const favoriteTitle=document.querySelector('#favoritos>h2');if(favoriteTitle){favoriteTitle.className='mn-hub-title';favoriteTitle.innerHTML=icon('star')+(en?'Favorite questions':'Preguntas favoritas')}
   set('#progreso>h2',en?'📈 Your progress':'📈 Tu progreso');
   const footer=document.querySelector('main>footer');if(footer)footer.textContent=en?'Study content based on the provided document. This page does not replace protocols, laws, clinical guidelines, or official course materials.':'Contenido de estudio basado en el documento proporcionado. Esta página no sustituye protocolos, legislación, guías clínicas ni el material oficial del curso.';
   const searchTitle=document.querySelector('#buscar h2');if(searchTitle)searchTitle.textContent=en?'🔎 Search content':'🔎 Buscar contenido';
   const smartSearch=document.getElementById('smartSearch');if(smartSearch)smartSearch.placeholder=en?'Example: insulin, heart attack, pregnancy…':'Ejemplo: insulina, infarto, embarazo…';
-  const errorTitle=document.querySelector('#errores h2');if(errorTitle)errorTitle.textContent=en?'⚠️ Error Notebook':'⚠️ Cuaderno de errores';
+  const errorTitle=document.querySelector('#errores h2');if(errorTitle){errorTitle.className='mn-hub-title';errorTitle.innerHTML=icon('warning')+(en?'Error Notebook':'Cuaderno de errores')}
   const active=document.querySelector('section.active')?.id||'inicio';
   if(active==='errores'&&typeof renderMistakes==='function')renderMistakes();
   if(active==='favoritos'&&typeof renderFavorites==='function')renderFavorites();
@@ -8314,7 +8314,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.12.04';
+  const MNSC_APP_BUILD='2026.09.12.05';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
