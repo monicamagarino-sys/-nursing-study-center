@@ -8314,7 +8314,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.12.03';
+  const MNSC_APP_BUILD='2026.09.12.04';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8376,6 +8376,8 @@ addEventListener('load',function(){
 .progress-detail>summary::-webkit-details-marker{display:none}
 .progress-detail>summary::after{content:'＋';color:var(--brand);font-size:24px;line-height:1}
 .progress-detail[open]>summary::after{content:'−'}
+.progress-summary-label,.progress-card-heading{display:flex;align-items:center;gap:9px}
+.progress-summary-label svg,.progress-card-heading svg{width:25px;height:25px;flex:0 0 25px;fill:none;stroke:#1769b0;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .progress-detail>.progress-detail-body{padding:0 18px 18px}
 .progress-detail .card{box-shadow:none;border-color:#e5e8ef}
 .calc-answer-field{display:grid;gap:10px;margin:20px 0 14px}
@@ -8387,6 +8389,10 @@ addEventListener('load',function(){
 /* MNSC V10.0 — focused Practice access and compact Progress */
 (function(){
   function progressEnglish(){return appState?.planLang==='en'}
+  function progressSvg(name){
+    const paths={calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 18h3"/>',chart:'<path d="M4 20V10M10 20V5M16 20v-8M22 20V2M2 20h22"/>',book:'<path d="M3 5.5A3.5 3.5 0 0 1 6.5 2H11v18H6.5A3.5 3.5 0 0 0 3 23.5ZM21 5.5A3.5 3.5 0 0 0 17.5 2H13v18h4.5a3.5 3.5 0 0 1 3.5 3.5Z"/>',cards:'<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M8 8h8M8 12h5M2 8v10a2 2 0 0 0 2 2"/>',trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0ZM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/>',report:'<path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h7M9 16h7"/>'};
+    return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.chart}</svg>`;
+  }
   function patchPracticeMedCalc(){
     const hub=document.getElementById('practicar'),grid=hub?.querySelector('.mn-launch-grid');if(!grid)return;
     if(grid.querySelector('[data-medcalc-practice]'))return;
@@ -8403,7 +8409,7 @@ addEventListener('load',function(){
     const legacyInsights=document.getElementById('statisticsInsights');if(legacyInsights&&!box.contains(legacyInsights))legacyInsights.remove();
     const en=progressEnglish(),done=appState.completed.length,fs=flashcardStats(),practiceScore=pct(appState.practice.correct,appState.practice.attempts),ngnBest=appState.ngn?.best||0,sataBest=appState.sata?.best||0,medBest=appState.medPharm?.best||0,calcBest=appState.medCalc?.best||0;
     const learningDetails=`${renderSmartWeeklyPlan()}${renderStudyReminder()}${renderExamPlan()}${renderStudyRecommendation()}${renderWeeklyGoals()}${renderActivityCalendar()}${renderModuleMasteryOverview()}`;
-    const historyDetails=`<div id="statisticsInsights"></div><div class="card"><h3>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div><div class="card"><h3>🏆 ${en?'My achievements':'Mis logros'}</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned':'medallas conseguidas'}.</p><button class="warnbtn" onclick="show('logros')">${en?'View achievements':'Ver logros'}</button></div><div class="card"><h3>📄 ${en?'Progress and notes report':'Informe de progreso y notas'}</h3><button class="primary" onclick="exportProgressReport()">${en?'Export PDF report':'Exportar informe PDF'}</button></div>${renderExamHistory()}${renderNotesOverview()}`;
+    const historyDetails=`<div id="statisticsInsights"></div><div class="card"><h3 class="progress-card-heading">${progressSvg('cards')}${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div><div class="card"><h3 class="progress-card-heading">${progressSvg('trophy')}${en?'My achievements':'Mis logros'}</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned':'medallas conseguidas'}.</p><button class="warnbtn" onclick="show('logros')">${en?'View achievements':'Ver logros'}</button></div><div class="card"><h3 class="progress-card-heading">${progressSvg('report')}${en?'Progress and notes report':'Informe de progreso y notas'}</h3><button class="primary" onclick="exportProgressReport()">${en?'Export PDF report':'Exportar informe PDF'}</button></div>${renderExamHistory()}${renderNotesOverview()}`;
     const completedDetails=`<p>${en?'Review the status of all 20 modules.':'Revisa el estado de los 20 módulos.'}</p>${CORE_MODULES.map(([key],i)=>`<p>${appState.completed.includes(key)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(key,en).replace(/^(Clase|Class) \d+ — /,''))}</p>`).join('')}`;
     box.innerHTML=`<div class="final-stats">
       <div class="stat"><b>${done}/20</b>${en?'Modules':'Módulos'}<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
@@ -8413,9 +8419,9 @@ addEventListener('load',function(){
       <div class="stat"><b>${sataBest}% · ${ngnBest}%</b>SATA · NGN</div>
       <div class="stat"><b>${appState.daily.streak||0}</b>${en?'Daily streak':'Racha diaria'}<br><small>${fs.mastered} ${en?'cards mastered':'tarjetas dominadas'}</small></div>
     </div>
-    <details class="card progress-detail"><summary>📅 ${en?'Study plan and activity':'Plan de estudio y actividad'}</summary><div class="progress-detail-body">${learningDetails}</div></details>
-    <details class="card progress-detail"><summary>📊 ${en?'History, reports, and achievements':'Historial, informes y logros'}</summary><div class="progress-detail-body">${historyDetails}</div></details>
-    <details class="card progress-detail"><summary>📚 ${en?'Completed modules':'Módulos completados'}</summary><div class="progress-detail-body">${completedDetails}</div></details>`;
+    <details class="card progress-detail"><summary><span class="progress-summary-label">${progressSvg('calendar')}${en?'Study plan and activity':'Plan de estudio y actividad'}</span></summary><div class="progress-detail-body">${learningDetails}</div></details>
+    <details class="card progress-detail"><summary><span class="progress-summary-label">${progressSvg('chart')}${en?'History, reports, and achievements':'Historial, informes y logros'}</span></summary><div class="progress-detail-body">${historyDetails}</div></details>
+    <details class="card progress-detail"><summary><span class="progress-summary-label">${progressSvg('book')}${en?'Completed modules':'Módulos completados'}</span></summary><div class="progress-detail-body">${completedDetails}</div></details>`;
     if(typeof window.renderStatisticsInsights==='function')window.renderStatisticsInsights();
   }
   window.renderProgress=compactProgress;
