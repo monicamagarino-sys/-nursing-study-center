@@ -4792,6 +4792,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
 .mn-launch small{display:block;color:var(--muted);line-height:1.35}
 .mn-back{margin:0 0 12px}
 #cuenta .card{margin-bottom:14px}
+.mn-account-heading{display:flex;align-items:center;gap:9px}.mn-account-heading svg{width:25px;height:25px;flex:0 0 25px;stroke:#1769b0}
 #proLogout{display:none!important}
 #inicio>.card .actions,#inicio>.card .install-note,#homeStats,#homeModules,#homeStats+h2{display:none!important}
 #dailyPlan>*:not(.continue-card){display:none!important}
@@ -4843,6 +4844,10 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
   cards:'<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M8 8h8M8 12h5"/><path d="M2 8v10a2 2 0 0 0 2 2"/>',
   guides:'<path d="M7 3h9l4 4v14H7Z"/><path d="M16 3v5h4M10 12h7M10 16h7"/><path d="M4 7v14h12"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+  cloud:'<path d="M7 18h11a4 4 0 0 0 .7-7.9A7 7 0 0 0 5.4 8.5 4.8 4.8 0 0 0 7 18Z"/><path d="m9 14 3-3 3 3M12 11v8"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',
+  logout:'<path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/>',
   questions:'<path d="M5 3h14v18H5z"/><path d="M9 9a3 3 0 1 1 4.8 2.4c-1 .7-1.8 1.2-1.8 2.6"/><path d="M12 17h.01"/>',
   exam:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M21 12h-3M12 21v-3M3 12h3"/>',
   medicine:'<path d="M8 3a5 5 0 0 0-3.5 8.5l8 8a5 5 0 0 0 7-7l-8-8A5 5 0 0 0 8 3Z"/><path d="m7 15 8-8"/>',
@@ -4900,10 +4905,10 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const security=typeof renderMfaSecurityCard==='function'?renderMfaSecurityCard():'';
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
-   '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3>🌐 '+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
-   '<div class="card"><h3>☁️ '+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
-   '<div class="card"><h3>ℹ️ '+(en?'About this app':'Sobre la aplicación')+'</h3><p class="muted">'+(en?'Learn the story and purpose behind Nursing Study Center.':'Conoce la historia y el propósito de Nursing Study Center.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button></div>'+
-   '<div class="card"><h3>🚪 '+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
+   '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3 class="mn-account-heading">'+icon('globe')+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
+   '<div class="card"><h3 class="mn-account-heading">'+icon('cloud')+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
+   '<div class="card"><h3 class="mn-account-heading">'+icon('info')+(en?'About this app':'Sobre la aplicación')+'</h3><p class="muted">'+(en?'Learn the story and purpose behind Nursing Study Center.':'Conoce la historia y el propósito de Nursing Study Center.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button></div>'+
+   '<div class="card"><h3 class="mn-account-heading">'+icon('logout')+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
  window.setInterfaceLanguage=function(lang){ setGlobalLanguage(lang); };
  function buildGroupedUI(){
@@ -8276,7 +8281,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.11.02';
+  const MNSC_APP_BUILD='2026.09.12.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
