@@ -40,6 +40,8 @@ footer{padding:30px 0;color:var(--muted);font-size:12px}
 button.secondary{border:1px solid #d8dbea;background:white;color:var(--ink);padding:10px 14px;border-radius:12px;font-weight:750;cursor:pointer}
 button.goodbtn{border:0;background:var(--good);color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
 button.warnbtn{border:0;background:#8b5cf6;color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
+button.dangerbtn{border:0;background:#b42318;color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
+button.dangerbtn:hover,button.dangerbtn:focus{background:#8f1c13}
 .star{float:right;border:0;background:transparent;font-size:24px;cursor:pointer}
 .exam-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .exam-timer{font-weight:900;color:#b42318;background:#fff1f0;border:1px solid #ffc9c5;border-radius:10px;padding:7px 10px;font-variant-numeric:tabular-nums}
@@ -4324,7 +4326,7 @@ function renderProgress(){
  <div class="card"><h3>🎯 ${en?'Smart reinforcement':'Refuerzo inteligente'}</h3><p>${weak.length?(en?'Practice up to 30 questions from the three lowest-scoring modules in your latest exam.':'Practica hasta 30 preguntas de los tres módulos con menor resultado en tu último examen.'):(en?'Complete an exam so the app can identify your three weakest topics automatically.':'Completa un examen para que la app identifique automáticamente tus tres temas más débiles.')}</p><button class="warnbtn" onclick="startWeakPractice()" ${weak.length?'':'disabled'}>${en?'Practice weak topics':'Practicar temas débiles'}</button></div>
  <div class="card"><h3>☁️ ${en?'Synchronization':'Sincronización'}</h3><p id="syncStatus" class="muted">${en?'Checking your account…':'Comprobando tu cuenta…'}</p><div class="actions"><button class="secondary" onclick="syncCloudProgress(false,true)">${en?'Load from my account':'Cargar desde mi cuenta'}</button><button class="primary" onclick="if(confirm('${en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?'}'))syncCloudProgress(true,true)">${en?'Save this device':'Guardar este dispositivo'}</button><button class="warnbtn" onclick="restoreProgressRecovery()">${en?'Restore protected copy':'Restaurar copia protegida'}</button></div></div>
  <div class="card"><h3>${en?'Completed modules':'Módulos completados'}</h3>${CORE_MODULES.map(([k,t],i)=>`<p>${appState.completed.includes(k)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(k,en).replace(/^(Clase|Class) \\d+ — /,''))}</p>`).join('')}
- <button class="secondary" onclick="if(confirm('${en?'Delete all saved progress?':'¿Borrar todo el progreso guardado?'}')){localStorage.removeItem(STORE_KEY);location.reload()}">${en?'Reset progress':'Reiniciar progreso'}</button></div>`;
+ </div>`;
  setTimeout(()=>{if(typeof refreshMfaStatus==='function')refreshMfaStatus()},0);
 }
 
@@ -4539,6 +4541,40 @@ async function syncCloudProgress(uploadLocal=false,manual=false){
    if(manual)alert(interfaceEn?'The account could not be reached. Your progress remains saved on this device.':'No se pudo conectar con la cuenta. Tu progreso continúa guardado en este dispositivo.');
  }finally{cloudSyncBusy=false;setSyncBusyUI(false);updateSyncLastSuccessUI()}
 }
+
+function emptyProgressState(){
+ return {
+  completed:[],favorites:[],mistakes:[],history:[],notes:{},moduleProgress:{},activityLog:{},flashcards:{},achievements:{},
+  examPlan:Object.assign({targetDate:''},appState.examPlan||{}),planLang:appState.planLang==='en'?'en':'es',
+  studyReminder:Object.assign({enabled:false,days:[1,2,3,4,5],time:'19:00',activity:'daily'},appState.studyReminder||{}),
+  ngn:{last:0,best:0,taken:0,history:[],mistakes:[],byCase:{}},adaptive:{last:0,best:0,taken:0,level:2},
+  medCalc:{correct:0,attempts:0,best:0,mistakes:[]},medPharm:{correct:0,attempts:0,best:0,mistakes:[],byCategory:{}},
+  sata:{attempts:0,earned:0,possible:0,best:0},lifetime:{questions:0,practiceSessions:0,flashcardSessions:0},
+  audio:Object.assign({lang:'es-US',rate:1},appState.audio||{}),lastStudy:null,
+  weekly:{week:'',questions:0,modules:0,exams:0,goals:{questions:100,modules:2,exams:1}},practice:{correct:0,attempts:0},
+  exam:{last:0,best:0,taken:0,breakdown:{}},customExam:{last:0,best:0,taken:0},
+  daily:{completedDate:'',lastCompletedDate:'',correct:0,total:0,streak:0},updatedAt:Date.now()
+ };
+}
+window.resetAllProgress=async function(){
+ const en=appState?.planLang==='en';
+ if(!confirm(en?'Reset all study progress? This includes answers, exams, errors, favorites, modules, cards, streaks, achievements, and notes.':'¿Reiniciar todo el progreso? Se borrarán respuestas, exámenes, errores, favoritos, módulos, tarjetas, rachas, logros y notas.'))return;
+ if(!confirm(en?'This action will also replace the synchronized progress in your account. Do you want to continue?':'Esta acción también reemplazará el progreso sincronizado de tu cuenta. ¿Deseas continuar?'))return;
+ if(cloudSyncBusy){alert(en?'Please wait for the current synchronization to finish and try again.':'Espera a que termine la sincronización actual e inténtalo nuevamente.');return}
+ cloudSyncBusy=true;setSyncBusyUI(true);setSyncStatus('Sincronizando…');
+ try{
+  const {data:{user},error:userError}=await authTimeout(sb.auth.getUser(),8000);if(userError||!user)throw userError||new Error('NO_USER');
+  const profileResult=await authTimeout(sb.from('profiles').select('preferences').eq('user_id',user.id).maybeSingle(),10000);if(profileResult.error)throw profileResult.error;
+  const blank=emptyProgressState(),tables=['module_progress','favorite_questions','question_errors','exam_attempts'];
+  for(const table of tables){const result=await authTimeout(sb.from(table).delete().eq('user_id',user.id),10000);if(result.error)throw result.error}
+  const existingPreferences=profileResult.data?.preferences||{};
+  const saved=await authTimeout(sb.from('profiles').upsert({user_id:user.id,preferences:{...existingPreferences,[CLOUD_STATE_KEY]:blank},updated_at:new Date().toISOString()},{onConflict:'user_id'}),12000);if(saved.error)throw saved.error;
+  preserveRecoverySnapshot(appState,'before-full-progress-reset');appState=blank;
+  localStorage.setItem(STORE_KEY,JSON.stringify(appState));localStorage.removeItem('mnsc_sync_pending');localStorage.setItem(SYNC_POLICY_KEY,'cloud');localStorage.setItem(LAST_SYNC_SUCCESS_KEY,String(Date.now()));
+  alert(en?'All progress was reset successfully. Your language and study settings were kept.':'Todo el progreso se reinició correctamente. Se conservaron el idioma y tus ajustes de estudio.');location.reload();
+ }catch(e){console.error('Progress reset error',e);setSyncStatus('Sin conexión: el progreso continúa guardado en este dispositivo.');alert(en?'The reset could not be completed because the account could not be updated. Your current progress was not erased.':'No se pudo completar el reinicio porque la cuenta no pudo actualizarse. Tu progreso actual no fue borrado.');}
+ finally{cloudSyncBusy=false;setSyncBusyUI(false)}
+};
 
 function setProLang(lang){
  lang=lang==='en'?'en':'es';
@@ -4905,7 +4941,7 @@ window.addEventListener('online',()=>{if(cloudSyncReady)syncCloudProgress()});
   const backup=typeof renderProgressBackup==='function'?renderProgressBackup():'';
   return '<h2 class="mn-hub-title">'+titleIcon('user',en?'Account':'Cuenta')+'</h2>'+
    '<div class="card"><span class="pill">'+(en?'LANGUAGE':'IDIOMA')+'</span><h3 class="mn-account-heading">'+icon('globe')+(en?'App language':'Idioma de la app')+'</h3><p class="muted">'+(en?'Choose the language used by menus and available bilingual tools.':'Elige el idioma de los menús y de las herramientas bilingües disponibles.')+'</p><div class="pro-lang"><button class="'+(!en?'active':'')+'" onclick="setGlobalLanguage(\'es\')">Español</button><button class="'+(en?'active':'')+'" onclick="setGlobalLanguage(\'en\')">English</button></div></div>'+security+backup+
-   '<div class="card"><h3 class="mn-account-heading">'+icon('cloud')+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div></div>'+
+   '<div class="card"><h3 class="mn-account-heading">'+icon('cloud')+(en?'Synchronization':'Sincronización')+'</h3><p id="syncStatusAccount" class="muted" aria-live="polite">'+(en?'Your progress is saved to your account.':'Tu progreso se guarda en tu cuenta.')+'</p><p id="syncLastSuccessAccount" class="muted">'+syncLastSuccessText()+'</p><div class="actions"><button data-sync-action class="secondary" onclick="syncCloudProgress(false,true)">'+(en?'Load from my account':'Cargar desde mi cuenta')+'</button><button data-sync-action class="primary" onclick="if(confirm(\''+(en?'Use this device progress as the main copy?':'¿Usar el progreso de este dispositivo como copia principal?')+'\'))syncCloudProgress(true,true)">'+(en?'Save this device':'Guardar este dispositivo')+'</button><button data-sync-action class="warnbtn" onclick="restoreProgressRecovery()">'+(en?'Restore protected copy':'Restaurar copia protegida')+'</button></div><hr><p><b>'+(en?'Danger zone':'Zona de precaución')+'</b></p><p class="muted">'+(en?'Erase all study results from this device and your synchronized account.':'Borra todos los resultados de estudio de este dispositivo y de tu cuenta sincronizada.')+'</p><button data-sync-action class="dangerbtn" onclick="resetAllProgress()">'+(en?'Reset all progress':'Reiniciar todo el progreso')+'</button></div>'+
    '<div class="card"><h3 class="mn-account-heading">'+icon('info')+(en?'About this app':'Sobre la aplicación')+'</h3><p class="muted">'+(en?'Learn the story and purpose behind Nursing Study Center.':'Conoce la historia y el propósito de Nursing Study Center.')+'</p><button class="secondary" onclick="show(\'about\')">'+(en?'Read our story':'Conocer la historia')+'</button></div>'+
    '<div class="card"><h3 class="mn-account-heading">'+icon('logout')+(en?'Session':'Sesión')+'</h3><p class="muted">'+(en?'Sign out safely on this device.':'Cierra tu sesión de forma segura en este dispositivo.')+'</p><button class="secondary" onclick="signOutProfessional()">'+(en?'Sign out':'Cerrar sesión')+'</button></div>';
  }
@@ -8278,7 +8314,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.12.02';
+  const MNSC_APP_BUILD='2026.09.12.03';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8368,7 +8404,7 @@ addEventListener('load',function(){
     const en=progressEnglish(),done=appState.completed.length,fs=flashcardStats(),practiceScore=pct(appState.practice.correct,appState.practice.attempts),ngnBest=appState.ngn?.best||0,sataBest=appState.sata?.best||0,medBest=appState.medPharm?.best||0,calcBest=appState.medCalc?.best||0;
     const learningDetails=`${renderSmartWeeklyPlan()}${renderStudyReminder()}${renderExamPlan()}${renderStudyRecommendation()}${renderWeeklyGoals()}${renderActivityCalendar()}${renderModuleMasteryOverview()}`;
     const historyDetails=`<div id="statisticsInsights"></div><div class="card"><h3>🧠 ${en?'Smart flashcards':'Tarjetas inteligentes'}</h3><p><b>${fs.mastered}</b> ${en?'mastered':'dominadas'} · <b>${fs.due}</b> ${en?'ready to review':'listas para repasar'}.</p><button class="primary" onclick="show('tarjetas')">${en?'Study flashcards':'Estudiar tarjetas'}</button></div><div class="card"><h3>🏆 ${en?'My achievements':'Mis logros'}</h3><p><b>${ACHIEVEMENT_DEFS.filter(a=>appState.achievements[a.id]).length}/${ACHIEVEMENT_DEFS.length}</b> ${en?'medals earned':'medallas conseguidas'}.</p><button class="warnbtn" onclick="show('logros')">${en?'View achievements':'Ver logros'}</button></div><div class="card"><h3>📄 ${en?'Progress and notes report':'Informe de progreso y notas'}</h3><button class="primary" onclick="exportProgressReport()">${en?'Export PDF report':'Exportar informe PDF'}</button></div>${renderExamHistory()}${renderNotesOverview()}`;
-    const completedDetails=`<p>${en?'Review the status of all 20 modules.':'Revisa el estado de los 20 módulos.'}</p>${CORE_MODULES.map(([key],i)=>`<p>${appState.completed.includes(key)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(key,en).replace(/^(Clase|Class) \d+ — /,''))}</p>`).join('')}<button class="secondary" onclick="if(confirm('${en?'Delete all saved progress?':'¿Borrar todo el progreso guardado?'}')){localStorage.removeItem(STORE_KEY);location.reload()}">${en?'Reset progress':'Reiniciar progreso'}</button>`;
+    const completedDetails=`<p>${en?'Review the status of all 20 modules.':'Revisa el estado de los 20 módulos.'}</p>${CORE_MODULES.map(([key],i)=>`<p>${appState.completed.includes(key)?'✅':'⬜'} ${i+1}. ${esc(mnModuleTitle(key,en).replace(/^(Clase|Class) \d+ — /,''))}</p>`).join('')}`;
     box.innerHTML=`<div class="final-stats">
       <div class="stat"><b>${done}/20</b>${en?'Modules':'Módulos'}<div class="progressbar"><span style="width:${done*5}%"></span></div></div>
       <div class="stat"><b>${practiceScore}%</b>${en?'Practice':'Práctica'}<br><small>${appState.practice.correct}/${appState.practice.attempts}</small></div>
