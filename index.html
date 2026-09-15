@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.15.02';
+  const MNSC_APP_BUILD='2026.09.15.04';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8852,4 +8852,102 @@ window.mnBilingualAudit={
   };
   window.mnModuleBilingualRendererVersion='V10.2.2';
 })();
+</script>
+
+<script>
+/* MNSC V10.3 — Class 4 Nutrition clinical-safety expansion */
+addEventListener('load',function(){setTimeout(function(){
+  const es=[
+    ["Un paciente con disfagia comienza a toser durante la comida. ¿Cuál es la primera acción de enfermería?",["Suspender la alimentación y valorar la vía aérea","Ofrecer más líquido inmediatamente","Colocar al paciente en decúbito supino","Continuar con porciones más grandes"],0,"La tos durante la alimentación puede indicar aspiración. Se suspende la comida, se valora la vía aérea y se siguen las recomendaciones de deglución.","nutri"],
+    ["¿Qué posición reduce el riesgo de aspiración durante la alimentación oral de un paciente con disfagia?",["Sentado lo más erguido posible","Trendelenburg","Decúbito prono","Supino sin almohada"],0,"El paciente debe permanecer erguido durante la alimentación y después de comer según el plan de deglución.","nutri"],
+    ["Al administrar varios medicamentos por una sonda enteral, ¿qué técnica es más segura?",["Mezclarlos todos con la fórmula","Administrarlos por separado e irrigar según el protocolo","Añadirlos directamente a la bolsa de alimentación","Triturarlos sin verificar si pueden triturarse"],1,"Los medicamentos se verifican, se administran por separado y la sonda se irriga según el protocolo para evitar incompatibilidades y obstrucción.","nutri"],
+    ["Durante una alimentación enteral, el paciente presenta dificultad respiratoria repentina. ¿Qué debe hacer primero la enfermera?",["Aumentar la velocidad de la fórmula","Detener la alimentación y valorar al paciente","Añadir agua a la fórmula","Colocar al paciente completamente plano"],1,"La dificultad respiratoria puede indicar aspiración; se detiene la alimentación y se realiza una valoración inmediata.","nutri"],
+    ["¿Qué electrolito debe vigilarse especialmente al iniciar nutrición en una persona con desnutrición grave por riesgo de síndrome de realimentación?",["Fósforo","Cloruro solamente","Bicarbonato solamente","Calcio ionizado solamente"],0,"La hipofosfatemia es característica del síndrome de realimentación; también se vigilan potasio, magnesio, glucosa y balance de líquidos.","nutri"],
+    ["¿Por qué no debe suspenderse bruscamente una infusión de TPN sin una alternativa indicada?",["Puede producir hipoglucemia","Siempre produce hipercalcemia","Provoca inmediatamente anemia","Elimina la necesidad de insulina"],0,"La interrupción brusca de una infusión concentrada de dextrosa puede causar hipoglucemia; debe seguirse el protocolo y la orden correspondiente.","nutri"],
+    ["¿Qué medida ofrece la mejor tendencia para vigilar cambios rápidos del balance de líquidos?",["Peso diario en condiciones similares","Estatura semanal","Circunferencia del brazo una vez al mes","IMC calculado una sola vez"],0,"El peso diario, tomado a la misma hora y en condiciones similares, es el indicador más sensible de cambios rápidos de líquidos.","nutri"],
+    ["¿Qué selección debe evitar un paciente inmunocomprometido para disminuir el riesgo de infección alimentaria?",["Huevos crudos o poco cocidos","Arroz completamente cocido","Fruta lavada y pelada","Sopa recién preparada"],0,"Los alimentos crudos o poco cocidos aumentan el riesgo de infección; se recomiendan preparación, cocción y almacenamiento seguros.","nutri"]
+  ];
+  const en=[
+    ["A patient with dysphagia begins coughing during a meal. What is the nurse's first action?",["Stop feeding and assess the airway","Immediately offer more liquid","Place the patient supine","Continue with larger bites"],0,"Coughing during feeding may indicate aspiration. Stop the meal, assess the airway, and follow the swallowing plan.","nutri"],
+    ["Which position reduces aspiration risk while orally feeding a patient with dysphagia?",["As upright as possible","Trendelenburg","Prone","Supine without a pillow"],0,"The patient should remain upright during feeding and afterward according to the swallowing plan.","nutri"],
+    ["When giving several medications through an enteral tube, which technique is safest?",["Mix all medications into the formula","Give medications separately and flush according to protocol","Add them directly to the feeding bag","Crush them without checking whether crushing is allowed"],1,"Verify each medication, administer medications separately, and flush according to protocol to prevent incompatibility and tube obstruction.","nutri"],
+    ["During an enteral feeding, a patient develops sudden respiratory difficulty. What should the nurse do first?",["Increase the formula rate","Stop the feeding and assess the patient","Add water to the formula","Place the patient completely flat"],1,"Sudden respiratory difficulty may indicate aspiration; stop the feeding and assess immediately.","nutri"],
+    ["Which electrolyte requires especially close monitoring when nutrition is started in a severely malnourished patient at risk for refeeding syndrome?",["Phosphorus","Chloride only","Bicarbonate only","Ionized calcium only"],0,"Hypophosphatemia is characteristic of refeeding syndrome; potassium, magnesium, glucose, and fluid balance also require monitoring.","nutri"],
+    ["Why should TPN not be stopped abruptly without an ordered alternative?",["It may cause hypoglycemia","It always causes hypercalcemia","It immediately causes anemia","It eliminates the need for insulin"],0,"Abrupt interruption of a concentrated dextrose infusion may cause hypoglycemia; follow the prescribed protocol.","nutri"],
+    ["Which measurement provides the best trend for rapid changes in fluid balance?",["Daily weight under similar conditions","Weekly height","Monthly arm circumference","A one-time BMI calculation"],0,"Daily weight measured at the same time and under similar conditions is the most sensitive indicator of rapid fluid change.","nutri"],
+    ["Which selection should an immunocompromised patient avoid to reduce foodborne-infection risk?",["Raw or undercooked eggs","Fully cooked rice","Washed and peeled fruit","Freshly prepared soup"],0,"Raw or undercooked foods increase infection risk; safe preparation, cooking, and storage are recommended.","nutri"]
+  ];
+  const lessonEs=[
+    ["Disfagia y prevención de aspiración","Sentar al paciente lo más erguido posible, seguir la consistencia indicada y ofrecer bocados pequeños. Si aparecen tos, voz húmeda o dificultad respiratoria, suspender la alimentación y valorar."],
+    ["Medicamentos por sonda enteral","Verificar cuáles medicamentos pueden triturarse. Administrarlos por separado y realizar irrigación según el protocolo; no mezclarlos directamente con la fórmula."],
+    ["Síndrome de realimentación","Al reiniciar nutrición en desnutrición grave, vigilar especialmente fósforo, potasio, magnesio, glucosa y balance de líquidos. La nutrición se aumenta gradualmente según el plan clínico."],
+    ["Interrupción de TPN","No suspender bruscamente sin seguir la orden o el protocolo, debido al riesgo de hipoglucemia. Vigilar glucosa, línea central y signos de infección."],
+    ["Seguimiento nutricional","El peso diario en condiciones similares ayuda a detectar cambios rápidos de líquidos. Interpretarlo junto con ingesta, eliminación, edema y resultados clínicos."],
+    ["Seguridad alimentaria","Las personas inmunocomprometidas deben evitar alimentos crudos o poco cocidos y mantener cocción, refrigeración, higiene de manos y prevención de contaminación cruzada."]
+  ];
+  const lessonEn=[
+    ["Dysphagia and aspiration prevention","Position the patient as upright as possible, follow the prescribed consistency, and offer small bites. Stop feeding and assess if coughing, a wet voice, or respiratory difficulty occurs."],
+    ["Medications through an enteral tube","Verify which medications may be crushed. Give medications separately and flush according to protocol; do not mix them directly into the formula."],
+    ["Refeeding syndrome","When nutrition resumes after severe malnutrition, closely monitor phosphorus, potassium, magnesium, glucose, and fluid balance. Advance nutrition gradually according to the clinical plan."],
+    ["TPN interruption","Do not stop TPN abruptly without following the order or protocol because hypoglycemia may occur. Monitor glucose, the central line, and signs of infection."],
+    ["Nutrition monitoring","Daily weight under similar conditions helps detect rapid fluid changes. Interpret it with intake, output, edema, and clinical findings."],
+    ["Food safety","Immunocompromised patients should avoid raw or undercooked foods and use safe cooking, refrigeration, hand hygiene, and cross-contamination prevention."]
+  ];
+  const marker='Un paciente con disfagia comienza a toser durante la comida';
+  let start=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+  if(start<0&&Array.isArray(qs)){start=qs.length;qs.push(...es);if(Array.isArray(window.qsEn))window.qsEn.push(...en)}
+  const add=(target,items,title)=>{if(!target?.items||target.items.some(x=>x?.[0]===title))return;target.items.push(...items)};
+  if(typeof lessons!=='undefined')add(lessons.nutri,lessonEs,'Disfagia y prevención de aspiración');
+  if(typeof lessonsEn!=='undefined')add(lessonsEn.nutri,lessonEn,'Dysphagia and aspiration prevention');
+  window.mnLatestQuestionBatch={start,end:start+8,count:8,module:'nutri'};
+  window.mnQuestionBankVersion='STRUCTURAL-1350-ES-EN-V10.3-NUTRITION';
+  window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+  window.mnBilingualAudit={version:'V10.3',completed:'2026-09-15',pairedMainBank:1350,sataQuestions:140,ngnQuestions:102,status:'passed'};
+  setTimeout(()=>{try{if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){console.warn('Nutrition expansion refresh:',e)}},0);
+},0);});
+</script>
+
+<script>
+/* MNSC V10.4 — original clinical scenarios for Class 5 IV Therapy and Blood */
+addEventListener('load',function(){setTimeout(function(){
+ const es=[
+  ["Una paciente con mastectomía izquierda necesita una vía IV periférica. ¿Qué sitio debe evitar la enfermera?",["Brazo izquierdo","Antebrazo derecho","Dorso de la mano derecha","Una vena visible del brazo derecho"],0,"Debe evitarse el brazo del lado de la mastectomía cuando existe riesgo de alteración del drenaje linfático; se selecciona un sitio alternativo apropiado.","ivblood"],
+  ["Durante una infusión periférica, el sitio se observa frío, pálido y edematoso. ¿Cuál es la acción inicial?",["Detener la infusión","Aumentar la velocidad","Masajear con fuerza","Cubrir el sitio sin revisarlo"],0,"Los hallazgos sugieren infiltración. Se detiene la infusión y se sigue el protocolo correspondiente al líquido administrado.","ivblood"],
+  ["Un paciente desarrolla disnea e hipotensión poco después de manipularse una línea central. ¿Qué complicación debe sospecharse?",["Embolia aérea","Hiperglucemia","Flebitis superficial","Anemia ferropénica"],0,"La aparición súbita de dificultad respiratoria e hipotensión relacionada con una línea central es compatible con embolia aérea y requiere respuesta inmediata.","ivblood"],
+  ["Quince minutos después de iniciar una transfusión, el paciente presenta escalofríos y dolor lumbar. ¿Qué debe hacer primero la enfermera?",["Detener la transfusión","Acelerar la transfusión","Administrar otra unidad","Retirar inmediatamente el acceso IV"],0,"Ante una posible reacción transfusional, la primera acción es detener la sangre y mantener el acceso según el protocolo con equipo y solución apropiados.","ivblood"],
+  ["¿Qué solución se utiliza con el equipo de administración de concentrado de eritrocitos?",["Solución salina normal","Dextrosa al 5%","Lactato de Ringer con medicamentos","Agua estéril"],0,"La solución salina normal es compatible con la administración de concentrado de eritrocitos; no se añaden medicamentos a la sangre.","ivblood"],
+  ["Una bomba indica oclusión en un catéter venoso central. ¿Qué acción es segura?",["Detenerse y evaluar la causa sin forzar la irrigación","Aplicar presión máxima a la jeringa","Usar una jeringa muy pequeña para aumentar presión","Continuar la infusión ignorando la alarma"],0,"Nunca se fuerza la irrigación de un catéter central obstruido; se revisan pinzas, posición, tubo y protocolo antes de continuar.","ivblood"]
+ ];
+ const en=[
+  ["A patient with a left mastectomy needs a peripheral IV. Which site should the nurse avoid?",["The left arm","The right forearm","The back of the right hand","A visible vein in the right arm"],0,"Avoid the arm on the mastectomy side when lymphatic drainage may be impaired; select an appropriate alternative site.","ivblood"],
+  ["During a peripheral infusion, the site becomes cool, pale, and swollen. What is the initial action?",["Stop the infusion","Increase the rate","Massage the site firmly","Cover the site without reassessment"],0,"These findings suggest infiltration. Stop the infusion and follow the protocol appropriate for the infused solution.","ivblood"],
+  ["A patient develops sudden dyspnea and hypotension shortly after a central line is manipulated. Which complication should be suspected?",["Air embolism","Hyperglycemia","Superficial phlebitis","Iron-deficiency anemia"],0,"Sudden respiratory difficulty and hypotension associated with a central line are consistent with air embolism and require an immediate response.","ivblood"],
+  ["Fifteen minutes after a transfusion begins, the patient develops chills and low-back pain. What should the nurse do first?",["Stop the transfusion","Increase the transfusion rate","Administer another unit","Immediately remove the IV access"],0,"For a possible transfusion reaction, stop the blood first and maintain access according to protocol with appropriate new tubing and solution.","ivblood"],
+  ["Which solution is used with packed red blood cell administration tubing?",["Normal saline","5% dextrose","Lactated Ringer's with medications","Sterile water"],0,"Normal saline is compatible with packed red blood cell administration; medications are not added to the blood.","ivblood"],
+  ["An infusion pump reports an occlusion in a central venous catheter. Which action is safe?",["Stop and assess the cause without forcing a flush","Apply maximum pressure to the syringe","Use a very small syringe to increase pressure","Ignore the alarm and continue the infusion"],0,"Never force flushing through an obstructed central catheter; assess clamps, position, tubing, and the applicable protocol before proceeding.","ivblood"]
+ ];
+ const lessonEs=[
+  ["Selección segura del sitio IV","Evitar extremidades con alteración linfática, fístulas, infección, parálisis o compromiso circulatorio. Valorar cada sitio y elegir la alternativa más segura."],
+  ["Reconocimiento de infiltración","Frialdad, palidez, edema, molestia y disminución del flujo pueden indicar infiltración. Detener la infusión y seguir el protocolo del medicamento o líquido."],
+  ["Respuesta a una reacción transfusional","Detener la transfusión, mantener el acceso con equipo nuevo y solución compatible, valorar al paciente y activar el protocolo de notificación y laboratorio."],
+  ["Catéter central obstruido","No forzar la irrigación. Revisar pinzas, conexiones, posición y causas mecánicas, y seguir el procedimiento autorizado para recuperar la permeabilidad."]
+ ];
+ const lessonEn=[
+  ["Safe IV-site selection","Avoid extremities with impaired lymphatic drainage, fistulas, infection, paralysis, or poor circulation. Assess each site and choose the safest alternative."],
+  ["Recognizing infiltration","Coolness, pallor, swelling, discomfort, and reduced flow may indicate infiltration. Stop the infusion and follow the protocol for the medication or solution."],
+  ["Responding to a transfusion reaction","Stop the transfusion, maintain access with new tubing and a compatible solution, assess the patient, and activate notification and laboratory procedures."],
+  ["Obstructed central catheter","Do not force a flush. Check clamps, connections, position, and mechanical causes, then follow the authorized patency-restoration procedure."]
+ ];
+ const marker='Una paciente con mastectomía izquierda necesita una vía IV periférica';
+ let start=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+ if(start<0&&Array.isArray(qs)){start=qs.length;qs.push(...es);if(Array.isArray(window.qsEn))window.qsEn.push(...en)}
+ const add=(target,items,title)=>{if(!target?.items||target.items.some(x=>x?.[0]===title))return;target.items.push(...items)};
+ if(typeof lessons!=='undefined')add(lessons.ivblood,lessonEs,'Selección segura del sitio IV');
+ if(typeof lessonsEn!=='undefined')add(lessonsEn.ivblood,lessonEn,'Safe IV-site selection');
+ window.mnLatestQuestionBatch={start,end:start+6,count:6,module:'ivblood'};
+ window.mnQuestionBankVersion='STRUCTURAL-1356-ES-EN-V10.4-IV-BLOOD';
+ window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+ window.mnBilingualAudit={version:'V10.4',completed:'2026-09-15',pairedMainBank:1356,sataQuestions:140,ngnQuestions:102,status:'passed',wording:'original'};
+ setTimeout(()=>{try{if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){}},0);
+},0);});
 </script>
