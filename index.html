@@ -8737,3 +8737,51 @@ window.mnBilingualAudit={
   window.mnSataSessionSelectorVersion='V9.8';
 })();
 </script>
+
+<script>
+/* MNSC V10.2.1 — final language-state guard for Study Topics */
+(function(){
+  const normalize=lang=>lang==='en'?'en':'es';
+  function savedChoice(){
+    return normalize(localStorage.getItem('mnsc_user_lang_choice')||localStorage.getItem('mnsc_global_lang')||(typeof appState!=='undefined'&&appState?.planLang)||'es');
+  }
+  function enforce(lang){
+    lang=normalize(lang);
+    if(typeof appState!=='undefined'&&appState)appState.planLang=lang;
+    ['mnsc_global_lang','mnsc_user_lang_choice','mnsc_interface_lang','mnsc_lang'].forEach(key=>localStorage.setItem(key,lang));
+    const selector=document.getElementById('planLang');if(selector)selector.value=lang;
+    document.querySelectorAll('[data-lang-option]').forEach(el=>el.classList.toggle('active',el.getAttribute('data-lang-option')===lang));
+    return lang;
+  }
+
+  const topicsRenderer=window.renderTopics;
+  if(typeof topicsRenderer==='function')window.renderTopics=function(){enforce(savedChoice());return topicsRenderer.apply(this,arguments)};
+
+  const lessonOpener=window.openLesson;
+  if(typeof lessonOpener==='function')window.openLesson=function(){enforce(savedChoice());return lessonOpener.apply(this,arguments)};
+
+  const languageSetter=window.setGlobalLanguage;
+  window.setGlobalLanguage=function(lang){
+    lang=enforce(lang);
+    const result=typeof languageSetter==='function'?languageSetter.apply(this,[lang]):undefined;
+    enforce(lang);
+    setTimeout(function(){
+      enforce(lang);
+      const active=document.querySelector('section.active')?.id||'inicio';
+      if(active==='temas'&&typeof window.renderTopics==='function')window.renderTopics();
+      if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
+      if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();
+    },0);
+    return result;
+  };
+
+  function refreshSavedLanguage(){
+    const lang=enforce(savedChoice());
+    if(typeof window.mnApplyGlobalLanguageUI==='function')window.mnApplyGlobalLanguageUI();
+    if(typeof window.renderTopics==='function')window.renderTopics();
+    document.documentElement.lang=lang;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshSavedLanguage,0),{once:true});else setTimeout(refreshSavedLanguage,0);
+  window.mnStudyTopicsLanguageGuardVersion='V10.2.1';
+})();
+</script>
