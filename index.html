@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.14.01';
+  const MNSC_APP_BUILD='2026.09.15.02';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8783,5 +8783,73 @@ window.mnBilingualAudit={
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshSavedLanguage,0),{once:true});else setTimeout(refreshSavedLanguage,0);
   window.mnStudyTopicsLanguageGuardVersion='V10.2.1';
+})();
+</script>
+
+<script>
+/* MNSC V10.2.2 — authoritative bilingual renderer for modules */
+(function(){
+  const clean=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const language=()=>appState?.planLang==='en'?'en':'es';
+  const moduleData=(key,lang)=>lang==='en'&&typeof lessonsEn!=='undefined'&&lessonsEn[key]?lessonsEn[key]:lessons[key];
+  const moduleTitle=(key,lang)=>{
+    const fixed=typeof MN_MODULE_TITLES!=='undefined'?MN_MODULE_TITLES[key]:null;
+    if(fixed?.[lang])return fixed[lang];
+    return moduleData(key,lang)?.title||key;
+  };
+  function moduleVisual(key,title){
+    if(typeof inlineVisualsForLesson!=='function')return '';
+    try{return inlineVisualsForLesson(key,title)||''}catch(e){return ''}
+  }
+
+  window.renderTopics=function(){
+    const grid=document.getElementById('topicGrid');if(!grid)return;
+    const lang=language(),en=lang==='en';
+    const heading=document.querySelector('#temas>h2');if(heading)heading.textContent=en?'📖 Study modules':'📖 Temas de estudio';
+    grid.innerHTML=CORE_MODULES.map(([key],i)=>{
+      const lesson=moduleData(key,lang);if(!lesson)return '';
+      const title=moduleTitle(key,lang).replace(/^(Clase|Class)\s+\d+\s+—\s+/, '');
+      return `<div class="card topic" data-key="${key}" onclick="openLesson('${key}')"><div class="module-num">${en?'MODULE':'MÓDULO'} ${i+1}</div><h3>${appState.completed.includes(key)?'✅':'📘'} ${clean(title)}</h3><small>${lesson.items.length} ${en?'review blocks':'bloques de repaso'}${typeof moduleMasteryLabel==='function'?moduleMasteryLabel(key):''}</small></div>`;
+    }).join('');
+  };
+
+  window.openLesson=function(key){
+    if(typeof show==='function')show('temas');
+    const lang=language(),en=lang==='en',lesson=moduleData(key,lang),source=lessons[key];if(!lesson)return;
+    window.mnCurrentOpenModule=key;
+    const completed=appState.completed.includes(key);
+    const title=moduleTitle(key,lang);
+    if(typeof rememberStudy==='function')rememberStudy('module',key,title);
+    const moduleQs=qs.reduce((list,q,i)=>{if(q?.[4]===key)list.push(i);return list},[]);
+    const audioCode=en?'en-US':'es-US';appState.audio=appState.audio||{lang:audioCode,rate:1};appState.audio.lang=audioCode;
+    document.getElementById('topicGrid').innerHTML=`<div class="card">
+      <div class="actions"><button class="secondary" onclick="mnCurrentOpenModule=null;renderTopics()">← ${en?'All modules':'Todos los módulos'}</button>
+      <button class="${completed?'secondary':'goodbtn'}" onclick="toggleComplete('${key}')">${completed?(en?'✅ Completed — mark pending':'✅ Completado — marcar pendiente'):(en?'✓ Mark module completed':'✓ Marcar módulo completado')}</button>
+      ${moduleQs.length?`<button class="warnbtn" onclick="startModuleQuiz('${key}')">📝 ${en?'Module quiz':'Quiz del módulo'} (${moduleQs.length})</button>`:''}</div>
+      <h2>${clean(title)}</h2>
+      <div class="audio-tools"><b>🔊 ${en?'Read aloud':'Lectura en voz alta'}</b><div class="actions">
+      <select id="audioLang-${key}" onchange="saveAudioSettings('${key}')"><option value="es-US" ${!en?'selected':''}>Español</option><option value="en-US" ${en?'selected':''}>English</option></select>
+      <select id="audioRate-${key}" onchange="saveAudioSettings('${key}')"><option value="0.75" ${Number(appState.audio.rate)===0.75?'selected':''}>${en?'Slow':'Lenta'}</option><option value="1" ${Number(appState.audio.rate)===1?'selected':''}>${en?'Normal':'Normal'}</option><option value="1.25" ${Number(appState.audio.rate)===1.25?'selected':''}>${en?'Fast':'Rápida'}</option></select>
+      <button class="primary" onclick="readModuleAloud('${key}')">▶ ${en?'Read module':'Leer módulo'}</button><button class="secondary" onclick="pauseSpeech()">⏸ ${en?'Pause':'Pausar'}</button><button class="secondary" onclick="resumeSpeech()">${en?'Continue':'Continuar'}</button><button class="secondary" onclick="stopSpeech()">⏹ ${en?'Stop':'Detener'}</button></div></div>
+      <div class="card" style="background:#fffdf3"><h3>🗒️ ${en?'My notes':'Mis notas'}</h3>
+      <textarea class="note-area" maxlength="1500" placeholder="${en?'Write your notes, reminders, or important concepts here…':'Escribe aquí tus apuntes, recordatorios o conceptos importantes…'}" oninput="saveModuleNote('${key}',this.value)">${clean(appState.notes[key]||'')}</textarea>
+      <div class="actions"><span id="noteStatus-${key}" class="note-saved">${en?'Auto-saved':'Guardado automático'}</span><button class="secondary" onclick="readModuleNoteAloud('${key}')">🔊 ${en?'Read note':'Leer nota'}</button><button class="secondary" onclick="deleteModuleNote('${key}')">${en?'Delete note':'Eliminar nota'}</button></div></div>
+      ${lesson.items.map((item,index)=>{const original=source?.items?.[index]?.[0]||item[0],visual=moduleVisual(key,original);return `<div class="lesson ${visual?'lesson-with-visual':''}"><div><h3>${clean(item[0])}</h3><p>${clean(item[1])}</p></div>${visual}</div>`}).join('')}
+      </div>`;
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+
+  const priorLanguage=window.setGlobalLanguage;
+  window.setGlobalLanguage=function(lang){
+    lang=lang==='en'?'en':'es';
+    if(appState)appState.planLang=lang;
+    const openKey=window.mnCurrentOpenModule;
+    const result=typeof priorLanguage==='function'?priorLanguage.apply(this,[lang]):undefined;
+    if(appState)appState.planLang=lang;
+    const refresh=()=>{if(appState)appState.planLang=lang;if(openKey)window.openLesson(openKey);else if(document.querySelector('section.active')?.id==='temas')window.renderTopics()};
+    refresh();setTimeout(refresh,60);setTimeout(refresh,250);
+    return result;
+  };
+  window.mnModuleBilingualRendererVersion='V10.2.2';
 })();
 </script>
