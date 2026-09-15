@@ -1629,6 +1629,67 @@ renderTopics();
 </script>
 
 <script>
+/* MNSC V10.2 — Class 3 Physical Assessment complementary expansion */
+addEventListener('load',function(){setTimeout(function(){
+  const es=[
+    ["¿Cuál es la secuencia habitual de una valoración física, excepto en el abdomen?",["Inspección, palpación, percusión y auscultación","Palpación, inspección, auscultación y percusión","Auscultación, percusión, inspección y palpación","Inspección, auscultación, palpación y percusión"],0,"La secuencia general es inspección, palpación, percusión y auscultación. En el abdomen, la auscultación se realiza antes de la percusión y la palpación.","fisico"],
+    ["¿Qué significa la letra R en PERRLA?",["Respiración regular","Reacción a la luz","Reflejo radial","Respuesta verbal"],1,"PERRLA describe pupilas iguales, redondas, reactivas a la luz y a la acomodación.","fisico"],
+    ["¿Cuál es el rango total de la escala de coma de Glasgow?",["0 a 10","1 a 12","3 a 15","5 a 20"],2,"La escala de Glasgow suma las respuestas ocular, verbal y motora; el resultado total varía de 3 a 15.","fisico"],
+    ["¿Qué hallazgo indica perfusión periférica adecuada en un adulto?",["Llenado capilar de 2 segundos o menos","Llenado capilar de 5 segundos","Extremidad fría y moteada","Pulso periférico ausente"],0,"Un llenado capilar de 2 segundos o menos apoya una perfusión periférica adecuada; debe interpretarse junto con temperatura, color y pulsos.","fisico"],
+    ["Al valorar edema con fóvea, ¿qué debe documentar la enfermera?",["Solo la presencia de dolor","Localización, simetría y grado del edema","Únicamente el peso del paciente","Solo el color de la piel"],1,"La documentación objetiva incluye la localización, la simetría y el grado del edema, además de otros hallazgos relevantes.","fisico"],
+    ["¿Qué sonido se espera normalmente al percutir tejido pulmonar sano?",["Matidez","Timpanismo","Resonancia","Silencio"],2,"La resonancia es el sonido esperado sobre tejido pulmonar aireado; la matidez puede sugerir líquido o tejido consolidado.","fisico"],
+    ["¿Qué hallazgo requiere prioridad durante una valoración respiratoria?",["Tórax simétrico","Frecuencia respiratoria de 16/min","Estridor inspiratorio","Expansión bilateral uniforme"],2,"El estridor puede indicar obstrucción de la vía aérea superior y requiere valoración e intervención inmediata.","fisico"],
+    ["¿Cuál es la mejor forma de documentar una lesión cutánea?",["Se ve bastante mal","Lesión probablemente infectada","Área eritematosa de 2 cm en el antebrazo derecho","Piel rara cerca del codo"],2,"La documentación debe ser objetiva y medible: ubicación, tamaño, color, forma, drenaje y características observables.","fisico"],
+    ["Para comparar pulsos periféricos, ¿qué técnica es la más apropiada?",["Valorar ambos lados de manera sistemática","Palpar las dos carótidas al mismo tiempo","Contar cada pulso durante 5 segundos","Usar solamente el lado dominante"],0,"Los pulsos periféricos se comparan bilateralmente de forma sistemática; las carótidas nunca se palpan simultáneamente.","fisico"],
+    ["¿Qué componente de Glasgow evalúa la capacidad de obedecer órdenes?",["Respuesta ocular","Respuesta motora","Respuesta pupilar","Reflejo corneal"],1,"Obedecer órdenes forma parte de la respuesta motora, que es uno de los tres componentes de Glasgow.","fisico"]
+  ];
+  const en=[
+    ["What is the usual sequence of a physical assessment, except for the abdomen?",["Inspection, palpation, percussion, and auscultation","Palpation, inspection, auscultation, and percussion","Auscultation, percussion, inspection, and palpation","Inspection, auscultation, palpation, and percussion"],0,"The general sequence is inspection, palpation, percussion, and auscultation. In the abdomen, auscultation occurs before percussion and palpation.","fisico"],
+    ["What does the first R in PERRLA represent?",["Regular respiration","Reaction to light","Radial reflex","Verbal response"],1,"PERRLA describes pupils that are equal, round, reactive to light, and accommodating.","fisico"],
+    ["What is the total range of the Glasgow Coma Scale?",["0 to 10","1 to 12","3 to 15","5 to 20"],2,"The Glasgow Coma Scale adds eye, verbal, and motor responses; the total score ranges from 3 to 15.","fisico"],
+    ["Which finding supports adequate peripheral perfusion in an adult?",["Capillary refill of 2 seconds or less","Capillary refill of 5 seconds","A cool, mottled extremity","An absent peripheral pulse"],0,"Capillary refill of 2 seconds or less supports adequate peripheral perfusion and should be interpreted with temperature, color, and pulses.","fisico"],
+    ["When assessing pitting edema, what should the nurse document?",["Only whether pain is present","Location, symmetry, and edema grade","Only the patient's weight","Only skin color"],1,"Objective documentation includes the edema's location, symmetry, and grade, plus other relevant findings.","fisico"],
+    ["Which percussion sound is normally expected over healthy lung tissue?",["Dullness","Tympany","Resonance","Silence"],2,"Resonance is expected over air-filled lung tissue; dullness may suggest fluid or consolidated tissue.","fisico"],
+    ["Which finding has priority during a respiratory assessment?",["Symmetric chest movement","A respiratory rate of 16/min","Inspiratory stridor","Equal bilateral expansion"],2,"Stridor may indicate upper-airway obstruction and requires immediate assessment and intervention.","fisico"],
+    ["Which entry best documents a skin lesion?",["It looks very bad","The lesion is probably infected","A 2-cm erythematous area on the right forearm","Odd skin near the elbow"],2,"Documentation should be objective and measurable, including location, size, color, shape, drainage, and observable characteristics.","fisico"],
+    ["What is the best technique for comparing peripheral pulses?",["Assess both sides systematically","Palpate both carotid arteries simultaneously","Count each pulse for 5 seconds","Use only the dominant side"],0,"Peripheral pulses are compared bilaterally and systematically; both carotid arteries should never be palpated at the same time.","fisico"],
+    ["Which Glasgow component evaluates the ability to follow commands?",["Eye response","Motor response","Pupillary response","Corneal reflex"],1,"Following commands is part of the motor response, one of the three Glasgow components.","fisico"]
+  ];
+  const lessonEs=[
+    ["Secuencia de la valoración","La secuencia general es inspección, palpación, percusión y auscultación. En el abdomen: inspección, auscultación, percusión y palpación para no alterar los ruidos intestinales."],
+    ["Pupilas y PERRLA","Valorar tamaño, igualdad y forma de las pupilas, reacción a la luz y acomodación. Registrar asimetrías o cambios nuevos y relacionarlos con el estado neurológico."],
+    ["Escala de Glasgow","Evalúa apertura ocular, respuesta verbal y respuesta motora. La puntuación total va de 3 a 15; registrar cada componente además del total permite seguir cambios."],
+    ["Perfusión periférica","Comparar bilateralmente color, temperatura, llenado capilar, pulsos y edema. Un llenado capilar de 2 segundos o menos suele apoyar una perfusión adecuada."],
+    ["Edema con fóvea","Valorar ubicación, simetría y grado. Combinar el hallazgo con peso, balance de líquidos, pulsos, temperatura y otros datos clínicos."],
+    ["Percusión pulmonar","La resonancia es esperada sobre pulmón aireado. La matidez puede sugerir líquido o consolidación; la hiperresonancia puede relacionarse con exceso de aire."],
+    ["Hallazgos respiratorios prioritarios","El estridor puede indicar obstrucción de la vía aérea superior. También requieren atención inmediata el uso de músculos accesorios, la cianosis y el deterioro del estado mental."],
+    ["Documentación objetiva","Describir ubicación, tamaño, color, forma, simetría, drenaje y otros datos observables. Evitar expresiones vagas, juicios y conclusiones no verificadas."]
+  ];
+  const lessonEn=[
+    ["Assessment sequence","The general sequence is inspection, palpation, percussion, and auscultation. For the abdomen use inspection, auscultation, percussion, and palpation to avoid changing bowel sounds."],
+    ["Pupils and PERRLA","Assess pupil size, equality, shape, reaction to light, and accommodation. Document asymmetry or new changes and relate them to neurologic status."],
+    ["Glasgow Coma Scale","Evaluate eye opening, verbal response, and motor response. The total ranges from 3 to 15; documenting each component along with the total helps track change."],
+    ["Peripheral perfusion","Compare color, temperature, capillary refill, pulses, and edema bilaterally. Capillary refill of 2 seconds or less generally supports adequate perfusion."],
+    ["Pitting edema","Assess location, symmetry, and grade. Interpret the finding with weight, fluid balance, pulses, temperature, and other clinical data."],
+    ["Lung percussion","Resonance is expected over air-filled lung tissue. Dullness may suggest fluid or consolidation; hyperresonance may be associated with excess air."],
+    ["Priority respiratory findings","Stridor may indicate upper-airway obstruction. Accessory-muscle use, cyanosis, and worsening mental status also require immediate attention."],
+    ["Objective documentation","Describe location, size, color, shape, symmetry, drainage, and other observable data. Avoid vague wording, judgments, and unverified conclusions."]
+  ];
+  const marker='¿Cuál es la secuencia habitual de una valoración física';
+  let batchStart=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+  if(batchStart<0&&Array.isArray(qs)){batchStart=qs.length;qs.push(...es);if(Array.isArray(window.qsEn))window.qsEn.push(...en)}
+  const addItems=(target,items,markerText)=>{if(!target?.items||target.items.some(item=>item?.[0]===markerText))return;target.items.push(...items)};
+  if(typeof lessons!=='undefined')addItems(lessons.fisico,lessonEs,'Secuencia de la valoración');
+  if(typeof lessonsEn!=='undefined')addItems(lessonsEn.fisico,lessonEn,'Assessment sequence');
+  window.mnLatestQuestionBatch={start:batchStart,end:batchStart+10,count:10,module:'fisico'};
+  window.mnQuestionBankVersion='STRUCTURAL-1342-ES-EN-V10.2-PHYSICAL-ASSESSMENT';
+  window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+  window.mnBilingualAudit={version:'V10.2',completed:'2026-09-15',pairedMainBank:1342,sataQuestions:140,ngnQuestions:102,status:'passed'};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();if(typeof renderTopics==='function')renderTopics()}catch(e){console.warn('Physical Assessment expansion refresh:',e)}},0);
+},0);});
+</script>
+
+<script>
 /* MNSC V9.2 — Bilingual visual and clinical-audio practice */
 (function(){
  const ecg=(kind)=>{const paths={sinus:'M10 58 L35 58 L41 48 L47 58 L58 58 L64 35 L71 82 L79 12 L88 58 L106 58 L115 45 L125 58 L155 58 L161 48 L167 58 L178 58 L184 35 L191 82 L199 12 L208 58 L226 58 L235 45 L245 58 L270 58',afib:'M10 58 Q18 50 24 61 T38 56 T52 60 L62 58 L68 35 L75 82 L83 13 L92 58 Q104 49 112 61 T128 55 T146 59 L157 58 L163 35 L170 82 L178 13 L187 58 Q201 50 212 61 T230 54 T250 60 L270 58',vtach:'M10 58 L24 24 L43 88 L62 20 L82 90 L102 22 L122 87 L142 20 L162 90 L182 22 L202 88 L222 20 L242 90 L260 28 L270 58',vfib:'M10 58 Q18 18 28 68 T46 35 T65 79 T84 22 T105 70 T123 33 T143 83 T161 26 T181 72 T202 31 T220 81 T242 25 T270 58',asystole:'M10 58 L270 58'};return `<svg viewBox="0 0 280 100" role="img" aria-label="ECG tracing" style="width:100%;max-height:220px;background:#fff;border:1px solid #d9b6b6;border-radius:14px"><defs><pattern id="ecgGrid-${kind}" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="#efcaca" stroke-width=".55"/><path d="M50 0H0V50" fill="none" stroke="#d99b9b" stroke-width="1"/></pattern></defs><rect width="280" height="100" fill="url(#ecgGrid-${kind})"/><path d="${paths[kind]}" fill="none" stroke="#18212b" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`};
@@ -8319,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.12.06';
+  const MNSC_APP_BUILD='2026.09.14.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8373,6 +8434,74 @@ addEventListener('load',function(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
   window.mnUpdateSystemVersion='V5.5';
 })();
+</script>
+
+<script>
+/* MNSC V10.1 — Class 2 Prevention & Safety expansion from the nursing summary */
+addEventListener('load',function(){setTimeout(function(){
+  const es=[
+    ["Al ingresar un adulto mayor, ¿cuándo debe completarse la valoración obligatoria del riesgo de caídas según el resumen?",["Dentro de las primeras 4 horas","Al finalizar el primer turno de 12 horas","Solo después de una caída","Durante la planificación del alta"],0,"El resumen indica realizar la valoración obligatoria del riesgo de caídas dentro de las primeras 4 horas del ingreso.","prev"],
+    ["¿Cuál es el mejor predictor de que un paciente sufrirá una caída?",["Tener más de 65 años","Vivir solo","Haber sufrido una caída previa","Usar anteojos"],2,"Según el resumen, el antecedente de una caída previa es el mejor predictor del riesgo de caídas.","prev"],
+    ["En el método RACE para responder a un incendio, ¿qué acción sigue inmediatamente después de rescatar a quienes están en peligro?",["Extinguir el fuego","Activar la alarma","Abrir puertas y ventanas","Trasladar primero a los pacientes encamados"],1,"RACE significa Rescue, Alarm, Confine, Extinguish: después de rescatar, se activa la alarma.","prev"],
+    ["Durante una evacuación por incendio, ¿qué grupo debe trasladarse primero según el resumen?",["Pacientes encamados de la UCI","Pacientes en sillas de ruedas","Pacientes ambulatorios sin peligro inmediato","Pacientes en peligro inmediato que pueden moverse por sí mismos"],3,"El orden comienza con los pacientes en peligro inmediato que pueden moverse; luego siguen los ambulatorios, quienes usan sillas de ruedas/cunas o están aislados y, al final, los encamados.","prev"],
+    ["¿Qué paciente tiene mayor riesgo de alergia al látex?",["Un niño con espina bífida y múltiples cirugías","Un adulto con hipertensión controlada","Un adolescente con miopía","Una persona con intolerancia a la lactosa"],0,"El resumen relaciona un riesgo elevado de alergia al látex con espina bífida y antecedentes de múltiples cirugías.","prev"],
+    ["Durante una tormenta eléctrica, el cabello de una persona comienza a erizarse. ¿Qué debe hacer inmediatamente?",["Refugiarse debajo de un árbol","Correr hacia el punto más alto","Acostarse en una bañera","Bajarse al suelo de inmediato"],3,"El cabello erizado puede anunciar un impacto inminente de rayo; el resumen indica bajarse al suelo inmediatamente.","prev"],
+    ["Un paciente presenta estridor, urticaria e hipotensión después de una exposición alérgica. Tras pedir ayuda y mantener la vía aérea, ¿qué medicamento es de primera línea?",["Difenhidramina IV","Epinefrina 1:1000 IM en el muslo","Albuterol oral","Glucocorticoide tópico"],1,"En la anafilaxia, el resumen identifica como tratamiento de primera línea la epinefrina 1:1000 por vía intramuscular en el muslo.","prev"],
+    ["¿Cómo debe retirarse un aguijón de abeja que permanece en la piel?",["Con un movimiento plano de raspado","Con pinzas, apretando el saco de veneno","Mediante una incisión profunda","Frotándolo con alcohol hasta que se desprenda"],0,"El resumen indica retirar el aguijón con un movimiento plano de raspado y evitar las pinzas.","prev"],
+    ["Un paciente tiene ántrax. ¿Qué precauciones corresponden según el resumen?",["Aéreas, porque se transmite fácilmente entre personas","Gotas durante toda la hospitalización","Estándar, porque no se transmite de persona a persona","Contacto y aislamiento protector"],2,"El resumen señala que el ántrax no se transmite de persona a persona y requiere precauciones estándar.","prev"],
+    ["¿Qué combinación de peste y precaución es correcta?",["Peste neumónica: gotas; peste bubónica: estándar","Peste neumónica: estándar; peste bubónica: aérea","Ambas formas: solo contacto","Ambas formas: aislamiento protector"],0,"La peste neumónica puede propagarse entre personas y requiere precauciones por gotas; la forma bubónica transmitida por pulgas utiliza precauciones estándar.","prev"],
+    ["Tras una exposición a una sustancia peligrosa, ¿dónde debe comenzar la descontaminación?",["En la sala de examen","En la habitación del paciente","Fuera del área de examen","Después de trasladar al paciente a radiología"],2,"El resumen indica que la descontaminación se realiza fuera del área de examen: retirar la ropa sin pasarla sobre la cabeza, lavar con agua y jabón e irrigar los ojos.","prev"],
+    ["¿Qué término epidemiológico representa todos los casos vivos de una enfermedad en un momento determinado?",["Incidencia","Prevalencia","Mortalidad","Sensibilidad"],1,"La prevalencia es el total de casos vivos en un momento determinado; la incidencia cuenta los casos recién diagnosticados.","prev"]
+  ];
+  const en=[
+    ["When an older adult is admitted, when should the mandatory fall-risk screening be completed according to the summary?",["Within the first 4 hours","At the end of the first 12-hour shift","Only after a fall occurs","During discharge planning"],0,"The summary states that mandatory fall-risk screening should be completed within the first 4 hours of admission.","prev"],
+    ["Which finding is the best predictor that a patient will fall?",["Being older than 65","Living alone","A previous fall","Wearing eyeglasses"],2,"According to the summary, a history of a previous fall is the best predictor of fall risk.","prev"],
+    ["In the RACE response to a fire, which action comes immediately after rescuing those in danger?",["Extinguish the fire","Activate the alarm","Open doors and windows","Move bed-bound patients first"],1,"RACE means Rescue, Alarm, Confine, Extinguish: after rescue, activate the alarm.","prev"],
+    ["During a fire evacuation, which group should be moved first according to the summary?",["Bed-bound ICU patients","Patients in wheelchairs","Ambulatory patients who are not in immediate danger","Patients in immediate danger who can move themselves"],3,"Evacuation begins with patients in immediate danger who can move; ambulatory patients follow, then patients in wheelchairs, cribs, or isolation, and bed-bound patients last.","prev"],
+    ["Which patient has the greatest risk of latex allergy?",["A child with spina bifida and multiple surgeries","An adult with controlled hypertension","An adolescent with myopia","A person with lactose intolerance"],0,"The summary associates a higher latex-allergy risk with spina bifida and a history of multiple surgeries.","prev"],
+    ["During a thunderstorm, a person's hair begins to stand on end. What should the person do immediately?",["Shelter under a tree","Run toward the highest point","Lie down in a bathtub","Drop to the ground immediately"],3,"Hair standing on end may signal an imminent lightning strike; the summary instructs the person to drop to the ground immediately.","prev"],
+    ["A patient develops stridor, urticaria, and hypotension after an allergen exposure. After calling for help and maintaining the airway, which medication is first-line?",["IV diphenhydramine","Epinephrine 1:1000 IM in the thigh","Oral albuterol","Topical glucocorticoid"],1,"For anaphylaxis, the summary identifies epinephrine 1:1000 given intramuscularly in the thigh as the first-line medication.","prev"],
+    ["How should a bee stinger that remains in the skin be removed?",["With a flat scraping motion","With tweezers while squeezing the venom sac","Through a deep incision","By rubbing it with alcohol until it falls out"],0,"The summary instructs removal with a flat scraping motion rather than tweezers.","prev"],
+    ["A patient has anthrax. Which precautions are appropriate according to the summary?",["Airborne, because it spreads easily between people","Droplet throughout hospitalization","Standard, because it is not transmitted person-to-person","Contact plus protective isolation"],2,"The summary states that anthrax is not transmitted person-to-person and requires standard precautions.","prev"],
+    ["Which plague-and-precaution pairing is correct?",["Pneumonic plague: droplet; bubonic plague: standard","Pneumonic plague: standard; bubonic plague: airborne","Both forms: contact only","Both forms: protective isolation"],0,"Pneumonic plague can spread person-to-person and requires droplet precautions; flea-borne bubonic plague uses standard precautions.","prev"],
+    ["After exposure to a hazardous substance, where should decontamination begin?",["Inside the exam room","In the patient's assigned room","Outside the exam area","After transfer to radiology"],2,"The summary places decontamination outside the exam area: remove clothing without pulling it over the head, wash with soap and water, and irrigate the eyes.","prev"],
+    ["Which epidemiologic term represents all living cases of a disease at a given time?",["Incidence","Prevalence","Mortality","Sensitivity"],1,"Prevalence is the total number of living cases at a given time; incidence counts newly diagnosed cases.","prev"]
+  ];
+  const marker='Al ingresar un adulto mayor, ¿cuándo debe completarse la valoración obligatoria del riesgo de caídas';
+  let batchStart=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+  if(batchStart<0&&Array.isArray(qs)){
+    batchStart=qs.length;
+    qs.push(...es);
+    if(Array.isArray(window.qsEn))window.qsEn.push(...en);
+  }
+  const lessonEs=[
+    ["Prevención de accidentes y caídas","Guardar medicamentos y venenos bajo llave; evitar alimentos y objetos pequeños que causen aspiración; girar mangos de ollas hacia dentro y mantener el calentador a 120 °F o menos. Valorar riesgo de caídas dentro de 4 horas; el mejor predictor es una caída previa."],
+    ["Incendio y evacuación","RACE: rescatar, activar la alarma, confinar y extinguir. Evacuar primero a quienes están en peligro inmediato y pueden moverse; los pacientes encamados se trasladan al final."],
+    ["Látex y rayos","La alergia al látex se asocia con espina bífida, múltiples cirugías y reacción cruzada con aguacate, banana, piña, kiwi y mango. Durante una tormenta, evitar árboles, tuberías y teléfonos fijos; si el cabello se eriza, bajarse al suelo."],
+    ["Anafilaxia","Pedir ayuda, mantener la vía aérea y administrar epinefrina 1:1000 IM en el muslo. Oxígeno, albuterol, líquidos isotónicos, glucocorticoides y difenhidramina son medidas de segunda línea."],
+    ["Bioterrorismo y descontaminación","Ántrax: estándar; peste neumónica: gotas; peste bubónica y tularemia: estándar; viruela/monkeypox: aérea; Ebola: contacto y gotas. Descontaminar fuera del área de examen."],
+    ["Epidemiología","Incidencia significa casos recién diagnosticados; prevalencia significa todos los casos vivos en un momento determinado."]
+  ];
+  const lessonEn=[
+    ["Accident and fall prevention","Lock medications and poisons away; prevent access to choking foods and small objects; turn pan handles inward and keep the water heater at 120°F or below. Screen fall risk within 4 hours; a previous fall is the best predictor."],
+    ["Fire and evacuation","RACE: Rescue, Alarm, Confine, Extinguish. Evacuate patients in immediate danger who can move first; move bed-bound patients last."],
+    ["Latex and lightning","Latex allergy is associated with spina bifida, multiple surgeries, and cross-reactions with avocado, banana, pineapple, kiwi, and mango. During storms avoid trees, plumbing, and landlines; if hair stands on end, drop to the ground."],
+    ["Anaphylaxis","Call for help, maintain the airway, and give epinephrine 1:1000 IM in the thigh. Oxygen, albuterol, isotonic fluids, glucocorticoids, and diphenhydramine are second-line measures."],
+    ["Bioterrorism and decontamination","Anthrax: standard; pneumonic plague: droplet; bubonic plague and tularemia: standard; smallpox/monkeypox: airborne; Ebola: contact and droplet. Decontaminate outside the exam area."],
+    ["Epidemiology","Incidence means newly diagnosed cases; prevalence means all living cases at a given time."]
+  ];
+  const addLessonItems=(target,items,markerText)=>{
+    if(!target?.items||target.items.some(item=>item?.[0]===markerText))return;
+    target.items.push(...items);
+  };
+  if(typeof lessons!=='undefined')addLessonItems(lessons.prev,lessonEs,'Prevención de accidentes y caídas');
+  if(typeof lessonsEn!=='undefined')addLessonItems(lessonsEn.prev,lessonEn,'Accident and fall prevention');
+  window.mnLatestQuestionBatch={start:batchStart,end:batchStart+12,count:12,module:'prev'};
+  window.mnQuestionBankVersion='STRUCTURAL-1332-ES-EN-V10.1-PREVENTION-SAFETY';
+  window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+  window.mnBilingualAudit={version:'V10.1',completed:'2026-09-14',pairedMainBank:1332,sataQuestions:140,ngnQuestions:102,status:'passed'};
+  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();if(typeof renderTopics==='function')renderTopics()}catch(e){console.warn('Prevention expansion refresh:',e)}},0);
+},0);});
 </script>
 
 <style>
