@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.15.04';
+  const MNSC_APP_BUILD='2026.09.15.05';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8945,9 +8945,54 @@ addEventListener('load',function(){setTimeout(function(){
  if(typeof lessons!=='undefined')add(lessons.ivblood,lessonEs,'Selección segura del sitio IV');
  if(typeof lessonsEn!=='undefined')add(lessonsEn.ivblood,lessonEn,'Safe IV-site selection');
  window.mnLatestQuestionBatch={start,end:start+6,count:6,module:'ivblood'};
- window.mnQuestionBankVersion='STRUCTURAL-1356-ES-EN-V10.4-IV-BLOOD';
+  window.mnQuestionBankVersion='STRUCTURAL-1356-ES-EN-V10.4-IV-BLOOD';
  window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
  window.mnBilingualAudit={version:'V10.4',completed:'2026-09-15',pairedMainBank:1356,sataQuestions:140,ngnQuestions:102,status:'passed',wording:'original'};
+ setTimeout(()=>{try{if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){}},0);
+},0);});
+</script>
+
+<script>
+/* MNSC V10.5 — original clinical scenarios for Class 6 Labs and Procedures */
+addEventListener('load',function(){setTimeout(function(){
+ const es=[
+  ["Antes de un estudio con contraste yodado, la creatinina del paciente está elevada. ¿Cuál es la acción apropiada?",["Notificar el resultado antes de administrar el contraste","Administrar el contraste sin demora","Ocultar el resultado para evitar retrasos","Duplicar automáticamente la dosis"],0,"Una función renal alterada aumenta el riesgo relacionado con el contraste. El resultado debe comunicarse y el equipo clínico determina cómo proceder.","labs"],
+  ["Después de una broncoscopia, un paciente solicita agua. ¿Qué valoración debe realizarse antes de permitir líquidos?",["Comprobar el regreso del reflejo nauseoso","Medir la circunferencia abdominal","Valorar el reflejo de Babinski","Comprobar la agudeza visual"],0,"La anestesia de la garganta puede disminuir el reflejo protector; se mantiene NPO hasta confirmar que el reflejo nauseoso regresó.","labs"],
+  ["¿Qué preparación reduce el riesgo de lesión vesical antes de una paracentesis?",["Pedir al paciente que vacíe la vejiga","Administrar una comida abundante","Colocarlo en Trendelenburg","Restringir toda respiración profunda"],0,"Vaciar la vejiga antes del procedimiento disminuye el riesgo de punción accidental y mejora la seguridad.","labs"],
+  ["Un paciente tiene plaquetas de 18,000/mm³. ¿Qué intervención es prioritaria?",["Aplicar precauciones estrictas contra el sangrado","Usar inyecciones IM siempre que sea posible","Recomendar deportes de contacto","Tomar la temperatura por vía rectal"],0,"Una trombocitopenia grave implica alto riesgo de sangrado; deben evitarse traumatismos y procedimientos que lesionen tejidos.","labs"],
+  ["¿Cuándo debe obtenerse un nivel valle de un medicamento?",["Poco antes de la siguiente dosis","Inmediatamente después de administrarlo","En cualquier momento sin relación con la dosis","Solo después de suspenderlo"],0,"El nivel valle se obtiene justo antes de la siguiente dosis para valorar la concentración mínima del medicamento.","labs"],
+  ["Tras una biopsia hepática percutánea, ¿qué posición ayuda a aplicar presión sobre el sitio?",["Decúbito lateral derecho","Decúbito lateral izquierdo","Trendelenburg","Prono con los brazos elevados"],0,"El decúbito lateral derecho ayuda a ejercer presión sobre el sitio de la biopsia y a reducir el riesgo de sangrado.","labs"]
+ ];
+ const en=[
+  ["Before an iodinated-contrast study, the patient's creatinine is elevated. What is the appropriate action?",["Report the result before contrast is administered","Give the contrast without delay","Hide the result to prevent delays","Automatically double the dose"],0,"Impaired kidney function increases contrast-related risk. Report the result so the clinical team can determine how to proceed.","labs"],
+  ["After bronchoscopy, a patient asks for water. Which assessment is required before allowing fluids?",["Confirm that the gag reflex has returned","Measure abdominal circumference","Assess the Babinski reflex","Check visual acuity"],0,"Throat anesthesia may reduce protective reflexes; keep the patient NPO until the gag reflex returns.","labs"],
+  ["Which preparation reduces bladder-injury risk before paracentesis?",["Ask the patient to empty the bladder","Provide a large meal","Place the patient in Trendelenburg","Prevent all deep breathing"],0,"Emptying the bladder before the procedure lowers the risk of accidental puncture and improves safety.","labs"],
+  ["A patient has a platelet count of 18,000/mm³. Which intervention is the priority?",["Use strict bleeding precautions","Use IM injections whenever possible","Recommend contact sports","Measure temperature rectally"],0,"Severe thrombocytopenia creates a high bleeding risk; avoid trauma and procedures that can injure tissue.","labs"],
+  ["When should a trough medication level be collected?",["Shortly before the next dose","Immediately after administration","At any time without regard to dosing","Only after the medication is discontinued"],0,"A trough is collected just before the next dose to measure the medication's lowest concentration.","labs"],
+  ["After a percutaneous liver biopsy, which position helps apply pressure to the site?",["Right side-lying","Left side-lying","Trendelenburg","Prone with arms elevated"],0,"Right side-lying applies pressure to the biopsy site and helps reduce bleeding risk.","labs"]
+ ];
+ const lessonEs=[
+  ["Seguridad con contraste","Revisar función renal, alergias relevantes, medicamentos como metformina y las instrucciones de ayuno e hidratación. Comunicar resultados anormales antes del estudio."],
+  ["Recuperación después de endoscopia o broncoscopia","Mantener NPO hasta el regreso del reflejo nauseoso y vigilar respiración, sedación, sangrado y signos de perforación según el procedimiento."],
+  ["Prevención de sangrado","Con plaquetas muy bajas, evitar inyecciones IM, procedimientos rectales, traumatismos y medicamentos que aumenten el sangrado cuando no estén indicados."],
+  ["Preparación y cuidado posterior","Antes de paracentesis se vacía la vejiga. Después de biopsia hepática, el decúbito lateral derecho ayuda a comprimir el sitio; se vigilan signos vitales y sangrado."]
+ ];
+ const lessonEn=[
+  ["Contrast safety","Review kidney function, relevant allergies, medications such as metformin, and fasting and hydration instructions. Report abnormal results before the study."],
+  ["Recovery after endoscopy or bronchoscopy","Keep the patient NPO until the gag reflex returns and monitor breathing, sedation, bleeding, and signs of perforation as appropriate to the procedure."],
+  ["Bleeding prevention","With a very low platelet count, avoid IM injections, rectal procedures, trauma, and nonessential medications that increase bleeding risk."],
+  ["Preparation and aftercare","Empty the bladder before paracentesis. After liver biopsy, right side-lying helps compress the site; monitor vital signs and bleeding."]
+ ];
+ const marker='Antes de un estudio con contraste yodado, la creatinina del paciente está elevada';
+ let start=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+ if(start<0&&Array.isArray(qs)){start=qs.length;qs.push(...es);if(Array.isArray(window.qsEn))window.qsEn.push(...en)}
+ const add=(target,items,title)=>{if(!target?.items||target.items.some(x=>x?.[0]===title))return;target.items.push(...items)};
+ if(typeof lessons!=='undefined')add(lessons.labs,lessonEs,'Seguridad con contraste');
+ if(typeof lessonsEn!=='undefined')add(lessonsEn.labs,lessonEn,'Contrast safety');
+ window.mnLatestQuestionBatch={start,end:start+6,count:6,module:'labs'};
+ window.mnQuestionBankVersion='STRUCTURAL-1362-ES-EN-V10.5-LABS-PROCEDURES';
+ window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+ window.mnBilingualAudit={version:'V10.5',completed:'2026-09-15',pairedMainBank:1362,sataQuestions:140,ngnQuestions:102,status:'passed',wording:'original'};
  setTimeout(()=>{try{if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){}},0);
 },0);});
 </script>
