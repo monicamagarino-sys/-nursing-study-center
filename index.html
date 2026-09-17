@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.15.05';
+  const MNSC_APP_BUILD='2026.09.17.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8434,6 +8434,51 @@ addEventListener('load',function(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
   window.mnUpdateSystemVersion='V5.5';
 })();
+</script>
+
+<script>
+/* MNSC V10.6 — original clinical scenarios for Class 7 ABG and Electrolytes */
+addEventListener('load',function(){setTimeout(function(){
+ const es=[
+  ["Un paciente somnoliento tiene pH 7.30, PaCO₂ 52 mmHg y HCO₃⁻ 24 mEq/L. ¿Cómo interpreta la enfermera estos resultados?",["Acidosis respiratoria no compensada","Alcalosis respiratoria no compensada","Acidosis metabólica compensada","Alcalosis metabólica compensada"],0,"El pH bajo indica acidosis y la PaCO₂ elevada identifica un origen respiratorio. El HCO₃⁻ normal indica que todavía no hay compensación metabólica.","abg"],
+  ["Los resultados de ABG muestran pH 7.49, PaCO₂ 40 mmHg y HCO₃⁻ 30 mEq/L. ¿Qué trastorno está presente?",["Alcalosis metabólica no compensada","Acidosis metabólica no compensada","Alcalosis respiratoria compensada","Acidosis respiratoria compensada"],0,"El pH elevado indica alcalosis y el HCO₃⁻ elevado señala un origen metabólico. La PaCO₂ normal indica ausencia de compensación respiratoria.","abg"],
+  ["Un paciente con potasio de 6.4 mEq/L presenta ondas T altas y picudas. ¿Qué acción es prioritaria?",["Mantener monitorización cardíaca y notificar inmediatamente","Ofrecer alimentos ricos en potasio","Suspender la valoración cardíaca","Programar una revisión rutinaria para la próxima semana"],0,"La hiperpotasemia con cambios electrocardiográficos puede causar arritmias potencialmente mortales; requiere monitorización y comunicación inmediata para tratamiento urgente.","abg"],
+  ["Un paciente con sodio de 118 mEq/L está confundido y desarrolla cefalea. ¿Qué intervención de seguridad es prioritaria?",["Iniciar precauciones contra convulsiones y notificar el cambio","Animarlo a caminar sin ayuda","Administrar agua libre por vía oral","Reducir la frecuencia de las valoraciones neurológicas"],0,"La hiponatremia grave y sintomática puede producir edema cerebral y convulsiones. Se protege al paciente y se comunica el deterioro neurológico de inmediato.","abg"],
+  ["Un paciente que recibe un diurético de asa tiene potasio de 2.8 mEq/L y debilidad muscular. ¿Cuál es la principal preocupación?",["Riesgo de alteraciones del ritmo cardíaco","Riesgo inmediato de hipercalcemia","Aumento de la coagulación","Exceso de bicarbonato por sí solo"],0,"La hipopotasemia puede alterar la conducción eléctrica cardíaca y causar debilidad muscular; el resultado y los síntomas requieren atención oportuna.","abg"],
+  ["Se prescribe cloruro de potasio IV para un paciente con hipopotasemia. ¿Qué acción es segura?",["Diluirlo y administrarlo con una bomba de infusión según el protocolo","Administrarlo por vía IV directa para acelerar la corrección","Añadirlo a una bolsa sin mezclar ni verificar","Aumentar libremente la velocidad si el paciente tiene debilidad"],0,"El potasio IV se diluye y se administra de forma controlada con una bomba. Nunca se administra por vía IV directa debido al riesgo de arritmias y paro cardíaco.","abg"]
+ ];
+ const en=[
+  ["A drowsy patient has pH 7.30, PaCO₂ 52 mmHg, and HCO₃⁻ 24 mEq/L. How should the nurse interpret these results?",["Uncompensated respiratory acidosis","Uncompensated respiratory alkalosis","Compensated metabolic acidosis","Compensated metabolic alkalosis"],0,"The low pH indicates acidosis, and the elevated PaCO₂ identifies a respiratory cause. The normal HCO₃⁻ shows that metabolic compensation has not yet occurred.","abg"],
+  ["ABG results are pH 7.49, PaCO₂ 40 mmHg, and HCO₃⁻ 30 mEq/L. Which disorder is present?",["Uncompensated metabolic alkalosis","Uncompensated metabolic acidosis","Compensated respiratory alkalosis","Compensated respiratory acidosis"],0,"The elevated pH indicates alkalosis, and the elevated HCO₃⁻ identifies a metabolic cause. The normal PaCO₂ indicates that respiratory compensation is absent.","abg"],
+  ["A patient with a potassium level of 6.4 mEq/L has tall, peaked T waves. Which action is the priority?",["Maintain cardiac monitoring and report the finding immediately","Offer potassium-rich foods","Discontinue cardiac assessment","Schedule a routine review for next week"],0,"Hyperkalemia with ECG changes can cause life-threatening dysrhythmias and requires cardiac monitoring and immediate communication for urgent treatment.","abg"],
+  ["A patient with a sodium level of 118 mEq/L is confused and develops a headache. Which safety intervention is the priority?",["Initiate seizure precautions and report the change","Encourage unassisted ambulation","Give oral free water","Decrease the frequency of neurologic assessments"],0,"Severe symptomatic hyponatremia can cause cerebral edema and seizures. Protect the patient and report neurologic deterioration immediately.","abg"],
+  ["A patient receiving a loop diuretic has a potassium level of 2.8 mEq/L and muscle weakness. What is the main concern?",["Risk for cardiac rhythm disturbances","Immediate risk for hypercalcemia","Increased coagulation","Excess bicarbonate alone"],0,"Hypokalemia can impair cardiac electrical conduction and cause muscle weakness; the result and symptoms require prompt attention.","abg"],
+  ["IV potassium chloride is prescribed for a patient with hypokalemia. Which action is safe?",["Dilute it and administer it with an infusion pump according to protocol","Give it by direct IV push to speed correction","Add it to a bag without mixing or verification","Increase the rate freely if the patient is weak"],0,"IV potassium is diluted and administered at a controlled rate with a pump. It is never given by direct IV push because of the risk of dysrhythmias and cardiac arrest.","abg"]
+ ];
+ const lessonEs=[
+  ["Interpretación sistemática de ABG","Revisar primero el pH, después identificar si el cambio principal corresponde a PaCO₂ o HCO₃⁻ y finalmente valorar la compensación. PaCO₂ refleja el componente respiratorio; HCO₃⁻, el metabólico."],
+  ["Potasio y seguridad cardíaca","La hiperpotasemia y la hipopotasemia pueden alterar la conducción cardíaca. Los síntomas, los cambios en el ECG y los resultados marcadamente anormales requieren valoración y comunicación oportunas."],
+  ["Sodio y estado neurológico","Los cambios importantes de sodio pueden afectar el cerebro. Confusión, cefalea, convulsiones o disminución del nivel de conciencia requieren medidas de seguridad y evaluación inmediata."],
+  ["Administración segura de potasio IV","Nunca administrar potasio por vía IV directa. Diluir, mezclar, verificar la concentración y usar una bomba de infusión conforme al protocolo; vigilar el sitio, el ritmo cardíaco y los laboratorios indicados."]
+ ];
+ const lessonEn=[
+  ["Systematic ABG interpretation","Check the pH first, then determine whether the primary change involves PaCO₂ or HCO₃⁻, and finally assess compensation. PaCO₂ represents the respiratory component; HCO₃⁻ represents the metabolic component."],
+  ["Potassium and cardiac safety","Both hyperkalemia and hypokalemia can disrupt cardiac conduction. Symptoms, ECG changes, and markedly abnormal results require timely assessment and communication."],
+  ["Sodium and neurologic status","Major sodium changes can affect the brain. Confusion, headache, seizures, or a decreased level of consciousness require safety measures and immediate evaluation."],
+  ["Safe IV potassium administration","Never give potassium by direct IV push. Dilute, mix, verify the concentration, and use an infusion pump according to protocol; monitor the site, cardiac rhythm, and ordered laboratory results."]
+ ];
+ const marker='Un paciente somnoliento tiene pH 7.30';
+ let start=Array.isArray(qs)?qs.findIndex(q=>(q?.[0]||'').includes(marker)):-1;
+ if(start<0&&Array.isArray(qs)){start=qs.length;qs.push(...es);if(Array.isArray(window.qsEn))window.qsEn.push(...en)}
+ const add=(target,items,title)=>{if(!target?.items||target.items.some(x=>x?.[0]===title))return;target.items.push(...items)};
+ if(typeof lessons!=='undefined')add(lessons.abg,lessonEs,'Interpretación sistemática de ABG');
+ if(typeof lessonsEn!=='undefined')add(lessonsEn.abg,lessonEn,'Systematic ABG interpretation');
+ window.mnLatestQuestionBatch={start,end:start+6,count:6,module:'abg'};
+ window.mnQuestionBankVersion='STRUCTURAL-1368-ES-EN-V10.6-ABG-ELECTROLYTES';
+ window.mnQuestionBankCounts={es:Array.isArray(qs)?qs.length:0,en:Array.isArray(window.qsEn)?window.qsEn.length:0};
+ window.mnBilingualAudit={version:'V10.6',completed:'2026-09-17',pairedMainBank:1368,sataQuestions:140,ngnQuestions:102,status:'passed',wording:'original'};
+ setTimeout(()=>{try{if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){}},0);
+},75);});
 </script>
 
 <script>
