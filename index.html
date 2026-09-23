@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.21.01';
+  const MNSC_APP_BUILD='2026.09.23.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -9101,4 +9101,39 @@ addEventListener('load',function(){setTimeout(function(){
  window.mnBilingualAudit={version:'V10.7',completed:'2026-09-21',pairedMainBank:1380,sataQuestions:140,ngnQuestions:102,status:'passed',wording:'original'};
  setTimeout(()=>{try{if(typeof window.mnBuildGroupedUI==='function')window.mnBuildGroupedUI();if(typeof window.renderTopics==='function')window.renderTopics()}catch(e){}},0);
 },0);});
+</script>
+
+
+<script>
+/* V10.8: respiratory clinical decisions; paired ES/EN, added once. */
+addEventListener('load',function(){setTimeout(function(){
+ const es=[
+  ["Un paciente hospitalizado con sospecha de tuberculosis pulmonar necesita aislamiento. ¿Qué combinación corresponde?",["Precauciones de contacto y guantes solamente","Precauciones aéreas en habitación de aislamiento respiratorio y respirador N95 ajustado","Precauciones por gotas y mascarilla quirúrgica para el personal","Ninguna precaución hasta confirmar el cultivo"],1,"La sospecha de TB pulmonar requiere precauciones aéreas; el personal usa un respirador N95 ajustado o superior y, cuando está disponible, se emplea una habitación de aislamiento de infecciones aéreas.","resp"],
+  ["Se debe trasladar a un paciente con sospecha de tuberculosis fuera de su habitación de aislamiento. ¿Qué medida ayuda a reducir la transmisión durante el traslado?",["Poner una mascarilla quirúrgica al paciente si la tolera","Sustituir el respirador del personal por guantes","Mantener la puerta abierta antes de salir","Suspender las precauciones aéreas definitivamente"],0,"Cuando el traslado es necesario, se indica que el paciente lleve mascarilla quirúrgica si es posible y se sigan las precauciones respiratorias.","resp"],
+  ["Un paciente presenta disnea súbita y dolor torácico que empeora al inspirar, después de inmovilidad prolongada. ¿Qué problema requiere valoración inmediata?",["Estreñimiento","Embolia pulmonar","Otitis media","Reflujo gastroesofágico"],1,"La embolia pulmonar puede causar falta de aire inexplicada y dolor pleurítico; estos síntomas ameritan evaluación urgente.","resp"],
+  ["Tras cirugía, un paciente presenta desmayo, disnea inexplicada y dolor torácico pleurítico. ¿Cuál es la acción prioritaria de enfermería?",["Esperar a la siguiente ronda de signos vitales","Activar la respuesta urgente y valorar respiración y circulación","Animarlo a caminar solo","Ofrecer una comida antes de evaluar"],1,"El conjunto de síncope, disnea y dolor pleurítico puede indicar embolia pulmonar y exige valoración y respuesta inmediata.","resp"],
+  ["El plan de acción escrito para asma de un paciente señala zona amarilla. Su flujo máximo baja al 65 % del mejor valor personal. ¿Qué debe hacer primero?",["Ignorar la lectura porque supera el 50 %","Seguir las instrucciones de la zona amarilla de su plan individual y reevaluar","Esperar una semana para repetir el flujo máximo","Suspender todos los medicamentos de control"],1,"Un 65 % del mejor flujo personal está en la zona amarilla habitual (50–79 %); se sigue el plan de acción individual y se vuelve a valorar.","resp"],
+  ["Una persona con asma registra un flujo máximo del 42 % de su mejor valor personal. ¿Qué interpretación es más segura?",["Zona verde: continuar sin cambios","Zona amarilla: esperar a la próxima cita","Zona roja: seguir el plan de rescate y buscar ayuda urgente según sus instrucciones","El flujo máximo no sirve cuando hay síntomas"],2,"Menos del 50 % del mejor valor personal corresponde a la zona roja en los planes habituales: se sigue el plan de rescate y se solicita ayuda urgente según las indicaciones.","resp"],
+  ["Un lactante con infección por VRS presenta dificultad respiratoria y toma muchos menos líquidos. ¿Qué recomendación es prioritaria?",["Esperar varios días sin valoración","Buscar atención médica por la dificultad respiratoria y la ingesta insuficiente","Suspender todas las tomas por cuenta propia","Tratarlo con antibióticos sin evaluación"],1,"Los CDC recomiendan atención médica si un niño con VRS tiene dificultad para respirar, no toma suficientes líquidos o empeora.","resp"],
+  ["Un lactante hospitalizado por bronquiolitis por VRS necesita cuidados. ¿Qué medida limita la transmisión por contacto?",["Usar las precauciones de contacto indicadas y realizar higiene de manos","Compartir el equipo sin limpieza","Retirar la protección al tocar secreciones","Omitir la higiene de manos si se usaron guantes"],0,"Las precauciones de contacto incluyen protección según indicación e higiene de manos; el VRS puede transmitirse por contacto con secreciones y superficies.","resp"]
+ ];
+ const en=[
+  ["A hospitalized patient with suspected pulmonary tuberculosis needs isolation. Which combination is appropriate?",["Contact precautions and gloves only","Airborne precautions in an airborne infection isolation room and a fit-tested N95 respirator","Droplet precautions and a surgical mask for staff","No precautions until culture confirmation"],1,"Suspected pulmonary TB requires airborne precautions; staff use a fit-tested N95 or higher respirator and an airborne infection isolation room when available.","resp"],
+  ["A patient with suspected tuberculosis must be transported outside the isolation room. What helps reduce transmission during transport?",["Place a surgical mask on the patient if tolerated","Replace staff respirators with gloves","Leave the room door open before departure","Discontinue airborne precautions permanently"],0,"When transport is necessary, instruct the patient to wear a surgical mask if possible and follow respiratory precautions.","resp"],
+  ["After prolonged immobility, a patient develops sudden shortness of breath and chest pain that worsens with inspiration. Which problem requires immediate assessment?",["Constipation","Pulmonary embolism","Otitis media","Gastroesophageal reflux"],1,"Pulmonary embolism can cause unexplained shortness of breath and pleuritic chest pain; these symptoms warrant urgent evaluation.","resp"],
+  ["After surgery, a patient faints and develops unexplained dyspnea and pleuritic chest pain. What is the nurse's priority?",["Wait until the next scheduled vital signs","Activate urgent response and assess breathing and circulation","Ask the patient to walk alone","Offer a meal before assessment"],1,"Syncope with dyspnea and pleuritic chest pain can signal pulmonary embolism and requires immediate assessment and response.","resp"],
+  ["A patient's written asthma action plan includes a yellow zone. Peak flow falls to 65% of personal best. What should the patient do first?",["Ignore the reading because it is above 50%","Follow the individualized yellow-zone instructions and reassess","Wait a week to repeat peak flow","Stop all controller medicines"],1,"A peak flow of 65% of personal best is in the usual yellow zone (50–79%); follow the individual action plan and reassess.","resp"],
+  ["A person with asthma measures peak flow at 42% of personal best. What is the safest interpretation?",["Green zone: no change needed","Yellow zone: wait until the next visit","Red zone: follow the rescue plan and seek urgent help as directed","Peak flow has no value when symptoms occur"],2,"Below 50% of personal best is the red zone in typical action plans; follow rescue instructions and seek urgent help as directed.","resp"],
+  ["An infant with RSV has difficulty breathing and is drinking much less than usual. What is the priority recommendation?",["Wait several days without evaluation","Seek medical attention for breathing difficulty and inadequate fluid intake","Stop all feeding independently","Start antibiotics without evaluation"],1,"CDC recommends medical attention when a child with RSV has breathing difficulty, inadequate fluid intake, or worsening symptoms.","resp"],
+  ["An infant hospitalized with RSV bronchiolitis needs care. Which measure limits contact transmission?",["Use indicated contact precautions and perform hand hygiene","Share equipment without cleaning","Remove protection while handling secretions","Skip hand hygiene when gloves were worn"],0,"Contact precautions include appropriate protection and hand hygiene; RSV can spread through secretions and contaminated surfaces.","resp"]
+ ];
+ if(!Array.isArray(qs)||!Array.isArray(window.qsEn)||qs.length!==window.qsEn.length)return;
+ const marker=es[0][0];let start=qs.findIndex(q=>q?.[0]===marker);
+ if(start<0){start=qs.length;qs.push(...es);window.qsEn.push(...en)}
+ window.mnLatestQuestionBatch={start,end:start+8,count:8,module:'resp'};
+ window.mnQuestionBankVersion='STRUCTURAL-1388-ES-EN-V10.8-RESPIRATORY-CASES';
+ window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+ window.mnBilingualAudit={version:'V10.8',completed:'2026-09-23',pairedMainBank:qs.length,sataQuestions:140,ngnQuestions:102,status:qs.length===1388&&window.qsEn.length===1388?'passed':'review'};
+ setTimeout(()=>{try{window.mnBuildGroupedUI?.();window.renderTopics?.()}catch(e){console.warn('Respiratory refresh:',e)}},0);
+},0)});
 </script>
