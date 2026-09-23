@@ -4238,7 +4238,7 @@ const CALC_STUDY=[
  ['Aminofilina 50 mg IV; disponible 250 mg/10 mL. ¿mL?','Aminophylline 50 mg IV; available 250 mg/10 mL. mL?',2,'mL','(50 ÷ 250) × 10 = 2 mL.'],
  ['Amoxicilina 200 mg PO; disponible 250 mg/5 mL. ¿mL?','Amoxicillin 200 mg PO; available 250 mg/5 mL. mL?',4,'mL','(200 ÷ 250) × 5 = 4 mL.'],
  ['Solu-Medrol 3 mg/kg IM para 20 kg; disponible 125 mg/2 mL. ¿mL?','Solu-Medrol 3 mg/kg IM for 20 kg; available 125 mg/2 mL. mL?',.96,'mL','3 × 20 = 60 mg; (60 ÷ 125) × 2 = 0.96 mL.'],
- ['Kay Ciel 30 mg PO BID; disponible 45 mg/15 mL. ¿mL por dosis?','Kay Ciel 30 mg PO BID; available 45 mg/15 mL. mL per dose?',10,'mL','(30 ÷ 45) × 15 = 10 mL.'],
+ ['Cloruro de potasio oral 20 mEq PO dos veces al día; disponible 20 mEq/15 mL. ¿mL por dosis?','Oral potassium chloride 20 mEq PO twice daily; available 20 mEq/15 mL. mL per dose?',15,'mL','(20 ÷ 20) × 15 = 15 mL por dosis; diluir antes de administrar según la etiqueta.'],
  ['Furosemida 40 mg IV; disponible 20 mg/2 mL. ¿mL?','Furosemide 40 mg IV; available 20 mg/2 mL. mL?',4,'mL','(40 ÷ 20) × 2 = 4 mL.'],
  ['Fenobarbital 160 mg; disponible 60 mg/mL. ¿mL?','Phenobarbital 160 mg; available 60 mg/mL. mL?',2.67,'mL','160 ÷ 60 = 2.67 mL.'],
  ['Furosemida 30 mg IV; disponible 10 mg/mL. ¿mL?','Furosemide 30 mg IV; available 10 mg/mL. mL?',3,'mL','30 ÷ 10 = 3 mL.'],
@@ -4273,10 +4273,10 @@ const CALC_STUDY=[
  ['Heparina 1,000 unidades/h; 50,000 unidades/500 mL D5W. ¿mL/h?','Heparin 1,000 units/hr; 50,000 units/500 mL D5W. mL/hr?',10,'mL/h','100 unidades/mL; 1,000 ÷ 100 = 10 mL/h.'],
  ['Heparina 1,000 unidades/h; 25,000 unidades/500 mL D5W. ¿mL/h?','Heparin 1,000 units/hr; 25,000 units/500 mL D5W. mL/hr?',20,'mL/h','50 unidades/mL; 1,000 ÷ 50 = 20 mL/h.'],
  ['Intake: 3 cafés de 180 mL, 4 oz de jugo, 2 tazas de agua, 3 tazas de té y 750 mL IV. Output: 2,500 mL de orina y 300 mL JP. ¿Balance?','Intake: three 180-mL coffees, 4 oz juice, 2 cups water, 3 cups tea, and 750 mL IV. Output: 2,500 mL urine and 300 mL JP. Balance?',-190,'mL','Intake 2,610; output 2,800; balance −190 mL.'],
- ['Intake: 2 cafés de 180 mL, 4 oz de jugo, ¾ taza de leche, sopa 240 mL, gelatina 120 mL, 2 tazas de agua y 2 L IV. Output: 2,000 mL de orina y 400 mL de emesis. ¿Balance?','Intake: two 180-mL coffees, 4 oz juice, ¾ cup milk, 240 mL soup, 120 mL gelatin, 2 cups water, and 2 L IV. Output: 2,000 mL urine and 400 mL emesis. Balance?',1040,'mL','Intake 3,440; output 2,400; balance +1,040 mL.'],
+ ['Intake: 2 cafés de 180 mL, 4 oz de jugo, ¾ taza de leche, sopa 240 mL, gelatina 120 mL, 2 tazas de agua y 2 L IV. Output: 2,000 mL de orina y 400 mL de emesis. ¿Balance?','Intake: two 180-mL coffees, 4 oz juice, ¾ cup milk, 240 mL soup, 120 mL gelatin, 2 cups water, and 2 L IV. Output: 2,000 mL urine and 400 mL emesis. Balance?',1100,'mL','Intake 3,500; output 2,400; balance +1,100 mL.'],
  ['Intake: 3 L IV y 4 tazas de hielo, 120 mL derretidos cada una. Output: 3,200 mL de orina y 280 mL de emesis. ¿Balance?','Intake: 3 L IV and 4 cups of ice, 120 mL melted each. Output: 3,200 mL urine and 280 mL emesis. Balance?',0,'mL','Intake 3,480; output 3,480; balance 0 mL, equilibrado.'],
  ['En 24 h: IV a 125 mL/h; 2 infusiones de 50 mL; 3 infusiones de 50 mL; 500 mL PRBC; flush NG de 30 mL cada 2 h. Output: 3,000 mL de orina, 360 mL NG y 500 mL JP. ¿Balance?','Over 24 hr: IV at 125 mL/hr; two 50-mL infusions; three 50-mL infusions; 500 mL PRBC; 30-mL NG flush every 2 hr. Output: 3,000 mL urine, 360 mL NG, and 500 mL JP. Balance?',250,'mL','Intake 4,110; output 3,860; balance +250 mL.']
-].forEach(([es,en,a,u,e])=>CALC_STUDY.push({q:[es,en],a,unit:[u,u==='mL/h'?'mL/hr':u],e:[e,e.replaceAll('redondeado a','rounded to').replaceAll('unidades','units').replaceAll('unidad','unit').replaceAll('equilibrado','even')]}));
+].forEach(([es,en,a,u,e])=>CALC_STUDY.push({q:[es,en],a,unit:[u,u==='mL/h'?'mL/hr':u],e:[e,e.replaceAll('redondeado a','rounded to').replaceAll('redondear a','round to').replaceAll('unidades','units').replaceAll('unidad','unit').replaceAll('equilibrado','balanced').replaceAll('por dosis','per dose').replaceAll('diluir antes de administrar según la etiqueta','dilute before administration per the label')]}));
 const PHARM_Q=[
  {cat:'cardio',q:['Antes de administrar digoxina, ¿qué valoración es prioritaria?','Before giving digoxin, which assessment is a priority?'],o:[['Pulso apical','Color del cabello','Agudeza visual solamente','Circunferencia abdominal'],['Apical pulse','Hair color','Visual acuity only','Abdominal circumference']],a:0,e:['La digoxina puede disminuir la frecuencia cardíaca; el resumen enfatiza valorar el pulso apical.','Digoxin can slow the heart rate; the summary emphasizes assessing the apical pulse.']},
  {cat:'cardio',q:['¿Qué hallazgo puede sugerir toxicidad por digoxina?','Which finding may suggest digoxin toxicity?'],o:[['Halos visuales','Aumento del apetito','Poliuria aislada','Estornudos'],['Visual halos','Increased appetite','Isolated polyuria','Sneezing']],a:0,e:['Las alteraciones visuales, incluidas visión borrosa o halos, son señales clásicas de toxicidad.','Visual changes, including blurred vision or halos, are classic toxicity signals.']},
@@ -8380,7 +8380,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.23.15';
+  const MNSC_APP_BUILD='2026.09.23.16';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -9360,5 +9360,16 @@ addEventListener('load',function(){setTimeout(function(){
  window.mnQuestionBankVersion='STRUCTURAL-1460-ES-EN-V12.2-CONTENT-REVIEW';
  window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
  window.mnBilingualAudit={version:'V12.2',completed:'2026-09-23',pairedMainBank:qs.length,sataQuestions:banks.es.length,ngnQuestions:typeof NGN_CASES!=='undefined'?NGN_CASES.reduce((n,c)=>n+c.items.length,0):0,status:qs.length===1460&&window.qsEn.length===1460&&banks.es.length===142&&banks.en.length===142?'passed':'review'};
+},0)});
+</script>
+
+<script>
+/* V12.3: calculation answer and potassium-unit corrections; indices retained. */
+addEventListener('load',function(){setTimeout(function(){
+ const banks=window.mnSataBanks;
+ if(!Array.isArray(qs)||!Array.isArray(window.qsEn)||!banks)return;
+ window.mnQuestionBankVersion='STRUCTURAL-1460-ES-EN-V12.3-CALC-REVIEW';
+ window.mnQuestionBankCounts={es:qs.length,en:window.qsEn.length};
+ window.mnBilingualAudit={version:'V12.3',completed:'2026-09-23',pairedMainBank:qs.length,sataQuestions:banks.es.length,ngnQuestions:typeof NGN_CASES!=='undefined'?NGN_CASES.reduce((n,c)=>n+c.items.length,0):0,status:qs.length===1460&&window.qsEn.length===1460&&banks.es.length===142&&banks.en.length===142?'passed':'review'};
 },0)});
 </script>
