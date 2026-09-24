@@ -126,6 +126,17 @@ body.mn-content-loading>:not(#mnSplash):not(script){visibility:hidden!important}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+#ngnCatalog{scroll-margin-top:18px}
+#ngnCaseSearch{margin:8px 0 10px;max-width:100%}
+.ngn-catalog-row{padding:13px 0;border-top:1px solid #e1e5ed}
+.ngn-catalog-row b{display:block;line-height:1.35}
+.ngn-catalog-row .actions{margin-top:8px}
+.ngn-catalog-row .actions button{min-height:42px}
+.ngn-catalog-pages{justify-content:space-between;margin-top:15px}
+@media(max-width:650px){#ngnCatalog{scroll-margin-top:12px}.ngn-catalog-row .actions button{flex:1;min-width:0}}
+</style>
 </head>
 <body class="mn-splash-active mn-content-loading">
 
@@ -3251,7 +3262,19 @@ function setNGNLang(lang){ngnLang=lang;localStorage.setItem('mnsc_ngn_lang',lang
 function ngnLangButtons(){return `<div class="pro-lang" style="justify-content:flex-end;margin-bottom:12px"><button class="${ngnLang==='es'?'active':''}" onclick="setNGNLang('es')">ES</button><button class="${ngnLang==='en'?'active':''}" onclick="setNGNLang('en')">EN</button></div>`}
 let ngnCase=null,ngnMode='practice',ngnPos=0,ngnEarned=0,ngnPossible=0,ngnResults=[];
 function ngnMax(item){if(item.type==='sata')return item.correct.length;if(item.type==='matrix')return item.rows.length;if(item.type==='order')return item.correct.length;return 1+item.actions.correct.length+item.monitors.correct.length}
-function renderNGN(){const box=document.getElementById('ngnBox');if(!box)return;if(ngnCase){renderNGNItem();return}const s=appState.ngn||{};box.innerHTML=`${ngnLangButtons()}<div class="card"><span class="pill">NEXT GENERATION NCLEX</span><h2 class="mn-feature-heading">${window.mnIcon?.('ngn')||'🧩'} ${ngnLang==='es'?'Casos clínicos NGN':'NGN Clinical Cases'}</h2><p>${ngnT('intro')}</p><div class="final-stats"><div class="stat"><b>${s.best||0}%</b>${ngnT('best')}</div><div class="stat"><b>${s.taken||0}</b>${ngnT('completed')}</div><div class="stat"><b>${(s.mistakes||[]).length}</b>${ngnT('review')}</div></div></div>${renderNGNErrorNotebook()}${renderNGNHistory()}<div class="card ngn-case" style="border-left-color:#8b5cf6"><span class="pill">12 ${ngnLang==='es'?'EJERCICIOS':'ITEMS'}</span><h2>🎯 ${ngnT('mixed')}</h2><p>${ngnT('mixedText')}</p><button class="goodbtn" onclick="startNGNMixed()">${ngnT('startMixed')}</button></div>${ngnCases().map(c=>`<div class="card ngn-case"><span class="pill">${ngnT('exercises')}</span><h2>${esc(c.title)}</h2><p>${esc(c.scenario)}</p><div class="actions"><button class="primary" onclick="startNGN('${c.id}','practice')">${ngnT('practice')}</button><button class="secondary" onclick="startNGN('${c.id}','exam')">${ngnT('exam')}</button></div></div>`).join('')}`}
+function renderNGN(){const box=document.getElementById('ngnBox');if(!box)return;if(ngnCase){renderNGNItem();return}const s=appState.ngn||{};box.innerHTML=`${ngnLangButtons()}<div class="card"><span class="pill">NEXT GENERATION NCLEX</span><h2 class="mn-feature-heading">${window.mnIcon?.('ngn')||'🧩'} ${ngnLang==='es'?'Casos clínicos NGN':'NGN Clinical Cases'}</h2><p>${ngnT('intro')}</p><div class="final-stats"><div class="stat"><b>${s.best||0}%</b>${ngnT('best')}</div><div class="stat"><b>${s.taken||0}</b>${ngnT('completed')}</div><div class="stat"><b>${(s.mistakes||[]).length}</b>${ngnT('review')}</div></div><button class="secondary" type="button" onclick="document.getElementById('ngnCatalog')?.scrollIntoView({behavior:'smooth',block:'start'})" style="margin-top:14px">${ngnLang==='es'?'Ir a los casos ↓':'Go to cases ↓'}</button></div>${renderNGNErrorNotebook()}${renderNGNHistory()}<div class="card ngn-case" style="border-left-color:#8b5cf6"><span class="pill">12 ${ngnLang==='es'?'EJERCICIOS':'ITEMS'}</span><h2>🎯 ${ngnT('mixed')}</h2><p>${ngnT('mixedText')}</p><button class="goodbtn" onclick="startNGNMixed()">${ngnT('startMixed')}</button></div>${ngnCaseCatalog()}`}
+const NGN_CATALOG_PAGE_SIZE=8;
+let ngnCatalogQuery='',ngnCatalogPage=0;
+function ngnCatalogResults(){
+ const en=ngnLang==='en',all=ngnCases(),norm=v=>String(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),q=norm(ngnCatalogQuery.trim());
+ const matches=q?all.filter(c=>norm(c.title+' '+c.scenario).includes(q)):all;
+ const pages=Math.max(1,Math.ceil(matches.length/NGN_CATALOG_PAGE_SIZE));ngnCatalogPage=Math.min(Math.max(0,ngnCatalogPage),pages-1);
+ const shown=matches.slice(ngnCatalogPage*NGN_CATALOG_PAGE_SIZE,(ngnCatalogPage+1)*NGN_CATALOG_PAGE_SIZE);
+ return `<p class="muted" aria-live="polite">${matches.length} ${en?'cases found':'casos encontrados'} · ${en?'page':'página'} ${ngnCatalogPage+1}/${pages}</p>${shown.length?shown.map(c=>`<div class="ngn-catalog-row"><b>${esc(c.title)}</b><div class="actions"><button class="primary" type="button" onclick="startNGN('${c.id}','practice')">${ngnT('practice')}</button><button class="secondary" type="button" onclick="startNGN('${c.id}','exam')">${ngnT('exam')}</button></div></div>`).join(''):`<p class="muted">${en?'No matching cases. Try another word.':'No hay casos con ese término. Prueba otra palabra.'}</p>`}<div class="actions ngn-catalog-pages"><button class="secondary" type="button" onclick="pageNGNCases(-1)" ${ngnCatalogPage===0?'disabled':''}>← ${en?'Previous':'Anterior'}</button><button class="secondary" type="button" onclick="pageNGNCases(1)" ${ngnCatalogPage>=pages-1?'disabled':''}>${en?'Next':'Siguiente'} →</button></div>`;
+}
+function ngnCaseCatalog(){const en=ngnLang==='en';return `<div class="card" id="ngnCatalog"><h2 class="mn-feature-heading">${window.mnIcon?.('ngn')||'🧩'} ${en?'Choose a clinical case':'Elige un caso clínico'}</h2><label for="ngnCaseSearch">${en?'Find a case by topic':'Busca un caso por tema'}</label><input id="ngnCaseSearch" class="flash-select" type="search" value="${esc(ngnCatalogQuery)}" placeholder="${en?'Example: respiratory, maternity…':'Ejemplo: respiratorio, maternidad…'}" oninput="filterNGNCases(this.value)" autocomplete="off"><div id="ngnCaseResults">${ngnCatalogResults()}</div></div>`}
+function filterNGNCases(query){ngnCatalogQuery=query;ngnCatalogPage=0;const box=document.getElementById('ngnCaseResults');if(box)box.innerHTML=ngnCatalogResults()}
+function pageNGNCases(delta){ngnCatalogPage+=delta;const box=document.getElementById('ngnCaseResults');if(box){box.innerHTML=ngnCatalogResults();document.getElementById('ngnCatalog')?.scrollIntoView({behavior:'smooth',block:'start'})}}
 let ngnHistoryFilter='all',ngnHistoryTopicPage=0,ngnHistoryAttemptPage=0;
 const NGN_HISTORY_PAGE_SIZE=5;
 function ngnHistoryData(){
@@ -8382,7 +8405,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.24.12';
+  const MNSC_APP_BUILD='2026.09.24.13';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
