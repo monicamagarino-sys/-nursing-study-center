@@ -8401,7 +8401,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.27.04';
+  const MNSC_APP_BUILD='2026.09.27.05';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -9946,6 +9946,33 @@ addEventListener('load',function(){
   const result=previousLanguage.apply(this,[lang]);
   if(active){translateExam(lang);setTimeout(()=>{if(ngnCase?.id==='mixed-format'&&ngnPos<ngnCase.items.length){renderNGNItem();restore(before)}},320)}
   if(sataBefore.length)setTimeout(()=>{for(const id of sataBefore){const b=document.querySelector(`#sataAnswers .option[data-orig="${id}"]`);if(b&&!b.disabled)b.classList.add('selected')}},320);
+  return result
+ };
+});
+</script>
+
+<script>
+/* Language controls remain visible while taking the mixed-format exam. */
+addEventListener('load',function(){
+ const previousRender=renderNGNItem;
+ renderNGNItem=function(){
+  const result=previousRender.apply(this,arguments);
+  if(ngnCase?.id!=='mixed-format'||ngnPos>=ngnCase.items.length)return result;
+  const meta=document.querySelector('#ngnBox .exam-meta');
+  if(!meta||meta.querySelector('[data-mixed-language]'))return result;
+  const controls=document.createElement('div');
+  controls.dataset.mixedLanguage='1';controls.className='pro-lang';
+  controls.style.cssText='display:inline-flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:wrap';
+  controls.setAttribute('role','group');controls.setAttribute('aria-label','Exam language / Idioma del examen');
+  for(const lang of ['es','en']){
+   const button=document.createElement('button');button.type='button';button.textContent=lang.toUpperCase();
+   button.className=appState.planLang===lang?'active':'';
+   button.setAttribute('aria-pressed',String(appState.planLang===lang));
+   button.setAttribute('aria-label',lang==='es'?'Cambiar examen a español':'Switch exam to English');
+   button.onclick=()=>{if(appState.planLang!==lang)window.setGlobalLanguage(lang)};
+   controls.appendChild(button)
+  }
+  meta.appendChild(controls);
   return result
  };
 });
