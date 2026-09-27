@@ -8401,7 +8401,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.09.27.03';
+  const MNSC_APP_BUILD='2026.09.27.04';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -9935,7 +9935,8 @@ addEventListener('load',function(){
    const key=`mixed-format:${item.sourceId}:${Number.isInteger(item.sourceIndex)?item.sourceIndex:index}`;
    return ngnShuffledItem(item,key)
   });
-  ngnCase.title=en?'Mixed-format NCLEX exam':'Simulacro NCLEX mixto';ngnLang=lang;
+  const main=/^(Main NCLEX simulation|Simulacro NCLEX principal)$/.test(ngnCase.title);
+  ngnCase.title=main?(en?'Main NCLEX simulation':'Simulacro NCLEX principal'):(en?'Mixed-format NCLEX exam':'Simulacro NCLEX mixto');ngnLang=lang;
   ngnResults.forEach((r,i)=>{const item=ngnCase.items[i];if(item){r.prompt=item.prompt;r.explanation=item.explanation;r.sourceTitle=item.sourceTitle||ngnCase.title}});
  }
  window.setGlobalLanguage=function(lang){
