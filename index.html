@@ -8410,7 +8410,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.10.05.01';
+  const MNSC_APP_BUILD='2026.10.05.02';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
@@ -8446,23 +8446,43 @@ addEventListener('load',function(){
       if(published&&published!==MNSC_APP_BUILD)showUpdateAvailable(reg,published);
     }catch(e){}
   }
+  let checkingUpdate=false,lastUpdateCheck=0;
+  async function refreshUpdateCheck(force=false){
+    if(location.protocol==='file:'||document.visibilityState==='hidden')return;
+    if(checkingUpdate||(!force&&Date.now()-lastUpdateCheck<15000))return;
+    checkingUpdate=true;lastUpdateCheck=Date.now();
+    try{
+      if(updateRegistration?.waiting&&navigator.serviceWorker.controller)showUpdateAvailable(updateRegistration);
+      if(updateRegistration)updateRegistration.update().catch(()=>{});
+      await checkPublishedBuild(updateRegistration);
+    }finally{checkingUpdate=false}
+  }
   async function startUpdateSystem(){
-    if(!('serviceWorker' in navigator)||location.protocol==='file:')return;
+    if(location.protocol==='file:')return;
+    // Published HTML checks must work even when worker registration fails.
+    setTimeout(()=>refreshUpdateCheck(true),1800);
+    setInterval(()=>refreshUpdateCheck(),60*1000);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshUpdateCheck()});
+    window.addEventListener('focus',()=>refreshUpdateCheck());
+    window.addEventListener('online',()=>refreshUpdateCheck(true));
+    window.addEventListener('pageshow',()=>refreshUpdateCheck());
+    if(!('serviceWorker' in navigator))return;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload()});
     try{
       const reg=await navigator.serviceWorker.register(`sw.js?v=${MNSC_APP_BUILD}`,{updateViaCache:'none'});updateRegistration=reg;
       if(reg.waiting&&navigator.serviceWorker.controller)showUpdateAvailable(reg);
-      reg.addEventListener('updatefound',()=>{
-        const worker=reg.installing;if(!worker)return;
-        worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showUpdateAvailable(reg)});
-      });
-      navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload()});
-      reg.update().catch(()=>{});
-      setTimeout(()=>checkPublishedBuild(reg),1800);
-      setInterval(()=>checkPublishedBuild(reg),5*60*1000);
-    }catch(e){}
+      const watchWorker=worker=>{
+        if(!worker)return;
+        const check=()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showUpdateAvailable(reg)};
+        worker.addEventListener('statechange',check);check();
+      };
+      reg.addEventListener('updatefound',()=>watchWorker(reg.installing));
+      watchWorker(reg.installing);
+      refreshUpdateCheck(true);
+    }catch(e){refreshUpdateCheck(true)}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUpdateSystem,{once:true});else startUpdateSystem();
-  window.mnUpdateSystemVersion='V5.5';
+  window.mnUpdateSystemVersion='V16.25';
 })();
 </script>
 
@@ -10162,3 +10182,5 @@ addEventListener('load',function(){setTimeout(function(){
  setTimeout(()=>{try{window.mnBuildGroupedUI?.();window.renderTopics?.();window.renderNGN?.()}catch(e){console.warn('Preeclampsia and eclampsia practice refresh:',e)}},0);
 },0)});
 </script>
+
+<!-- V16.25: update checks on app return; question content preserved from V16.24. -->
