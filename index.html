@@ -139,6 +139,17 @@ body.mn-content-loading>:not(#mnSplash):not(script){visibility:hidden!important}
 .ngn-support{scroll-margin-top:18px}.ngn-support>summary{cursor:pointer;font-weight:800;font-size:18px;color:var(--ink)}.ngn-support[open]>summary{margin-bottom:14px}.ngn-support>.card{box-shadow:none;border:1px solid #e1e5ed;margin:0;padding:14px}.ngn-quick-actions{margin-top:12px}
 @media(max-width:650px){#ngnCatalog{scroll-margin-top:12px}.ngn-catalog-grid{grid-template-columns:1fr}.ngn-catalog-row .actions button{flex:1;min-width:0}}
 </style>
+<style id="mnPasswordVisibilityStyle">
+#proLogin .nsc-password-field{position:relative;width:100%}
+#proLogin #previewPass{padding-right:116px!important;box-sizing:border-box}
+#proLogin .nsc-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;gap:6px;width:auto;min-width:96px;min-height:44px;margin:0;padding:8px 10px;border:1px solid #d0dbd1;border-radius:9px;background:#f0f5ee;color:#254d39;font:700 12px/1.2 system-ui,-apple-system,sans-serif;cursor:pointer;box-shadow:none;white-space:nowrap}
+#proLogin .nsc-password-toggle:hover{background:#e5eedf}
+#proLogin .nsc-password-toggle:focus-visible{outline:3px solid #799e83;outline-offset:2px}
+#proLogin .nsc-password-toggle svg{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#proLogin .nsc-password-toggle[aria-pressed="false"] .nsc-eye-slash{display:none}
+#proLogin .nsc-password-toggle[aria-pressed="true"]{background:#e2ecdf}
+
+</style>
 </head>
 <body class="mn-splash-active mn-content-loading">
 
@@ -5568,6 +5579,75 @@ addEventListener('load',function(){setTimeout(function(){
  setTimeout(()=>{try{window.mnBuildGroupedUI?.();window.renderTopics?.();window.renderNGN?.()}catch(e){console.warn('Infection practice refresh:',e)}},0);
 },0)});
 </script>
+<script id="mnPasswordVisibilityScript">
+/* Local password visibility only. Never stores, transmits, or reads the password value. */
+(function(){
+  'use strict';
+  function init(){
+    const input=document.getElementById('previewPass');
+    const login=document.getElementById('proLogin');
+    if(!input||!login||document.getElementById('nscPasswordToggle'))return;
+    const language=()=>typeof appState!=='undefined'?(appState.planLang==='en'?'en':'es'):
+      (document.documentElement.lang==='en'?'en':'es');
+    const wrapper=document.createElement('div');wrapper.className='nsc-password-field';
+    input.parentNode.insertBefore(wrapper,input);wrapper.appendChild(input);
+    input.setAttribute('spellcheck','false');
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('autocorrect','off');
+    const button=document.createElement('button');button.type='button';button.id='nscPasswordToggle';
+    button.className='nsc-password-toggle';button.setAttribute('aria-controls','previewPass');
+    button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="nsc-eye-slash" d="m3 3 18 18"/></svg><span></span>';
+    wrapper.appendChild(button);
+    for(const id of ['previewUser','previewPass']){
+      const field=document.getElementById(id);
+      field?.closest('.pro-field')?.querySelector('label')?.setAttribute('for',id);
+    }
+    const subtitle=login.querySelector('.pro-sub');
+    if(subtitle){
+      subtitle.setAttribute('data-es','Tu misma cuenta de Nursing Study Center en el teléfono y en la computadora.');
+      subtitle.setAttribute('data-en','Your same Nursing Study Center account on your phone and computer.');
+    }
+    function labels(){
+      const english=language()==='en',visible=input.type==='text';
+      const text=english?(visible?'Hide':'Show'):(visible?'Ocultar':'Mostrar');
+      button.querySelector('span').textContent=text;
+      button.setAttribute('aria-label',text+(english?' password':' contraseña'));
+      button.setAttribute('aria-pressed',String(visible));
+      button.title=text+(english?' password':' contraseña');
+      if(subtitle)subtitle.textContent=subtitle.getAttribute(english?'data-en':'data-es');
+    }
+    function show(visible,restoreFocus){
+      const start=input.selectionStart,end=input.selectionEnd;
+      input.type=visible?'text':'password';
+      labels();
+      if(restoreFocus){
+        input.focus({preventScroll:true});
+        try{if(start!==null&&end!==null)input.setSelectionRange(start,end)}catch{}
+      }
+    }
+    button.addEventListener('click',event=>{event.preventDefault();show(input.type!=='text',event.detail!==0)});
+    // Re-mask on sign-in, recovery, leaving the page, and moving into the MFA step.
+    login.addEventListener('click',event=>{
+      if(event.target.closest('button')&&!event.target.closest('#nscPasswordToggle'))show(false,false);
+    },true);
+    input.addEventListener('keydown',event=>{if(event.key==='Enter')show(false,false)});
+    login.addEventListener('submit',()=>show(false,false),true);
+    window.addEventListener('pagehide',()=>show(false,false));
+    window.addEventListener('blur',()=>show(false,false));
+    window.addEventListener('beforeprint',()=>show(false,false));
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)show(false,false)});
+    new MutationObserver(labels).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    new MutationObserver(()=>{
+      if(login.classList.contains('pro-hide')||document.getElementById('primaryLoginFields')?.classList.contains('pro-hide'))show(false,false);
+    }).observe(login,{attributes:true,attributeFilter:['class'],subtree:true});
+    document.addEventListener('click',()=>setTimeout(labels,0));
+    show(false,false);
+    window.mnPasswordVisibilityVersion='1.0';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+
+</script>
 </body>
 </html>
 
@@ -8459,7 +8539,7 @@ addEventListener('load',function(){
 
 /* MNSC V5.5 — visible, non-destructive app updates */
 (function(){
-  const MNSC_APP_BUILD='2026.10.21.05';
+  const MNSC_APP_BUILD='2026.10.30.01';
   window.mnAppBuild=MNSC_APP_BUILD;
   let updateRegistration=null,remoteBuild='',reloading=false;
 
